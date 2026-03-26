@@ -1,0 +1,113 @@
+plugins {
+    id 'net.minecraftforge.gradle' version '6.0.+'
+    id 'eclipse'
+    id 'maven-publish'
+}
+
+version = mod_version
+group = mod_group
+
+base {
+    archivesName = mod_id
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+}
+
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+    copyIdeResources = true
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                runic_races {
+                    source sourceSets.main
+                }
+            }
+        }
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                runic_races {
+                    source sourceSets.main
+                }
+            }
+        }
+        data {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            mods {
+                runic_races {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    mavenCentral()
+    flatDir { dirs 'Dependencies' }
+    maven { url = "https://maven.blamejared.com" }
+    maven { url = "https://www.cursemaven.com" }
+    maven { url = "https://maven.theillusivec4.top/" }
+    maven { url = "https://modmaven.dev" }
+    maven {
+        name = "Iron's Spells Maven"
+        url = "https://code.redspace.io/releases"
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // Test dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+
+    // Origins Forge + Apoli + Calio -- required hard dependency
+    // Local jars in Dependencies/ folder (extracted from Origins -all jar)
+    // These are SRG-mapped jars from the modpack, used as compile-only references.
+    compileOnly files('Dependencies/origins-forge-1.20.1-1.10.0.9-all.jar')
+    compileOnly files('Dependencies/apoli-forge-1.20.1-2.9.0.8.jar')
+    compileOnly files('Dependencies/calio-forge-1.20.1-1.11.0.5.jar')
+
+    // Optional mod integrations (compileOnly = doesn't require at runtime)
+    // All compat code uses ModList.isLoaded() guards with reflection-based loading.
+    compileOnly files('Dependencies/ars_nouveau-1.20.1-4.12.7-all.jar')
+    compileOnly files('Dependencies/irons_spellbooks-1.20.1-3.15.4.jar')
+    compileOnly files('Dependencies/curios-forge-5.14.1+1.20.1.jar')
+    compileOnly files('Dependencies/runic-skills_1.0.0.jar')
+    compileOnly files('Dependencies/spells_n_gods-0.1.0.jar')
+    compileOnly files('Dependencies/Apotheosis-1.20.1-7.4.8.jar')
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+        mod_id: mod_id,
+        mod_name: mod_name,
+        mod_version: mod_version,
+        mod_group: mod_group,
+        minecraft_version: minecraft_version,
+        forge_version: forge_version
+    ]
+    inputs.properties replaceProperties
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

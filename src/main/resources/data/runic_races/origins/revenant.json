@@ -1,0 +1,15 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2024}"
+  },
+  "order": 602,
+  "name": "origin.runic_races.revenant.name",
+  "description": "origin.runic_races.revenant.description",
+  "powers": [
+    "runic_races:revenant/deathless_spite",
+    "runic_races:revenant/grave_call",
+    "runic_races:revenant/undying_will",
+    "runic_races:revenant/cursed_flesh"
+  ]
+}

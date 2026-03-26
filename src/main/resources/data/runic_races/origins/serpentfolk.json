@@ -1,0 +1,15 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2014}"
+  },
+  "order": 304,
+  "name": "origin.runic_races.serpentfolk.name",
+  "description": "origin.runic_races.serpentfolk.description",
+  "powers": [
+    "runic_races:serpentfolk/venomstrike",
+    "runic_races:serpentfolk/shed_skin",
+    "runic_races:serpentfolk/cold_blood",
+    "runic_races:serpentfolk/cold_vulnerability"
+  ]
+}

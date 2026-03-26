@@ -1,0 +1,44 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.dryad.photosynthesis.name",
+  "description": "power.runic_races.dryad.photosynthesis.description",
+  "subpowers": [
+    "sun_healing",
+    "poison_immunity",
+    "badge"
+  ],
+
+  "sun_healing": {
+    "type": "origins:action_over_time",
+    "interval": 300,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:and",
+        "conditions": [
+          {
+            "type": "origins:exposed_to_sun"
+          },
+          {
+            "type": "origins:daytime"
+          }
+        ]
+      },
+      "if_action": {
+        "type": "origins:execute_command",
+        "command": "effect give @s minecraft:instant_health 1 0 true"
+      }
+    }
+  },
+
+  "poison_immunity": {
+    "type": "origins:effect_immunity",
+    "effect": "minecraft:poison"
+  },
+
+  "badge": {
+    "type": "origins:tooltip",
+    "sprite": "origins:textures/gui/badge/star.png",
+    "text": "Heal 1 HP every 15 seconds when exposed to sunlight during the day. Immune to poison."
+  }
+}

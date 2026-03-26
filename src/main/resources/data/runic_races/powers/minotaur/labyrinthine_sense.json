@@ -1,0 +1,124 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.minotaur.labyrinthine_sense.name",
+  "description": "power.runic_races.minotaur.labyrinthine_sense.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "active_ability",
+    "badge"
+  ],
+
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 6000,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": true,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 1
+    },
+    "min_action": null,
+    "max_action": null
+  },
+
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:minotaur/labyrinthine_sense_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:minotaur/labyrinthine_sense_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+
+  "active_ability": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": false
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "runic_races:minotaur/labyrinthine_sense_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:night_vision",
+            "duration": 300,
+            "amplifier": 0,
+            "is_ambient": false,
+            "show_particles": false,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "origins:area_of_effect",
+          "radius": 30,
+          "bientity_action": {
+            "type": "origins:target_action",
+            "action": {
+              "type": "origins:apply_effect",
+              "effect": {
+                "effect": "minecraft:glowing",
+                "duration": 300,
+                "amplifier": 0,
+                "is_ambient": false,
+                "show_particles": false,
+                "show_icon": false
+              }
+            }
+          },
+          "bientity_condition": {
+            "type": "origins:target_condition",
+            "condition": {
+              "type": "origins:living"
+            }
+          }
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:minotaur/labyrinthine_sense_cooldown_timer",
+          "change": 6000
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "title @s actionbar {\"text\":\"Your labyrinthine instincts awaken!\",\"color\":\"aqua\",\"bold\":true}"
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:soul",
+          "count": 20,
+          "speed": 0.3,
+          "spread": {
+            "x": 1.5,
+            "y": 2.0,
+            "z": 1.5
+          }
+        }
+      ]
+    }
+  },
+
+  "badge": {
+    "type": "origins:tooltip",
+    "sprite": "origins:textures/gui/badge/active.png",
+    "text": "Press primary active key to gain Night Vision and reveal all living entities within 30 blocks with Glowing for 15 seconds. 300-second cooldown."
+  }
+}

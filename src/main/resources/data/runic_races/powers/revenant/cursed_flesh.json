@@ -1,0 +1,54 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.revenant.cursed_flesh.name",
+  "description": "power.runic_races.revenant.cursed_flesh.description",
+  "subpowers": [
+    "healing_reduction",
+    "sunlight_decay",
+    "health_penalty",
+    "badge"
+  ],
+
+  "healing_reduction": {
+    "type": "origins:modify_healing",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -0.50
+    }
+  },
+
+  "sunlight_decay": {
+    "type": "origins:damage_over_time",
+    "interval": 100,
+    "damage": 1.0,
+    "damage_easy": 1.0,
+    "damage_source": "starve",
+    "condition": {
+      "type": "origins:and",
+      "conditions": [
+        {
+          "type": "origins:exposed_to_sun"
+        },
+        {
+          "type": "origins:daytime"
+        }
+      ]
+    }
+  },
+
+  "health_penalty": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": -2.0,
+      "name": "Cursed Flesh Health Penalty"
+    }
+  },
+
+  "badge": {
+    "type": "origins:tooltip",
+    "sprite": "origins:textures/gui/badge/star.png",
+    "text": "All healing reduced by 50%%, take 0.5 hearts every 5 seconds in direct sunlight, and suffer -1 heart max health. Your flesh resists restoration."
+  }
+}

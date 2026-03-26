@@ -1,0 +1,154 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.lycanthrope.transformation.name",
+  "description": "power.runic_races.lycanthrope.transformation.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "beast_trigger",
+    "badge"
+  ],
+
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 1200,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": true,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 1
+    },
+    "min_action": null,
+    "max_action": null
+  },
+
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:lycanthrope/transformation_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:lycanthrope/transformation_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+
+  "beast_trigger": {
+    "type": "origins:action_over_time",
+    "interval": 20,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:and",
+        "conditions": [
+          {
+            "type": "origins:resource",
+            "resource": "runic_races:lycanthrope/transformation_cooldown_timer",
+            "comparison": "==",
+            "compare_to": 0
+          },
+          {
+            "type": "origins:health",
+            "comparison": "<=",
+            "compare_to": 0.3
+          }
+        ]
+      },
+      "if_action": {
+        "type": "origins:and",
+        "actions": [
+          {
+            "type": "origins:apply_effect",
+            "effect": {
+              "effect": "minecraft:strength",
+              "duration": 600,
+              "amplifier": 2,
+              "is_ambient": false,
+              "show_particles": true,
+              "show_icon": true
+            }
+          },
+          {
+            "type": "origins:apply_effect",
+            "effect": {
+              "effect": "minecraft:speed",
+              "duration": 600,
+              "amplifier": 1,
+              "is_ambient": false,
+              "show_particles": true,
+              "show_icon": true
+            }
+          },
+          {
+            "type": "origins:apply_effect",
+            "effect": {
+              "effect": "minecraft:resistance",
+              "duration": 600,
+              "amplifier": 0,
+              "is_ambient": false,
+              "show_particles": true,
+              "show_icon": true
+            }
+          },
+          {
+            "type": "origins:apply_effect",
+            "effect": {
+              "effect": "minecraft:mining_fatigue",
+              "duration": 600,
+              "amplifier": 2,
+              "is_ambient": false,
+              "show_particles": true,
+              "show_icon": true
+            }
+          },
+          {
+            "type": "origins:change_resource",
+            "resource": "runic_races:lycanthrope/transformation_cooldown_timer",
+            "change": 1200
+          },
+          {
+            "type": "origins:execute_command",
+            "command": "title @s actionbar {\"text\":\"The beast within erupts!\",\"color\":\"red\",\"bold\":true}"
+          },
+          {
+            "type": "origins:spawn_particles",
+            "particle": "minecraft:angry_villager",
+            "count": 15,
+            "speed": 0.3,
+            "spread": {
+              "x": 1.5,
+              "y": 1.5,
+              "z": 1.5
+            }
+          },
+          {
+            "type": "origins:spawn_particles",
+            "particle": "minecraft:smoke",
+            "count": 30,
+            "speed": 0.5,
+            "spread": {
+              "x": 2.0,
+              "y": 2.0,
+              "z": 2.0
+            }
+          }
+        ]
+      }
+    }
+  },
+
+  "badge": {
+    "type": "origins:tooltip",
+    "sprite": "origins:textures/gui/badge/active.png",
+    "text": "When below 30%% HP, transform into beast form for 30 seconds: Strength III, Speed II, Resistance I, but Mining Fatigue III. 60-second cooldown."
+  }
+}

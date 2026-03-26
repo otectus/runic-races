@@ -1,0 +1,16 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2015}"
+  },
+  "order": 400,
+  "name": "origin.runic_races.mountain_dwarf.name",
+  "description": "origin.runic_races.mountain_dwarf.description",
+  "powers": [
+    "runic_races:mountain_dwarf/stonewall",
+    "runic_races:mountain_dwarf/darkvision",
+    "runic_races:mountain_dwarf/forge_hardened",
+    "runic_races:mountain_dwarf/surface_discomfort",
+    "runic_races:mountain_dwarf/biome_affinity"
+  ]
+}

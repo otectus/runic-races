@@ -1,0 +1,28 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.settings/
+.classpath
+.project
+bin/
+out/
+
+# Forge run directory
+run/
+
+# Generated resources
+src/generated/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies (local jars - download yourself)
+Dependencies/*.jar

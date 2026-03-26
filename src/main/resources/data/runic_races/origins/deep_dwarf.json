@@ -1,0 +1,15 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2016}"
+  },
+  "order": 401,
+  "name": "origin.runic_races.deep_dwarf.name",
+  "description": "origin.runic_races.deep_dwarf.description",
+  "powers": [
+    "runic_races:deep_dwarf/tremorsense",
+    "runic_races:deep_dwarf/stoneshape",
+    "runic_races:deep_dwarf/abyssal_adaptation",
+    "runic_races:deep_dwarf/photosensitivity"
+  ]
+}

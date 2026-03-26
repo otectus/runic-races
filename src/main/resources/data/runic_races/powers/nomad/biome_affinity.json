@@ -1,0 +1,12 @@
+{
+  "type": "runic_races:biome_affinity",
+  "name": "power.runic_races.nomad.biome_affinity.name",
+  "description": "power.runic_races.nomad.biome_affinity.description",
+  "home_biome_tag": "forge:is_dry/overworld",
+  "speed_bonus": 0.08,
+  "damage_bonus": 0.0,
+  "hostile_biome_tag": "forge:is_cold/overworld",
+  "speed_penalty": -0.05,
+  "damage_penalty": 0.0,
+  "check_interval": 40
+}

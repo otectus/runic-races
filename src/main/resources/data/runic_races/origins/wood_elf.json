@@ -1,0 +1,16 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2006}"
+  },
+  "order": 201,
+  "name": "origin.runic_races.wood_elf.name",
+  "description": "origin.runic_races.wood_elf.description",
+  "powers": [
+    "runic_races:wood_elf/thornguard",
+    "runic_races:wood_elf/canopy_meld",
+    "runic_races:wood_elf/forest_stride",
+    "runic_races:wood_elf/fire_vulnerability",
+    "runic_races:wood_elf/biome_affinity"
+  ]
+}

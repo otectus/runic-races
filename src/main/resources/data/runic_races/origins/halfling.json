@@ -1,0 +1,15 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2002}"
+  },
+  "order": 101,
+  "name": "origin.runic_races.halfling.name",
+  "description": "origin.runic_races.halfling.description",
+  "powers": [
+    "runic_races:halfling/lucky_dodge",
+    "runic_races:halfling/lightfoot",
+    "runic_races:halfling/small_stature",
+    "runic_races:halfling/high_metabolism"
+  ]
+}

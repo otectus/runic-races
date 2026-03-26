@@ -1,0 +1,15 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2013}"
+  },
+  "order": 303,
+  "name": "origin.runic_races.minotaur.name",
+  "description": "origin.runic_races.minotaur.description",
+  "powers": [
+    "runic_races:minotaur/bullrush",
+    "runic_races:minotaur/labyrinthine_sense",
+    "runic_races:minotaur/unstoppable_mass",
+    "runic_races:minotaur/clumsy_hooves"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.troll.fire_bane.name",
+  "description": "power.runic_races.troll.fire_bane.description",
+  "subpowers": [
+    "fire_vulnerability_on_fire",
+    "fire_vulnerability_in_fire",
+    "fire_vulnerability_lava",
+    "badge"
+  ],
+
+  "fire_vulnerability_on_fire": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "onFire"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 1.0
+    }
+  },
+
+  "fire_vulnerability_in_fire": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "inFire"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 1.0
+    }
+  },
+
+  "fire_vulnerability_lava": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "lava"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 1.0
+    }
+  },
+
+  "badge": {
+    "type": "origins:tooltip",
+    "sprite": "origins:textures/gui/badge/star.png",
+    "text": "Take double damage from all fire sources (onFire, inFire, lava). Fire suppresses troll regeneration -- removal of regen on fire hit coming in Phase 2."
+  }
+}

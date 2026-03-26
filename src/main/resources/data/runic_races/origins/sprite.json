@@ -1,0 +1,15 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2007}"
+  },
+  "order": 202,
+  "name": "origin.runic_races.sprite.name",
+  "description": "origin.runic_races.sprite.description",
+  "powers": [
+    "runic_races:sprite/phase_shift",
+    "runic_races:sprite/fae_drift",
+    "runic_races:sprite/diminutive_frame",
+    "runic_races:sprite/fragile_essence"
+  ]
+}

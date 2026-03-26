@@ -1,0 +1,56 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.high_elf.mana_attunement.name",
+  "description": "power.runic_races.high_elf.mana_attunement.description",
+  "subpowers": [
+    "magic_damage_bonus",
+    "health_reduction",
+    "night_vision",
+    "badge"
+  ],
+
+  "magic_damage_bonus": {
+    "type": "origins:modify_damage_dealt",
+    "condition": {
+      "type": "origins:damage_condition",
+      "damage_condition": {
+        "type": "origins:or",
+        "conditions": [
+          {
+            "type": "origins:name",
+            "name": "magic"
+          },
+          {
+            "type": "origins:name",
+            "name": "indirectMagic"
+          }
+        ]
+      }
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.15
+    }
+  },
+
+  "health_reduction": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": -4.0,
+      "name": "Mana Attunement Health Reduction"
+    }
+  },
+
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1.0
+  },
+
+  "badge": {
+    "type": "origins:tooltip",
+    "sprite": "origins:textures/gui/badge/star.png",
+    "text": "Grants +15%% magic damage, night vision, but -2 max hearts. Represents an innate magical attunement at the cost of physical frailty."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2001}"
+  },
+  "order": 100,
+  "name": "origin.runic_races.human.name",
+  "description": "origin.runic_races.human.description",
+  "powers": [
+    "runic_races:human/determination",
+    "runic_races:human/adaptive_learning",
+    "runic_races:human/universal_palate"
+  ]
+}

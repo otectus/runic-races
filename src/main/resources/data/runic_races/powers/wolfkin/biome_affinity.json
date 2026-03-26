@@ -1,0 +1,12 @@
+{
+  "type": "runic_races:biome_affinity",
+  "name": "power.runic_races.wolfkin.biome_affinity.name",
+  "description": "power.runic_races.wolfkin.biome_affinity.description",
+  "home_biome_tag": "forge:is_taiga",
+  "speed_bonus": 0.10,
+  "damage_bonus": 0.05,
+  "hostile_biome_tag": "forge:is_desert",
+  "speed_penalty": -0.03,
+  "damage_penalty": 0.0,
+  "check_interval": 40
+}

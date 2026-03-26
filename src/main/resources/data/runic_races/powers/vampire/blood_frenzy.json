@@ -1,0 +1,121 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.vampire.blood_frenzy.name",
+  "description": "power.runic_races.vampire.blood_frenzy.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "frenzy_trigger",
+    "badge"
+  ],
+
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 1800,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": true,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 1
+    },
+    "min_action": null,
+    "max_action": null
+  },
+
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:vampire/blood_frenzy_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:vampire/blood_frenzy_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+
+  "frenzy_trigger": {
+    "type": "origins:action_over_time",
+    "interval": 20,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:and",
+        "conditions": [
+          {
+            "type": "origins:resource",
+            "resource": "runic_races:vampire/blood_frenzy_cooldown_timer",
+            "comparison": "==",
+            "compare_to": 0
+          },
+          {
+            "type": "origins:health",
+            "comparison": "<=",
+            "compare_to": 0.5
+          }
+        ]
+      },
+      "if_action": {
+        "type": "origins:and",
+        "actions": [
+          {
+            "type": "origins:apply_effect",
+            "effect": {
+              "effect": "minecraft:strength",
+              "duration": 120,
+              "amplifier": 1,
+              "is_ambient": false,
+              "show_particles": true,
+              "show_icon": true
+            }
+          },
+          {
+            "type": "origins:apply_effect",
+            "effect": {
+              "effect": "minecraft:regeneration",
+              "duration": 120,
+              "amplifier": 1,
+              "is_ambient": false,
+              "show_particles": true,
+              "show_icon": true
+            }
+          },
+          {
+            "type": "origins:change_resource",
+            "resource": "runic_races:vampire/blood_frenzy_cooldown_timer",
+            "change": 1800
+          },
+          {
+            "type": "origins:execute_command",
+            "command": "title @s actionbar {\"text\":\"Blood frenzy consumes you!\",\"color\":\"dark_red\",\"bold\":true}"
+          },
+          {
+            "type": "origins:spawn_particles",
+            "particle": "minecraft:damage_indicator",
+            "count": 20,
+            "speed": 0.4,
+            "spread": {
+              "x": 1.5,
+              "y": 1.5,
+              "z": 1.5
+            }
+          }
+        ]
+      }
+    }
+  },
+
+  "badge": {
+    "type": "origins:tooltip",
+    "sprite": "origins:textures/gui/badge/active.png",
+    "text": "When below 50%% HP, enter blood frenzy: Strength II and Regeneration II for 6 seconds. 90-second cooldown."
+  }
+}

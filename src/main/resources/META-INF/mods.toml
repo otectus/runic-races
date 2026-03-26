@@ -1,0 +1,95 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+issueTrackerURL=""
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="Otectus"
+description='''
+Runic Races: A flagship Origins add-on for the Runecraft modpack.
+24 deeply designed races across 6 families, each with unique mechanics,
+environmental interactions, and deep integration with Runecraft's systems.
+'''
+
+# Required: Forge
+[[dependencies.${mod_id}]]
+modId="forge"
+mandatory=true
+versionRange="[${forge_version},)"
+ordering="NONE"
+side="BOTH"
+
+# Required: Minecraft
+[[dependencies.${mod_id}]]
+modId="minecraft"
+mandatory=true
+versionRange="[${minecraft_version},)"
+ordering="NONE"
+side="BOTH"
+
+# Required: Origins Forge
+[[dependencies.${mod_id}]]
+modId="origins"
+mandatory=true
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Optional: Ars Nouveau
+[[dependencies.${mod_id}]]
+modId="ars_nouveau"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Optional: Iron's Spellbooks
+[[dependencies.${mod_id}]]
+modId="irons_spellbooks"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Optional: Curios
+[[dependencies.${mod_id}]]
+modId="curios"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Optional: Apotheosis
+[[dependencies.${mod_id}]]
+modId="apotheosis"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Optional: Runic Skills
+[[dependencies.${mod_id}]]
+modId="runicskills"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Optional: Runic Gods
+[[dependencies.${mod_id}]]
+modId="runic_gods"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Optional: Passive Skill Tree
+[[dependencies.${mod_id}]]
+modId="skilltree"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"

@@ -1,0 +1,15 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2018}"
+  },
+  "order": 403,
+  "name": "origin.runic_races.troll.name",
+  "description": "origin.runic_races.troll.description",
+  "powers": [
+    "runic_races:troll/regrowth",
+    "runic_races:troll/thick_hide",
+    "runic_races:troll/fire_bane",
+    "runic_races:troll/dull_mind"
+  ]
+}

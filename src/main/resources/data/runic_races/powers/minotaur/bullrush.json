@@ -1,0 +1,30 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.minotaur.bullrush.name",
+  "description": "power.runic_races.minotaur.bullrush.description",
+  "subpowers": [
+    "damage_bonus",
+    "badge"
+  ],
+
+  "damage_bonus": {
+    "type": "origins:modify_damage_dealt",
+    "damage_condition": {
+      "type": "origins:invert",
+      "condition": {
+        "type": "origins:name",
+        "name": "magic"
+      }
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.25
+    }
+  },
+
+  "badge": {
+    "type": "origins:tooltip",
+    "sprite": "origins:textures/gui/badge/star.png",
+    "text": "Deal +25%% physical melee damage. The minotaur's raw strength is unmatched. Sprint-conditional bonus coming in Phase 2."
+  }
+}

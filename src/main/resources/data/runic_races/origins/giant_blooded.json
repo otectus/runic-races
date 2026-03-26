@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2004}"
+  },
+  "order": 103,
+  "name": "origin.runic_races.giant_blooded.name",
+  "description": "origin.runic_races.giant_blooded.description",
+  "powers": [
+    "runic_races:giant_blooded/earthshaker",
+    "runic_races:giant_blooded/towering_frame",
+    "runic_races:giant_blooded/lumbering_bulk"
+  ]
+}

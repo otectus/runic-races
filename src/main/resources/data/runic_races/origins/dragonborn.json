@@ -1,0 +1,15 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2011}"
+  },
+  "order": 301,
+  "name": "origin.runic_races.dragonborn.name",
+  "description": "origin.runic_races.dragonborn.description",
+  "powers": [
+    "runic_races:dragonborn/draconic_fury",
+    "runic_races:dragonborn/dragon_breath",
+    "runic_races:dragonborn/scaled_hide",
+    "runic_races:dragonborn/draconic_burden"
+  ]
+}

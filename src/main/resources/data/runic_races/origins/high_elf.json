@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2005}"
+  },
+  "order": 200,
+  "name": "origin.runic_races.high_elf.name",
+  "description": "origin.runic_races.high_elf.description",
+  "powers": [
+    "runic_races:high_elf/arcane_reflex",
+    "runic_races:high_elf/mana_attunement",
+    "runic_races:high_elf/iron_sensitivity"
+  ]
+}

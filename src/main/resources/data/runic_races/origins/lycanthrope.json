@@ -1,0 +1,15 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2023}"
+  },
+  "order": 601,
+  "name": "origin.runic_races.lycanthrope.name",
+  "description": "origin.runic_races.lycanthrope.description",
+  "powers": [
+    "runic_races:lycanthrope/transformation",
+    "runic_races:lycanthrope/howl_of_the_hunt",
+    "runic_races:lycanthrope/heightened_senses",
+    "runic_races:lycanthrope/silver_bane"
+  ]
+}

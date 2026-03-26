@@ -1,0 +1,15 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2019}"
+  },
+  "order": 404,
+  "name": "origin.runic_races.kobold.name",
+  "description": "origin.runic_races.kobold.description",
+  "powers": [
+    "runic_races:kobold/tunnel_rat",
+    "runic_races:kobold/improvised_trap",
+    "runic_races:kobold/demolitions_expert",
+    "runic_races:kobold/exposed_weakness"
+  ]
+}

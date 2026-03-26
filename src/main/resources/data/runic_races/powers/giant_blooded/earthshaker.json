@@ -1,0 +1,27 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.giant_blooded.earthshaker.name",
+  "description": "power.runic_races.giant_blooded.earthshaker.description",
+  "subpowers": [
+    "fall_damage_reduction",
+    "badge"
+  ],
+
+  "fall_damage_reduction": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "fall"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -0.5
+    }
+  },
+
+  "badge": {
+    "type": "origins:tooltip",
+    "sprite": "origins:textures/gui/badge/star.png",
+    "text": "Take 50%% less fall damage. AOE ground slam on landing will be added in Phase 2."
+  }
+}

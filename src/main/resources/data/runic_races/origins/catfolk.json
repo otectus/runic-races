@@ -1,0 +1,15 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2012}"
+  },
+  "order": 302,
+  "name": "origin.runic_races.catfolk.name",
+  "description": "origin.runic_races.catfolk.description",
+  "powers": [
+    "runic_races:catfolk/nine_lives",
+    "runic_races:catfolk/pounce",
+    "runic_races:catfolk/feline_grace",
+    "runic_races:catfolk/water_aversion"
+  ]
+}

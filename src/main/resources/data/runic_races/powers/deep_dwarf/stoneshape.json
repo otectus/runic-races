@@ -1,0 +1,103 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.deep_dwarf.stoneshape.name",
+  "description": "power.runic_races.deep_dwarf.stoneshape.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "activation",
+    "badge"
+  ],
+
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 2400,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": true,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 1
+    },
+    "min_action": null,
+    "max_action": null
+  },
+
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:deep_dwarf/stoneshape_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:deep_dwarf/stoneshape_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+
+  "activation": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": false
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "runic_races:deep_dwarf/stoneshape_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:haste",
+            "duration": 200,
+            "amplifier": 2,
+            "is_ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:deep_dwarf/stoneshape_cooldown_timer",
+          "change": 2400
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "title @s actionbar {\"text\":\"You reshape the stone around you!\",\"color\":\"dark_gray\",\"bold\":true}"
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": {
+            "type": "minecraft:block",
+            "block_state": "minecraft:stone"
+          },
+          "count": 25,
+          "speed": 0.4,
+          "spread": {
+            "x": 2.0,
+            "y": 1.5,
+            "z": 2.0
+          }
+        }
+      ]
+    }
+  },
+
+  "badge": {
+    "type": "origins:tooltip",
+    "sprite": "origins:textures/gui/badge/active.png",
+    "text": "Press primary active key to gain Haste III for 10 seconds, vastly increasing mining speed. 120-second cooldown."
+  }
+}

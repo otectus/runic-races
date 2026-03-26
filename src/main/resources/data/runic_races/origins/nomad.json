@@ -1,0 +1,16 @@
+{
+  "icon": {
+    "item": "minecraft:ink_sac",
+    "tag": "{CustomModelData:2003}"
+  },
+  "order": 102,
+  "name": "origin.runic_races.nomad.name",
+  "description": "origin.runic_races.nomad.description",
+  "powers": [
+    "runic_races:nomad/sand_shield",
+    "runic_races:nomad/pathfinders_mark",
+    "runic_races:nomad/desert_stride",
+    "runic_races:nomad/cold_vulnerability",
+    "runic_races:nomad/biome_affinity"
+  ]
+}
