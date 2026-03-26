@@ -4,6 +4,7 @@
   "description": "power.runic_races.nomad.pathfinders_mark.description",
   "subpowers": [
     "cooldown_timer",
+    "cooldown_decay",
     "active_ability",
     "badge"
   ],
@@ -14,12 +15,31 @@
     "max": 3600,
     "start_value": 0,
     "hud_render": {
-      "should_render": true,
+      "should_render": false,
       "sprite_location": "origins:textures/gui/community/spade.png",
       "bar_index": 2
     },
     "min_action": null,
     "max_action": null
+  },
+
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:nomad/pathfinders_mark_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:nomad/pathfinders_mark_cooldown_timer",
+        "change": -1
+      }
+    }
   },
 
   "active_ability": {

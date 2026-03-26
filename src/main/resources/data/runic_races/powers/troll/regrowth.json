@@ -16,7 +16,7 @@
     "max": 2400,
     "start_value": 0,
     "hud_render": {
-      "should_render": true,
+      "should_render": false,
       "sprite_location": "origins:textures/gui/community/spade.png",
       "bar_index": 1
     },
