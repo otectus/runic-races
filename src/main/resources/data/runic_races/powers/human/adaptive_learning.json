@@ -4,8 +4,7 @@
   "description": "power.runic_races.human.adaptive_learning.description",
   "subpowers": [
     "luck_bonus",
-    "speed_bonus",
-    "badge"
+    "speed_bonus"
   ],
 
   "luck_bonus": {
@@ -26,11 +25,5 @@
       "value": 0.05,
       "name": "Adaptive Learning Speed Bonus"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +1 Luck and +5%% movement speed, representing human adaptability."
   }
 }

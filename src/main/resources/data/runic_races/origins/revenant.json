@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2024}"
+    "item": "runic_races:revenant_icon"
   },
   "order": 602,
   "name": "origin.runic_races.revenant.name",

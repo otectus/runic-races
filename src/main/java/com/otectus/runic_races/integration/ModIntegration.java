@@ -1,5 +1,7 @@
 package com.otectus.runic_races.integration;
 
+import net.minecraft.server.level.ServerPlayer;
+
 /**
  * Interface for optional mod integrations.
  * Implementations live in isolated packages and are loaded via reflection
@@ -17,4 +19,12 @@ public interface ModIntegration {
      * @return Human-readable name of this integration
      */
     String getName();
+
+    /**
+     * Re-apply any race-dependent state for a player.
+     * Called by the central integration manager on login, respawn,
+     * dimension change, and detected race changes.
+     */
+    default void syncPlayer(ServerPlayer player) {
+    }
 }

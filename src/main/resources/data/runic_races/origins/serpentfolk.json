@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2014}"
+    "item": "runic_races:serpentfolk_icon"
   },
   "order": 304,
   "name": "origin.runic_races.serpentfolk.name",

@@ -50,7 +50,7 @@ public class IronsSpellsIntegration implements ModIntegration {
             }
         } catch (Exception e) {
             // Gracefully handle API changes or unexpected nulls
-            RunicRacesMod.LOGGER.debug("[RunicRaces] Could not process SpellDamageEvent: {}", e.getMessage());
+            RunicRacesMod.debug("[RunicRaces] Could not process SpellDamageEvent: {}", e.getMessage());
         }
     }
 

@@ -10,26 +10,26 @@ A flagship Origins add-on for the **Runecraft** modpack. 24 deeply designed race
 | Race | Fantasy | Signature Mechanic |
 |------|---------|-------------------|
 | **Human** | Adaptable generalist | +10% XP, no weaknesses, no specialization |
-| **Halfling** | Lucky rogue | Lucky Dodge (10% evade), can't use two-handed weapons |
-| **Nomad** | Desert survivor | Pathfinder's Mark teleport, desert biome affinity |
-| **Giant-Blooded** | Towering tank | Earthshaker fall AOE, full knockback immunity, slow |
+| **Halfling** | Lucky rogue | Lucky Dodge (10% evade), stealth burst |
+| **Nomad** | Desert survivor | Pathfinder's Mark dash, desert biome affinity |
+| **Giant-Blooded** | Towering tank | Massive reach, knockback immunity, slow bulk |
 
 ### Fae (5)
 | Race | Fantasy | Signature Mechanic |
 |------|---------|-------------------|
-| **High Elf** | Arcane master | Passive Source regen, +15% Ars cost reduction, iron weakness |
+| **High Elf** | Arcane master | Arcane reflex, caster affinity, iron weakness |
 | **Wood Elf** | Forest ranger | Canopy Meld stealth, forest biome affinity, fire vulnerability |
-| **Sprite** | Glass cannon | Permanent gliding, +30% speed, -3 hearts, no chest/legs |
-| **Changeling** | Shapeshifter | Assume Form disguise, gods distrust (-15% favor) |
-| **Dryad** | Plant support | Photosynthesis healing, ally heal aura, 3x fire damage |
+| **Sprite** | Glass cannon | Permanent gliding, +30% speed, -3 hearts |
+| **Changeling** | Shapeshifter | Assume Form invisibility burst, gods distrust (-15% favor) |
+| **Dryad** | Plant support | Photosynthesis healing, player heal burst, 3x fire damage |
 
 ### Beast (5)
 | Race | Fantasy | Signature Mechanic |
 |------|---------|-------------------|
-| **Wolfkin** | Pack hunter | Pack Howl ally buff, hostile detection through walls |
-| **Dragonborn** | Elemental bruiser | Dragon Breath AOE, natural armor, can't wear helmets |
-| **Catfolk** | Parkour assassin | **Nine Lives** (survive lethal blow, 10min CD), no heavy armor |
-| **Minotaur** | Momentum fighter | Bullrush sprint damage, Labyrinthine Sense, can't use bows |
+| **Wolfkin** | Pack hunter | Pack Howl speed buff, pursuit mobility |
+| **Dragonborn** | Fire-blooded bruiser | Dragon Breath AOE, natural armor |
+| **Catfolk** | Parkour assassin | **Nine Lives** (survive lethal blow, 10min CD), water aversion |
+| **Minotaur** | Momentum fighter | Bullrush melee power, Labyrinthine Sense |
 | **Serpentfolk** | Ambush predator | Venomstrike poison on hit, Shed Skin debuff removal |
 
 ### Underfolk (5)
@@ -37,21 +37,21 @@ A flagship Origins add-on for the **Runecraft** modpack. 24 deeply designed race
 |------|---------|-------------------|
 | **Mountain Dwarf** | Forgemaster | **Forge Blessing** (crafting bonus), darkvision, magic cap |
 | **Deep Dwarf** | Abyssal explorer | Mining Fatigue immune, Tremorsense, sunlight burns |
-| **Goblin** | Treasure hunter | +2 Curios slots, +2 Apotheosis luck, fragile alone |
-| **Troll** | Unkillable tank | Permanent Regen I, 2x fire damage, can't enchant |
+| **Goblin** | Treasure hunter | +2 Curios slots, +2 Apotheosis luck, frail frame |
+| **Troll** | Unkillable tank | Permanent Regen I, 2x fire damage |
 | **Kobold** | Trapmaster | Improvised Trap placement, stronger in tight spaces |
 
 ### Dragon (2)
 | Race | Fantasy | Signature Mechanic |
 |------|---------|-------------------|
 | **Wyvern-Blooded** | Aerial hunter | Updraft dive-bomb, permanent glide, claustrophobia |
-| **Elder Drake** | Ancient power | Fire immune, +6 HP, -25% XP gain, scorns Apotheosis affixes |
+| **Elder Drake** | Ancient power | Fire immune, powerful roar, ancient pride penalties |
 
 ### Cursed (3)
 | Race | Fantasy | Signature Mechanic |
 |------|---------|-------------------|
-| **Vampire** | Nocturnal predator | Day/night power scaling, lifesteal, sunlight kills, blood diet |
-| **Lycanthrope** | Involuntary werewolf | Beast form on low HP (buffs but locks inventory/spells) |
+| **Vampire** | Nocturnal predator | Day/night power scaling, frenzy, sunlight kills |
+| **Lycanthrope** | Involuntary werewolf | Beast surge on low HP (buffs with reduced control) |
 | **Revenant** | Undying returned | **Death-site revival** (respawn where you died), healing halved |
 
 ## Mod Integrations
@@ -70,7 +70,7 @@ All integrations are optional and config-toggleable. If a mod is absent, its fea
 ## Installation
 
 1. Requires **Origins Forge** (1.10.0.9+) installed in the modpack
-2. Drop `runic_races-1.0.0.jar` into the `mods/` folder
+2. Drop `runic_races-0.9.0.jar` into the `mods/` folder
 3. **Remove** the old KubeJS Runic Races datapack if present (`kubejs/data/runic_races/`)
 4. Existing players with preserved race names will keep their selection
 
@@ -78,8 +78,8 @@ All integrations are optional and config-toggleable. If a mod is absent, its fea
 
 Config files are generated in `config/runic_races/`:
 
-- `runic_races-server.toml` — Balance multipliers (cooldown, damage, healing) and integration toggles
-- `runic_races-common.toml` — Disabled races list, debug logging
+- `runic_races-server.toml` — Integration toggles
+- `runic_races-common.toml` — Debug logging
 
 ## Commands
 
@@ -100,5 +100,5 @@ Config files are generated in `config/runic_races/`:
 ```bash
 # Requires Origins, Apoli, Calio jars in Dependencies/
 ./gradlew build
-# Output: build/libs/runic_races-1.0.0.jar
+# Output: build/libs/runic_races-0.9.0.jar
 ```

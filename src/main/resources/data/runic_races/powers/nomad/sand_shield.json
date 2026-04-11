@@ -5,8 +5,7 @@
   "subpowers": [
     "cooldown_timer",
     "cooldown_decay",
-    "on_hit_trigger",
-    "badge"
+    "on_hit_trigger"
   ],
 
   "cooldown_timer": {
@@ -74,31 +73,44 @@
           "command": "title @s actionbar {\"text\":\"The desert shields you!\",\"color\":\"yellow\",\"bold\":true}"
         },
         {
+          "type": "origins:play_sound",
+          "sound": "minecraft:block.sand.break",
+          "volume": 0.7,
+          "pitch": 0.8
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.iron_golem.hurt",
+          "volume": 0.3,
+          "pitch": 1.8
+        },
+        {
           "type": "origins:spawn_particles",
           "particle": {
             "type": "minecraft:dust",
-            "color": {
-              "x": 0.9,
-              "y": 0.8,
-              "z": 0.5
-            },
+            "color": { "x": 0.9, "y": 0.8, "z": 0.5 },
             "scale": 1.0
           },
           "count": 15,
           "speed": 0.3,
-          "spread": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
+          "spread": { "x": 0.8, "y": 1.0, "z": 0.8 }
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": {
+            "type": "minecraft:dust",
+            "color": { "x": 0.7, "y": 0.6, "z": 0.3 },
+            "scale": 0.8
+          },
+          "count": 20,
+          "speed": 0.2,
+          "spread": { "x": 1.0, "y": 1.5, "z": 1.0 }
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "particle minecraft:dust 0.85 0.75 0.45 1.0 ~ ~1 ~ 1.0 1.5 1.0 0.02 40 force"
         }
       ]
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/active.png",
-    "text": "When hit, gain Resistance I for 2 seconds. 20-second cooldown. Block/biome conditions coming in Phase 2."
   }
 }

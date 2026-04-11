@@ -39,7 +39,8 @@ public class AbilityIconRegistry {
                 icon("wood_elf/thornguard_cooldown_timer", Items.SWEET_BERRIES, "Thornguard", 1),
                 icon("wood_elf/canopy_meld_cooldown_timer", Items.OAK_LEAVES, "Canopy Meld", 2));
         register("sprite",
-                icon("sprite/phase_shift_cooldown_timer", Items.END_ROD, "Phase Shift", 1));
+                icon("sprite/phase_shift_cooldown_timer", Items.END_ROD, "Phase Shift", 1),
+                icon("sprite/fae_wings_flap_cooldown_timer", Items.FEATHER, "Fae Wings", 2));
         register("changeling",
                 icon("changeling/mirror_form_cooldown_timer", Items.GLASS, "Mirror Form", 1),
                 icon("changeling/assume_form_cooldown_timer", Items.PLAYER_HEAD, "Assume Form", 2));
@@ -77,10 +78,12 @@ public class AbilityIconRegistry {
         // Dragon
         register("wyvern_blooded",
                 icon("wyvern_blooded/tailstrike_cooldown_timer", Items.PHANTOM_MEMBRANE, "Tailstrike", 1),
-                icon("wyvern_blooded/updraft_cooldown_timer", Items.ELYTRA, "Updraft", 2));
+                icon("wyvern_blooded/updraft_cooldown_timer", Items.ELYTRA, "Updraft", 2),
+                icon("wyvern_blooded/wyvern_wings_flap_cooldown_timer", Items.PHANTOM_MEMBRANE, "Wyvern Wings", 3));
         register("elder_drake",
                 icon("elder_drake/ancient_wrath_cooldown_timer", Items.MAGMA_CREAM, "Ancient Wrath", 1),
-                icon("elder_drake/primordial_roar_cooldown_timer", Items.DRAGON_HEAD, "Primordial Roar", 2));
+                icon("elder_drake/primordial_roar_cooldown_timer", Items.DRAGON_HEAD, "Primordial Roar", 2),
+                icon("elder_drake/ancient_wings_flap_cooldown_timer", Items.ELYTRA, "Ancient Wings", 3));
 
         // Cursed
         register("vampire",

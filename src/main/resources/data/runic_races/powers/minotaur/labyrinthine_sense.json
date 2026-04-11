@@ -5,8 +5,7 @@
   "subpowers": [
     "cooldown_timer",
     "cooldown_decay",
-    "active_ability",
-    "badge"
+    "active_ability"
   ],
 
   "cooldown_timer": {
@@ -102,23 +101,40 @@
           "command": "title @s actionbar {\"text\":\"Your labyrinthine instincts awaken!\",\"color\":\"aqua\",\"bold\":true}"
         },
         {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.warden.sonic_boom",
+          "volume": 0.3,
+          "pitch": 2.0
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.ravager.stunned",
+          "volume": 0.5,
+          "pitch": 2.0
+        },
+        {
           "type": "origins:spawn_particles",
-          "particle": "minecraft:soul",
+          "particle": "minecraft:sonic_boom",
+          "count": 5,
+          "speed": 0.2,
+          "spread": { "x": 3.0, "y": 1.0, "z": 3.0 }
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": {
+            "type": "minecraft:dust",
+            "color": { "x": 0.2, "y": 0.8, "z": 0.8 },
+            "scale": 0.6
+          },
           "count": 20,
           "speed": 0.3,
-          "spread": {
-            "x": 1.5,
-            "y": 2.0,
-            "z": 1.5
-          }
+          "spread": { "x": 3.0, "y": 1.5, "z": 3.0 }
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "particle minecraft:dust 0.2 0.85 0.85 0.7 ~ ~1 ~ 5.0 0.3 5.0 0.01 60 force"
         }
       ]
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/active.png",
-    "text": "Press primary active key to gain Night Vision and reveal all living entities within 30 blocks with Glowing for 15 seconds. 300-second cooldown."
   }
 }

@@ -5,8 +5,7 @@
   "subpowers": [
     "health_bonus",
     "armor_bonus",
-    "wither_immunity",
-    "badge"
+    "wither_immunity"
   ],
 
   "health_bonus": {
@@ -32,11 +31,5 @@
   "wither_immunity": {
     "type": "origins:effect_immunity",
     "effect": "minecraft:wither"
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +4 hearts, +2 armor, and immunity to the Wither effect. Trolls are incredibly tough."
   }
 }

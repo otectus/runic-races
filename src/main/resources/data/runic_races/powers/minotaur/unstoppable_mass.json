@@ -4,8 +4,7 @@
   "description": "power.runic_races.minotaur.unstoppable_mass.description",
   "subpowers": [
     "health_bonus",
-    "knockback_resistance",
-    "badge"
+    "knockback_resistance"
   ],
 
   "health_bonus": {
@@ -26,11 +25,5 @@
       "value": 0.5,
       "name": "Unstoppable Mass Knockback Resistance"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +3 hearts max health and 50%% knockback resistance. The minotaur's mass is nearly immovable."
   }
 }

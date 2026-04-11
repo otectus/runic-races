@@ -4,8 +4,7 @@
   "description": "power.runic_races.wolfkin.keen_senses.description",
   "subpowers": [
     "night_vision",
-    "speed_bonus",
-    "badge"
+    "speed_bonus"
   ],
 
   "night_vision": {
@@ -21,11 +20,5 @@
       "value": 0.15,
       "name": "Keen Senses Sprint Bonus"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Permanent night vision and +15%% movement speed. The wolf's senses are always sharp."
   }
 }

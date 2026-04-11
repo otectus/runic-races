@@ -5,8 +5,7 @@
   "subpowers": [
     "fire_vulnerability_on_fire",
     "fire_vulnerability_in_fire",
-    "fire_vulnerability_lava",
-    "badge"
+    "fire_vulnerability_lava"
   ],
 
   "fire_vulnerability_on_fire": {
@@ -43,11 +42,5 @@
       "operation": "multiply_total_multiplicative",
       "value": 1.0
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Take double damage from all fire sources (onFire, inFire, lava). Fire suppresses troll regeneration -- removal of regen on fire hit coming in Phase 2."
   }
 }

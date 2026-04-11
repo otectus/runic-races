@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2019}"
+    "item": "runic_races:kobold_icon"
   },
   "order": 404,
   "name": "origin.runic_races.kobold.name",

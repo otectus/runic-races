@@ -4,8 +4,7 @@
   "description": "power.runic_races.kobold.demolitions_expert.description",
   "subpowers": [
     "attack_bonus",
-    "armor_bonus",
-    "badge"
+    "armor_bonus"
   ],
 
   "attack_bonus": {
@@ -26,11 +25,5 @@
       "value": 1.0,
       "name": "Demolitions Expert Scrappy Armor"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +1 attack damage from trap and explosive expertise, and +1 armor from scrappy kobold protection."
   }
 }

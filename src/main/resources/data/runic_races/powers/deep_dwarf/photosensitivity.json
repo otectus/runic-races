@@ -4,8 +4,7 @@
   "description": "power.runic_races.deep_dwarf.photosensitivity.description",
   "subpowers": [
     "sunlight_damage",
-    "surface_slowness",
-    "badge"
+    "surface_slowness"
   ],
 
   "sunlight_damage": {
@@ -27,18 +26,15 @@
   },
 
   "surface_slowness": {
-    "type": "origins:attribute",
+    "type": "origins:conditioned_attribute",
     "modifier": {
       "attribute": "minecraft:generic.movement_speed",
       "operation": "multiply_total",
       "value": -0.05,
       "name": "Photosensitivity Surface Slowness"
+    },
+    "condition": {
+      "type": "origins:exposed_to_sky"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Take 0.5 hearts per second in direct sunlight during daytime. Suffer -5%% movement speed from surface discomfort."
   }
 }

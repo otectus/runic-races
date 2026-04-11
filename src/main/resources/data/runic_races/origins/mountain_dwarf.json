@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2015}"
+    "item": "runic_races:mountain_dwarf_icon"
   },
   "order": 400,
   "name": "origin.runic_races.mountain_dwarf.name",

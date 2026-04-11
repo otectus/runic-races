@@ -3,15 +3,10 @@ package com.otectus.runic_races.integration.apotheosis;
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.integration.ModIntegration;
 import com.otectus.runic_races.util.RaceHelper;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.UUID;
 
@@ -36,7 +31,6 @@ public class ApotheosisIntegration implements ModIntegration {
 
     @Override
     public void init() {
-        MinecraftForge.EVENT_BUS.register(this);
         RunicRacesMod.LOGGER.info("[RunicRaces] Apotheosis integration initialized — loot luck modifiers active");
     }
 
@@ -45,21 +39,8 @@ public class ApotheosisIntegration implements ModIntegration {
         return "Apotheosis";
     }
 
-    @SubscribeEvent
-    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        applyLuckModifier(player);
-    }
-
-    @SubscribeEvent
-    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        applyLuckModifier(player);
-    }
-
-    @SubscribeEvent
-    public void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+    @Override
+    public void syncPlayer(ServerPlayer player) {
         applyLuckModifier(player);
     }
 

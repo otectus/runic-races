@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2023}"
+    "item": "runic_races:lycanthrope_icon"
   },
   "order": 601,
   "name": "origin.runic_races.lycanthrope.name",

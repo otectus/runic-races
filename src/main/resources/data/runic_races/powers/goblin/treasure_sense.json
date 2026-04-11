@@ -4,8 +4,7 @@
   "description": "power.runic_races.goblin.treasure_sense.description",
   "subpowers": [
     "luck_bonus",
-    "night_vision",
-    "badge"
+    "night_vision"
   ],
 
   "luck_bonus": {
@@ -21,11 +20,5 @@
   "night_vision": {
     "type": "origins:night_vision",
     "strength": 1.0
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +2 luck for better loot and permanent night vision representing treasure-seeking instincts. Container detection through walls coming in Phase 2."
   }
 }

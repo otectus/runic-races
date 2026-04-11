@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2012}"
+    "item": "runic_races:catfolk_icon"
   },
   "order": 302,
   "name": "origin.runic_races.catfolk.name",

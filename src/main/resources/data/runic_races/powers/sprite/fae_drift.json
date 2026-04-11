@@ -3,24 +3,19 @@
   "name": "power.runic_races.sprite.fae_drift.name",
   "description": "power.runic_races.sprite.fae_drift.description",
   "subpowers": [
-    "slow_falling",
-    "speed_bonus",
-    "badge"
+    "fall_damage_immunity",
+    "speed_bonus"
   ],
 
-  "slow_falling": {
-    "type": "origins:action_over_time",
-    "interval": 60,
-    "entity_action": {
-      "type": "origins:apply_effect",
-      "effect": {
-        "effect": "minecraft:slow_falling",
-        "duration": 80,
-        "amplifier": 0,
-        "is_ambient": true,
-        "show_particles": false,
-        "show_icon": true
-      }
+  "fall_damage_immunity": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "fall"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -1.0
     }
   },
 
@@ -32,11 +27,5 @@
       "value": 0.30,
       "name": "Fae Drift Speed Bonus"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Permanent Slow Falling and +30%% movement speed. Sprites drift gracefully through the air."
   }
 }

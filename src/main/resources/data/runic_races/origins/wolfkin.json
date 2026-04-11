@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2010}"
+    "item": "runic_races:wolfkin_icon"
   },
   "order": 300,
   "name": "origin.runic_races.wolfkin.name",

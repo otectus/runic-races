@@ -4,8 +4,7 @@
   "description": "power.runic_races.deep_dwarf.abyssal_adaptation.description",
   "subpowers": [
     "mining_fatigue_immunity",
-    "health_bonus",
-    "badge"
+    "health_bonus"
   ],
 
   "mining_fatigue_immunity": {
@@ -21,11 +20,5 @@
       "value": 4.0,
       "name": "Abyssal Adaptation Health"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Immune to Mining Fatigue and grants +2 hearts from deep dwarf resilience. Ore eating ability coming in Phase 2."
   }
 }

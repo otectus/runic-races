@@ -4,8 +4,7 @@
   "description": "power.runic_races.lycanthrope.silver_bane.description",
   "subpowers": [
     "physical_vulnerability",
-    "health_penalty",
-    "badge"
+    "health_penalty"
   ],
 
   "physical_vulnerability": {
@@ -31,11 +30,5 @@
       "value": -2.0,
       "name": "Silver Bane Health Penalty"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Take +20%% physical damage and suffer -1 heart max health. Silver and steel bite deep into cursed flesh."
   }
 }

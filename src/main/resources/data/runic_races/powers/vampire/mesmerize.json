@@ -5,8 +5,7 @@
   "subpowers": [
     "cooldown_timer",
     "cooldown_decay",
-    "active_ability",
-    "badge"
+    "active_ability"
   ],
 
   "cooldown_timer": {
@@ -89,6 +88,12 @@
                 }
               ]
             }
+          },
+          "bientity_condition": {
+            "type": "origins:target_condition",
+            "condition": {
+              "type": "origins:living"
+            }
           }
         },
         {
@@ -101,23 +106,51 @@
           "command": "title @s actionbar {\"text\":\"Your gaze mesmerizes the weak-willed...\",\"color\":\"dark_purple\",\"bold\":true}"
         },
         {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.warden.agitated",
+          "volume": 0.6,
+          "pitch": 2.0
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:ambient.cave",
+          "volume": 0.3,
+          "pitch": 1.5
+        },
+        {
           "type": "origins:spawn_particles",
           "particle": "minecraft:sculk_soul",
+          "count": 30,
+          "speed": 0.3,
+          "spread": { "x": 5.0, "y": 2.0, "z": 5.0 }
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": {
+            "type": "minecraft:dust",
+            "color": { "x": 0.4, "y": 0.0, "z": 0.5 },
+            "scale": 0.7
+          },
           "count": 20,
           "speed": 0.3,
-          "spread": {
-            "x": 3.0,
-            "y": 1.5,
-            "z": 3.0
-          }
+          "spread": { "x": 2.0, "y": 1.0, "z": 2.0 }
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:enchanted_hit",
+          "count": 8,
+          "speed": 0.2,
+          "spread": { "x": 3.0, "y": 1.5, "z": 3.0 }
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "particle minecraft:sculk_soul ~ ~0.5 ~ 5.0 0.5 5.0 0.05 50 force"
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "particle minecraft:dust 0.35 0.0 0.5 0.5 ~ ~1 ~ 6.0 0.3 6.0 0.01 40 force"
         }
       ]
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/active.png",
-    "text": "Press primary active key to mesmerize. Enemies within 8 blocks receive Weakness II and Slowness III for 10 seconds. 120-second cooldown."
   }
 }

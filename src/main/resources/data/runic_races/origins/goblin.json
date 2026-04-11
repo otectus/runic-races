@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2017}"
+    "item": "runic_races:goblin_icon"
   },
   "order": 402,
   "name": "origin.runic_races.goblin.name",

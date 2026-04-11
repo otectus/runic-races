@@ -5,8 +5,7 @@
   "subpowers": [
     "cooldown_timer",
     "cooldown_decay",
-    "activation",
-    "badge"
+    "activation"
   ],
 
   "cooldown_timer": {
@@ -104,34 +103,51 @@
           "command": "title @s actionbar {\"text\":\"You spring your trap!\",\"color\":\"red\",\"bold\":true}"
         },
         {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.tnt.primed",
+          "volume": 0.6,
+          "pitch": 2.0
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.generic.explode",
+          "volume": 0.5,
+          "pitch": 2.0
+        },
+        {
           "type": "origins:spawn_particles",
           "particle": "minecraft:smoke",
           "count": 20,
-          "speed": 0.4,
-          "spread": {
-            "x": 2.0,
-            "y": 1.0,
-            "z": 2.0
-          }
+          "speed": 0.5,
+          "spread": { "x": 1.5, "y": 0.5, "z": 1.5 }
         },
         {
           "type": "origins:spawn_particles",
           "particle": "minecraft:flame",
+          "count": 15,
+          "speed": 0.3,
+          "spread": { "x": 1.5, "y": 0.5, "z": 1.5 }
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": {
+            "type": "minecraft:dust",
+            "color": { "x": 1.0, "y": 0.2, "z": 0.1 },
+            "scale": 0.7
+          },
           "count": 10,
           "speed": 0.3,
-          "spread": {
-            "x": 2.0,
-            "y": 0.5,
-            "z": 2.0
-          }
+          "spread": { "x": 2.0, "y": 0.5, "z": 2.0 }
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "particle minecraft:flame ~ ~0.3 ~ 2.0 0.3 2.0 0.05 40 force"
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "particle minecraft:smoke ~ ~0.5 ~ 2.5 0.5 2.5 0.03 25 force"
         }
       ]
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/active.png",
-    "text": "Press primary active key to spring a trap: deal 3 damage and apply Slowness III for 4 seconds to entities within 3 blocks. 60-second cooldown."
   }
 }

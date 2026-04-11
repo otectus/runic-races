@@ -4,8 +4,7 @@
   "description": "power.runic_races.nomad.desert_stride.description",
   "subpowers": [
     "speed_bonus",
-    "armor_bonus",
-    "badge"
+    "armor_bonus"
   ],
 
   "speed_bonus": {
@@ -26,11 +25,5 @@
       "value": 1.0,
       "name": "Desert Stride Resilience"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +10%% movement speed and +1 armor from desert-hardened resilience."
   }
 }

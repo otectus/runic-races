@@ -4,8 +4,7 @@
   "description": "power.runic_races.giant_blooded.lumbering_bulk.description",
   "subpowers": [
     "speed_penalty",
-    "hunger_penalty",
-    "badge"
+    "hunger_penalty"
   ],
 
   "speed_penalty": {
@@ -24,11 +23,5 @@
       "operation": "multiply_total_multiplicative",
       "value": 0.25
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Suffer -15%% movement speed and +25%% food exhaustion due to massive frame."
   }
 }

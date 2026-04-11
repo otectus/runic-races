@@ -4,8 +4,7 @@
   "description": "power.runic_races.dragonborn.scaled_hide.description",
   "subpowers": [
     "armor_bonus",
-    "fire_resistance",
-    "badge"
+    "fire_resistance"
   ],
 
   "armor_bonus": {
@@ -41,11 +40,5 @@
       "operation": "multiply_total_multiplicative",
       "value": -0.5
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +4 natural armor and 50%% fire damage resistance. Draconic scales harden your body against flame and steel."
   }
 }

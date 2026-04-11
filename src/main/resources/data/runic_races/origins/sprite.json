@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2007}"
+    "item": "runic_races:sprite_icon"
   },
   "order": 202,
   "name": "origin.runic_races.sprite.name",
@@ -10,6 +9,7 @@
     "runic_races:sprite/phase_shift",
     "runic_races:sprite/fae_drift",
     "runic_races:sprite/diminutive_frame",
-    "runic_races:sprite/fragile_essence"
+    "runic_races:sprite/fragile_essence",
+    "runic_races:sprite/fae_wings"
   ]
 }

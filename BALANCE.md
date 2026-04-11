@@ -5,32 +5,34 @@
 Each race has a total power budget of roughly **0** when summing benefits and drawbacks.
 Positive numbers = benefit, negative = drawback.
 
+This is a design-side reference, not a line-by-line dump of the live JSON. When in doubt, treat the power files under `src/main/resources/data/runic_races/powers/` as authoritative.
+
 | Race | HP | Speed | Armor | Damage | Utility | Drawback Summary | Net |
 |------|-----|-------|-------|--------|---------|------------------|-----|
-| Human | +1♥ | +5% | — | — | +1 luck, XP gain | No active, no proficiency | ~0 |
-| Halfling | — | +10% | — | — | Lucky Dodge, stealth | No 2H weapons, +25% hunger | ~0 |
-| Nomad | — | +10% | +1 | — | Waypoint teleport | Cold slow, armor penalty | ~0 |
+| Human | +1♥ | +5% | — | — | +1 luck, Determination (30% HP → Abs III + Regen I, 6s) | No active, no specialization | ~0 |
+| Halfling | — | +10% | — | — | Lucky Dodge, stealth | +25% hunger | ~0 |
+| Nomad | — | +10% | +1 | — | Pathfinding dash | Cold slow, armor penalty | ~0 |
 | Giant-Blooded | +2♥ | -15% | — | — | KB immune, reach | Can't stealth, +25% hunger | ~0 |
-| High Elf | -2♥ | — | — | +15% magic | Night vision, Source regen | Iron weakness, +15% phys taken | ~0 |
+| High Elf | -2♥ | — | — | +15% magic | Night vision, Arcane Reflex | Iron weakness, +15% phys taken | ~0 |
 | Wood Elf | — | +15% | — | — | Canopy Meld, regen | +25% fire, underground slow | ~0 |
-| Sprite | -3♥ | +30% | — | +15% atk spd | Slow falling | No chest/legs, 2x knockback | ~0 |
+| Sprite | -3♥ | +30% | — | +15% atk spd | Slow falling, Phase Shift (90s CD) | 2x knockback | ~0 |
 | Changeling | -1♥ | +10% | — | — | Invisibility, mirror | -0.5 luck, -15% god favor | ~0 |
 | Dryad | — | -5% | — | — | Sun heal, poison immune | 3x fire, darkness penalty | ~0 |
 | Wolfkin | — | +15% | -2 | — | Night vision, pack buff | +20% phys taken, no invis | ~0 |
-| Dragonborn | -2♥ | — | +4 | -10% atk spd | Dragon Breath, -50% fire | +25% hunger, no helmet | ~0 |
-| Catfolk | -2♥ | — | — | +15% atk spd | Nine Lives, night vision | +30% water dmg, no heavy armor | ~0 |
-| Minotaur | +2♥ net | -5% | — | +25% melee | Labyrinthine Sense | No ranged, +15% hunger | ~0 |
-| Serpentfolk | -1♥ | +10% | — | — | Poison on hit, Shed Skin | +50% freeze, +15% fire | ~0 |
+| Dragonborn | -2♥ | — | +4 | -10% atk spd | Dragon Breath, -50% fire | +25% hunger | ~0 |
+| Catfolk | -2♥ | — | — | +15% atk spd | Nine Lives, night vision | +30% water dmg | ~0 |
+| Minotaur | +2♥ net | -5% | — | +25% melee | Labyrinthine Sense | +15% hunger | ~0 |
+| Serpentfolk | -1♥ | +10% | — | — | Guaranteed poison on hit, Shed Skin | +50% freeze, +15% fire | ~0 |
 | Mtn Dwarf | +2♥ | -5% | +2 | — | Darkvision, Forge Blessing | Magic cap -4, +15% hunger | ~0 |
 | Deep Dwarf | +2♥ | -5% | — | — | Tremorsense, Mine Fatigue imm | Sunlight damage | ~0 |
 | Goblin | -2♥ | +10% | — | +20% atk spd | +2 Curio slots, treasure sense | +15% damage taken | ~0 |
-| Troll | +4♥ | -10% | +2 | -15% atk spd | Permanent Regen I, Wither imm | 2x fire, -30% magic dmg | ~0 |
+| Troll | +4♥ | -10% | +2 | -15% atk spd | Regen I (above 50% HP), Wither imm | 2x fire, -30% magic dmg | ~0 |
 | Kobold | -3♥ | +15% | +1 | +1 flat | Traps, trap detection | +20% dmg in open, sun penalty | ~0 |
 | Wyvern | -2♥ | +10% | — | — | Updraft dive-bomb, glide | Underground penalties | ~0 |
-| Elder Drake | +3♥ | -10% | +3 | — | Fire immune, Roar, boss sense | -25% XP, +20% hunger, -2 luck | ~0 |
-| Vampire | -2♥ | +15% | — | +20% night | Lifesteal, blood sense | Sun damage, +30% magic taken | ~0 |
+| Elder Drake | +3♥ | -10% | +3 | — | Fire immune, Roar, ancient wrath | -25% XP, +20% hunger, -2 luck | ~0 |
+| Vampire | -2♥ | +15% | — | +20% night | Mesmerize, Blood Frenzy | Sun damage, +30% magic taken | ~0 |
 | Lycanthrope | -1♥ | +10% | — | +1 flat | Beast form (+massive buffs) | Involuntary, +20% phys taken | ~0 |
-| Revenant | -1♥ | — | +2 | — | Death revival, Wither imm | -50% healing, sun prevents regen | ~0 |
+| Revenant | -1♥ | — | +2 | — | Death revival, Wither imm, Spite (25% HP → Str II + Res I) | -50% healing, sunlight decay | ~0 |
 
 ## Integration Modifiers
 

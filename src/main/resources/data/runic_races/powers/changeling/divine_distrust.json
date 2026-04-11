@@ -4,8 +4,7 @@
   "description": "power.runic_races.changeling.divine_distrust.description",
   "subpowers": [
     "health_reduction",
-    "luck_penalty",
-    "badge"
+    "luck_penalty"
   ],
 
   "health_reduction": {
@@ -26,11 +25,5 @@
       "value": -0.5,
       "name": "Divine Distrust Luck Penalty"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Suffer -2 max health (1 heart) and reduced luck. The gods distrust those who wear many faces. God integration coming in Phase 3."
   }
 }

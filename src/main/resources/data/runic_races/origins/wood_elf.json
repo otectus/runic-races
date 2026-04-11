@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2006}"
+    "item": "runic_races:wood_elf_icon"
   },
   "order": 201,
   "name": "origin.runic_races.wood_elf.name",

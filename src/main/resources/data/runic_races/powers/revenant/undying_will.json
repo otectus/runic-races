@@ -5,8 +5,7 @@
   "subpowers": [
     "wither_immunity",
     "health_bonus",
-    "armor_bonus",
-    "badge"
+    "armor_bonus"
   ],
 
   "wither_immunity": {
@@ -32,11 +31,5 @@
       "value": 2.0,
       "name": "Undying Will Armor Bonus"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Immune to Wither effect, +2 hearts max health, and +2 natural armor. Death has already claimed you once."
   }
 }

@@ -4,8 +4,7 @@
   "description": "power.runic_races.kobold.exposed_weakness.description",
   "subpowers": [
     "health_reduction",
-    "sky_vulnerability",
-    "badge"
+    "sky_vulnerability"
   ],
 
   "health_reduction": {
@@ -27,11 +26,5 @@
       "operation": "multiply_total_multiplicative",
       "value": 0.20
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Suffer -3 hearts max health and take +20%% damage when exposed to the sky. Kobolds are vulnerable in open areas."
   }
 }

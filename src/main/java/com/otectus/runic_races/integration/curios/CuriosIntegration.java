@@ -6,10 +6,6 @@ import com.otectus.runic_races.util.RaceHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import top.theillusivec4.curios.api.SlotAttribute;
 
 import java.util.Map;
@@ -56,7 +52,6 @@ public class CuriosIntegration implements ModIntegration {
 
     @Override
     public void init() {
-        MinecraftForge.EVENT_BUS.register(this);
         RunicRacesMod.LOGGER.info("[RunicRaces] Curios integration initialized — slot grants active for 5 races");
     }
 
@@ -65,34 +60,8 @@ public class CuriosIntegration implements ModIntegration {
         return "Curios";
     }
 
-    /**
-     * Apply slot modifiers when the player joins.
-     */
-    @SubscribeEvent
-    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        applySlotGrants(player);
-    }
-
-    /**
-     * Reapply after respawn (modifiers can be lost on death).
-     */
-    @SubscribeEvent
-    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        applySlotGrants(player);
-    }
-
-    /**
-     * Periodic check to ensure slot grants stay applied (handles edge cases
-     * like origin changes). Runs every 5 seconds.
-     */
-    @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
-        if (!(event.player instanceof ServerPlayer player)) return;
-        if (player.tickCount % 100 != 0) return; // Every 5 seconds
-
+    @Override
+    public void syncPlayer(ServerPlayer player) {
         applySlotGrants(player);
     }
 
@@ -119,7 +88,7 @@ public class CuriosIntegration implements ModIntegration {
                     ));
                 }
             } catch (Exception e) {
-                RunicRacesMod.LOGGER.debug("[RunicRaces] Could not apply slot grant for {}: {}", grant.slotId(), e.getMessage());
+                RunicRacesMod.debug("[RunicRaces] Could not apply slot grant for {}: {}", grant.slotId(), e.getMessage());
             }
         }
     }
@@ -134,7 +103,8 @@ public class CuriosIntegration implements ModIntegration {
                 if (instance != null) {
                     instance.removeModifier(allUuids[i]);
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 }

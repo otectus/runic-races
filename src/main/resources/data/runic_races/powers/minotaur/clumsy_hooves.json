@@ -5,8 +5,7 @@
   "subpowers": [
     "health_penalty",
     "speed_penalty",
-    "hunger_penalty",
-    "badge"
+    "hunger_penalty"
   ],
 
   "health_penalty": {
@@ -35,11 +34,5 @@
       "operation": "multiply_total_multiplicative",
       "value": 0.15
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Suffer -1 heart max health, -5%% movement speed, and +15%% hunger drain. The minotaur's bulk is cumbersome."
   }
 }

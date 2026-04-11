@@ -4,8 +4,7 @@
   "description": "power.runic_races.deep_dwarf.tremorsense.description",
   "subpowers": [
     "night_vision",
-    "detect_nearby",
-    "badge"
+    "detect_nearby"
   ],
 
   "night_vision": {
@@ -40,11 +39,5 @@
         }
       }
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants permanent night vision. Every 5 seconds, nearby living entities within 12 blocks gain Glowing, representing tremorsense detection."
   }
 }

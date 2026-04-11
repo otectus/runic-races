@@ -5,8 +5,7 @@
   "subpowers": [
     "speed_penalty",
     "attack_speed_penalty",
-    "magic_damage_penalty",
-    "badge"
+    "magic_damage_penalty"
   ],
 
   "speed_penalty": {
@@ -39,11 +38,5 @@
       "operation": "multiply_total_multiplicative",
       "value": -0.30
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Suffer -10%% movement speed, -15%% attack speed, and -30%% magic damage dealt. Trolls are slow and dim-witted."
   }
 }

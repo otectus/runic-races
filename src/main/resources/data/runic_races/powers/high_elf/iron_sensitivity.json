@@ -3,8 +3,7 @@
   "name": "power.runic_races.high_elf.iron_sensitivity.name",
   "description": "power.runic_races.high_elf.iron_sensitivity.description",
   "subpowers": [
-    "physical_vulnerability",
-    "badge"
+    "physical_vulnerability"
   ],
 
   "physical_vulnerability": {
@@ -32,11 +31,5 @@
       "operation": "multiply_total_multiplicative",
       "value": 0.15
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Take +15%% increased physical damage. Represents elven sensitivity to iron and mundane weaponry. Will be refined to iron-specific in Phase 2."
   }
 }

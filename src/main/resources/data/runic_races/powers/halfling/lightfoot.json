@@ -5,8 +5,7 @@
   "subpowers": [
     "cooldown_timer",
     "cooldown_decay",
-    "activate_stealth",
-    "badge"
+    "activate_stealth"
   ],
 
   "cooldown_timer": {
@@ -79,23 +78,40 @@
           "command": "title @s actionbar {\"text\":\"You slip into the shadows...\",\"color\":\"dark_gray\",\"italic\":true}"
         },
         {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.phantom.flap",
+          "volume": 0.4,
+          "pitch": 2.0
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.illusioner.prepare_blindness",
+          "volume": 0.3,
+          "pitch": 1.5
+        },
+        {
           "type": "origins:spawn_particles",
-          "particle": "minecraft:smoke",
+          "particle": "minecraft:large_smoke",
+          "count": 20,
+          "speed": 0.3,
+          "spread": { "x": 0.5, "y": 0.5, "z": 0.5 }
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": {
+            "type": "minecraft:dust",
+            "color": { "x": 0.8, "y": 0.8, "z": 0.8 },
+            "scale": 0.4
+          },
           "count": 15,
-          "speed": 0.1,
-          "spread": {
-            "x": 0.5,
-            "y": 1.0,
-            "z": 0.5
-          }
+          "speed": 0.2,
+          "spread": { "x": 0.6, "y": 0.6, "z": 0.6 }
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "particle minecraft:large_smoke ~ ~0.5 ~ 0.8 0.3 0.8 0.02 25 force"
         }
       ]
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/active.png",
-    "text": "Press primary active key to become invisible for 5 seconds. 90-second cooldown."
   }
 }

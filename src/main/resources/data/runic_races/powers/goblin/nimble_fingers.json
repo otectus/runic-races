@@ -4,8 +4,7 @@
   "description": "power.runic_races.goblin.nimble_fingers.description",
   "subpowers": [
     "attack_speed_bonus",
-    "speed_bonus",
-    "badge"
+    "speed_bonus"
   ],
 
   "attack_speed_bonus": {
@@ -26,11 +25,5 @@
       "value": 0.10,
       "name": "Nimble Fingers Movement Speed"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +20%% attack speed for fast stabbing and +10%% movement speed from goblin agility."
   }
 }

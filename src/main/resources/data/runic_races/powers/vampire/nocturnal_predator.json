@@ -5,8 +5,7 @@
   "subpowers": [
     "night_vision",
     "night_damage_bonus",
-    "speed_bonus",
-    "badge"
+    "speed_bonus"
   ],
 
   "night_vision": {
@@ -34,11 +33,5 @@
       "value": 0.15,
       "name": "Nocturnal Predator Speed Bonus"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Permanent night vision and +15%% movement speed. At night, deal +20%% damage. The darkness is your domain."
   }
 }

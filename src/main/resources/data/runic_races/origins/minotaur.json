@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2013}"
+    "item": "runic_races:minotaur_icon"
   },
   "order": 303,
   "name": "origin.runic_races.minotaur.name",

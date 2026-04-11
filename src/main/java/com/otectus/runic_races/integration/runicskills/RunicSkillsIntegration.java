@@ -102,7 +102,7 @@ public class RunicSkillsIntegration implements ModIntegration {
             // Mark bonuses as applied so they are never re-applied
             persistentData.putBoolean(BONUS_APPLIED_TAG, true);
 
-            RunicRacesMod.LOGGER.debug("[RunicRaces] Applied {} skill bonuses for race '{}' to player {}",
+            RunicRacesMod.debug("[RunicRaces] Applied {} skill bonuses for race '{}' to player {}",
                     bonuses.size(), raceName, player.getName().getString());
         } catch (Exception e) {
             RunicRacesMod.LOGGER.error("[RunicRaces] Failed to apply skill bonuses for player {}: {}",

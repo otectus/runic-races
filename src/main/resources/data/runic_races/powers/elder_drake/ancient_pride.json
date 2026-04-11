@@ -5,8 +5,7 @@
   "subpowers": [
     "luck_penalty",
     "speed_penalty",
-    "hunger_penalty",
-    "badge"
+    "hunger_penalty"
   ],
 
   "luck_penalty": {
@@ -35,11 +34,5 @@
       "operation": "multiply_total_multiplicative",
       "value": 0.20
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Suffer -2 luck, -10%% movement speed, and +20%% hunger drain. An ancient body demands much and moves deliberately."
   }
 }

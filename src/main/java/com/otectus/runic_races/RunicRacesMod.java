@@ -5,6 +5,10 @@ import com.otectus.runic_races.config.RRCommonConfig;
 import com.otectus.runic_races.config.RRServerConfig;
 import com.otectus.runic_races.event.RacialEventHandler;
 import com.otectus.runic_races.integration.IntegrationManager;
+import com.otectus.runic_races.network.NetworkHandler;
+import com.otectus.runic_races.registry.ModEntityActions;
+import com.otectus.runic_races.registry.ModEntityConditions;
+import com.otectus.runic_races.registry.ModItems;
 import com.otectus.runic_races.registry.ModPowerFactories;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,11 +26,20 @@ public class RunicRacesMod {
     public static final String MOD_NAME = "Runic Races";
     public static final Logger LOGGER = LogUtils.getLogger();
 
+    public static void debug(String message, Object... args) {
+        if (RRCommonConfig.DEBUG_LOGGING.get()) {
+            LOGGER.info(message, args);
+        }
+    }
+
     public RunicRacesMod() {
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        // Register custom Apoli power factories
+        // Register custom Apoli power factories, conditions, and actions
         ModPowerFactories.load(modBus);
+        ModEntityConditions.register(modBus);
+        ModEntityActions.register(modBus);
+        ModItems.register(modBus);
 
         modBus.addListener(this::onCommonSetup);
 
@@ -43,12 +56,13 @@ public class RunicRacesMod {
     private void onCommonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("[RunicRaces] Common setup — 24 races loaded via Origins data");
 
-        // Initialize optional mod integrations
+        // Initialize network and optional mod integrations
+        event.enqueueWork(NetworkHandler::init);
         event.enqueueWork(IntegrationManager::init);
     }
 
     private void onRegisterCommands(final RegisterCommandsEvent event) {
         RRCommands.register(event.getDispatcher());
-        LOGGER.debug("[RunicRaces] Commands registered");
+        debug("[RunicRaces] Commands registered");
     }
 }

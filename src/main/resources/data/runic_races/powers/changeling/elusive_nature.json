@@ -4,8 +4,7 @@
   "description": "power.runic_races.changeling.elusive_nature.description",
   "subpowers": [
     "speed_bonus",
-    "night_vision",
-    "badge"
+    "night_vision"
   ],
 
   "speed_bonus": {
@@ -21,11 +20,5 @@
   "night_vision": {
     "type": "origins:night_vision",
     "strength": 1.0
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +10%% movement speed and night vision. Changelings can read the nature of others and move unseen."
   }
 }

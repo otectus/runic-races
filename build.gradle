@@ -58,6 +58,7 @@ repositories {
     flatDir { dirs 'Dependencies' }
     maven { url = "https://maven.blamejared.com" }
     maven { url = "https://www.cursemaven.com" }
+    maven { url = "https://api.modrinth.com/maven" }
     maven { url = "https://maven.theillusivec4.top/" }
     maven { url = "https://modmaven.dev" }
     maven {
@@ -87,6 +88,12 @@ dependencies {
     compileOnly files('Dependencies/runic-skills_1.0.0.jar')
     compileOnly files('Dependencies/spells_n_gods-0.1.0.jar')
     compileOnly files('Dependencies/Apotheosis-1.20.1-7.4.8.jar')
+
+    // Optional: Pehkui (racial height scaling)
+    compileOnly "maven.modrinth:pehkui:3.8.2+1.20.1-forge"
+
+    // Optional: Feathers (stamina system for physical racial powers)
+    compileOnly "curse.maven:feathers-699933:4814309"
 }
 
 tasks.named('processResources', ProcessResources).configure {

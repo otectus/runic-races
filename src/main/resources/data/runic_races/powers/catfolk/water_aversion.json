@@ -4,8 +4,7 @@
   "description": "power.runic_races.catfolk.water_aversion.description",
   "subpowers": [
     "water_vulnerability",
-    "health_penalty",
-    "badge"
+    "health_penalty"
   ],
 
   "water_vulnerability": {
@@ -28,11 +27,5 @@
       "value": -4.0,
       "name": "Water Aversion Health Penalty"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Take +30%% damage while submerged in water and suffer -2 hearts max health. Catfolk despise getting wet."
   }
 }

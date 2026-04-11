@@ -5,8 +5,7 @@
   "subpowers": [
     "health_bonus",
     "knockback_resistance",
-    "reach_bonus",
-    "badge"
+    "reach_bonus"
   ],
 
   "health_bonus": {
@@ -37,11 +36,5 @@
       "value": 0.2,
       "name": "Towering Frame Reach Bonus"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +4 max health (2 hearts), full knockback immunity, and +20%% entity interaction reach."
   }
 }

@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2008}"
+    "item": "runic_races:changeling_icon"
   },
   "order": 203,
   "name": "origin.runic_races.changeling.name",

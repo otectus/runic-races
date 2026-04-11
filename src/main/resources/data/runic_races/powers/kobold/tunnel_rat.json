@@ -4,33 +4,38 @@
   "description": "power.runic_races.kobold.tunnel_rat.description",
   "subpowers": [
     "speed_bonus",
-    "attack_speed_bonus",
-    "badge"
+    "attack_speed_bonus"
   ],
 
   "speed_bonus": {
-    "type": "origins:attribute",
+    "type": "origins:conditioned_attribute",
     "modifier": {
       "attribute": "minecraft:generic.movement_speed",
       "operation": "multiply_total",
       "value": 0.15,
       "name": "Tunnel Rat Movement Speed"
+    },
+    "condition": {
+      "type": "origins:invert",
+      "condition": {
+        "type": "origins:exposed_to_sky"
+      }
     }
   },
 
   "attack_speed_bonus": {
-    "type": "origins:attribute",
+    "type": "origins:conditioned_attribute",
     "modifier": {
       "attribute": "minecraft:generic.attack_speed",
       "operation": "multiply_total",
       "value": 0.10,
       "name": "Tunnel Rat Attack Speed"
+    },
+    "condition": {
+      "type": "origins:invert",
+      "condition": {
+        "type": "origins:exposed_to_sky"
+      }
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +15%% movement speed and +10%% attack speed representing agility in tight spaces. Tight space detection condition coming in Phase 2."
   }
 }

@@ -5,8 +5,7 @@
   "subpowers": [
     "cooldown_timer",
     "cooldown_decay",
-    "beast_trigger",
-    "badge"
+    "beast_trigger"
   ],
 
   "cooldown_timer": {
@@ -44,7 +43,7 @@
 
   "beast_trigger": {
     "type": "origins:action_over_time",
-    "interval": 20,
+    "interval": 1,
     "entity_action": {
       "type": "origins:if_else",
       "condition": {
@@ -57,7 +56,7 @@
             "compare_to": 0
           },
           {
-            "type": "origins:health",
+            "type": "origins:relative_health",
             "comparison": "<=",
             "compare_to": 0.3
           }
@@ -120,35 +119,58 @@
             "command": "title @s actionbar {\"text\":\"The beast within erupts!\",\"color\":\"red\",\"bold\":true}"
           },
           {
+            "type": "origins:play_sound",
+            "sound": "minecraft:entity.wolf.growl",
+            "volume": 1.0,
+            "pitch": 0.5
+          },
+          {
+            "type": "origins:play_sound",
+            "sound": "minecraft:entity.wolf.howl",
+            "volume": 0.8,
+            "pitch": 0.7
+          },
+          {
+            "type": "origins:play_sound",
+            "sound": "minecraft:entity.warden.emerge",
+            "volume": 0.3,
+            "pitch": 1.5
+          },
+          {
             "type": "origins:spawn_particles",
             "particle": "minecraft:angry_villager",
-            "count": 15,
+            "count": 20,
             "speed": 0.3,
-            "spread": {
-              "x": 1.5,
-              "y": 1.5,
-              "z": 1.5
-            }
+            "spread": { "x": 1.0, "y": 1.0, "z": 1.0 }
           },
           {
             "type": "origins:spawn_particles",
             "particle": "minecraft:smoke",
-            "count": 30,
+            "count": 40,
             "speed": 0.5,
-            "spread": {
-              "x": 2.0,
-              "y": 2.0,
-              "z": 2.0
-            }
+            "spread": { "x": 2.0, "y": 2.0, "z": 2.0 }
+          },
+          {
+            "type": "origins:spawn_particles",
+            "particle": {
+              "type": "minecraft:dust",
+              "color": { "x": 0.6, "y": 0.4, "z": 0.1 },
+              "scale": 1.0
+            },
+            "count": 25,
+            "speed": 0.3,
+            "spread": { "x": 2.0, "y": 2.0, "z": 2.0 }
+          },
+          {
+            "type": "origins:execute_command",
+            "command": "particle minecraft:smoke ~ ~1 ~ 1.5 1.5 1.5 0.08 60 force"
+          },
+          {
+            "type": "origins:execute_command",
+            "command": "particle minecraft:damage_indicator ~ ~1 ~ 0.5 0.8 0.5 0.1 15 force"
           }
         ]
       }
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/active.png",
-    "text": "When below 30%% HP, transform into beast form for 30 seconds: Strength III, Speed II, Resistance I, but Mining Fatigue III. 60-second cooldown."
   }
 }

@@ -5,12 +5,5 @@
   "modifier": {
     "operation": "multiply_total_multiplicative",
     "value": 0.25
-  },
-  "badges": [
-    {
-      "type": "origins:tooltip",
-      "sprite": "origins:textures/gui/badge/star.png",
-      "text": "Hunger depletes 25%% faster due to high metabolism."
-    }
-  ]
+  }
 }

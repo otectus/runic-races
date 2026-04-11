@@ -4,8 +4,7 @@
   "description": "power.runic_races.dryad.wooden_bane.description",
   "subpowers": [
     "fire_vulnerability",
-    "speed_penalty",
-    "badge"
+    "speed_penalty"
   ],
 
   "fire_vulnerability": {
@@ -41,11 +40,5 @@
       "value": -0.05,
       "name": "Wooden Bane Speed Penalty"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Take triple fire damage (+200%%). Suffer -5%% movement speed. Conditional darkness/nether penalties coming in Phase 2."
   }
 }

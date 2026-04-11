@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2020}"
+    "item": "runic_races:wyvern_blooded_icon"
   },
   "order": 500,
   "name": "origin.runic_races.wyvern_blooded.name",
@@ -11,6 +10,7 @@
     "runic_races:wyvern_blooded/updraft",
     "runic_races:wyvern_blooded/windborne",
     "runic_races:wyvern_blooded/claustrophobia",
-    "runic_races:wyvern_blooded/biome_affinity"
+    "runic_races:wyvern_blooded/biome_affinity",
+    "runic_races:wyvern_blooded/wyvern_wings"
   ]
 }

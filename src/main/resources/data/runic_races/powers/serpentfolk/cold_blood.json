@@ -5,8 +5,7 @@
   "subpowers": [
     "poison_immunity",
     "speed_bonus",
-    "night_vision",
-    "badge"
+    "night_vision"
   ],
 
   "poison_immunity": {
@@ -27,11 +26,5 @@
   "night_vision": {
     "type": "origins:night_vision",
     "strength": 1.0
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Immune to Poison, +10%% movement speed, and permanent night vision. Serpentfolk thrive in darkness. Aquatic speed bonus coming in Phase 2."
   }
 }

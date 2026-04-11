@@ -5,8 +5,7 @@
   "subpowers": [
     "cooldown_timer",
     "cooldown_decay",
-    "active_ability",
-    "badge"
+    "active_ability"
   ],
 
   "cooldown_timer": {
@@ -103,23 +102,40 @@
           "command": "title @s actionbar {\"text\":\"You howl, rallying the hunt!\",\"color\":\"gold\",\"bold\":true}"
         },
         {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.wolf.howl",
+          "volume": 1.0,
+          "pitch": 1.0
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.warden.sonic_charge",
+          "volume": 0.2,
+          "pitch": 2.0
+        },
+        {
           "type": "origins:spawn_particles",
-          "particle": "minecraft:note",
-          "count": 15,
-          "speed": 0.5,
-          "spread": {
-            "x": 3.0,
-            "y": 2.0,
-            "z": 3.0
-          }
+          "particle": "minecraft:sonic_boom",
+          "count": 3,
+          "speed": 0.2,
+          "spread": { "x": 2.0, "y": 1.0, "z": 2.0 }
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": {
+            "type": "minecraft:dust",
+            "color": { "x": 0.9, "y": 0.7, "z": 0.2 },
+            "scale": 0.7
+          },
+          "count": 20,
+          "speed": 0.3,
+          "spread": { "x": 4.0, "y": 2.0, "z": 4.0 }
+        },
+        {
+          "type": "origins:execute_command",
+          "command": "particle minecraft:dust 0.9 0.75 0.25 0.6 ~ ~1 ~ 5.0 0.5 5.0 0.01 60 force"
         }
       ]
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/active.png",
-    "text": "Press primary active key to howl. Allies within 16 blocks and yourself gain Strength I for 10 seconds. 120-second cooldown."
   }
 }

@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2021}"
+    "item": "runic_races:elder_drake_icon"
   },
   "order": 501,
   "name": "origin.runic_races.elder_drake.name",
@@ -10,6 +9,7 @@
     "runic_races:elder_drake/ancient_wrath",
     "runic_races:elder_drake/primordial_roar",
     "runic_races:elder_drake/draconic_constitution",
-    "runic_races:elder_drake/ancient_pride"
+    "runic_races:elder_drake/ancient_pride",
+    "runic_races:elder_drake/ancient_wings"
   ]
 }

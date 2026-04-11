@@ -5,8 +5,7 @@
   "subpowers": [
     "night_vision",
     "speed_bonus",
-    "attack_bonus",
-    "badge"
+    "attack_bonus"
   ],
 
   "night_vision": {
@@ -32,11 +31,5 @@
       "value": 1.0,
       "name": "Heightened Senses Attack Bonus"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Permanent night vision, +10%% movement speed, and +0.5 hearts attack damage. The beast's senses are always sharp."
   }
 }

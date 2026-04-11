@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2009}"
+    "item": "runic_races:dryad_icon"
   },
   "order": 204,
   "name": "origin.runic_races.dryad.name",

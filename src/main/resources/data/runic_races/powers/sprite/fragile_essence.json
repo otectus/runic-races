@@ -4,8 +4,7 @@
   "description": "power.runic_races.sprite.fragile_essence.description",
   "subpowers": [
     "health_reduction",
-    "knockback_weakness",
-    "badge"
+    "knockback_weakness"
   ],
 
   "health_reduction": {
@@ -26,11 +25,5 @@
       "value": -0.5,
       "name": "Fragile Essence Knockback Weakness"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Suffer -6 max health (3 hearts) and greatly increased knockback received. Sprites are fragile beings."
   }
 }

@@ -6,7 +6,7 @@
     "health_bonus",
     "armor_bonus",
     "fire_immunity",
-    "badge"
+    "fall_damage_immunity"
   ],
 
   "health_bonus": {
@@ -33,9 +33,15 @@
     "type": "origins:fire_immunity"
   },
 
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +3 hearts max health, +3 natural armor, and complete fire immunity. The ancient drake's body is nearly indestructible."
+  "fall_damage_immunity": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "fall"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -1.0
+    }
   }
 }

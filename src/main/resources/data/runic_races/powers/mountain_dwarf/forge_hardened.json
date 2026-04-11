@@ -4,8 +4,7 @@
   "description": "power.runic_races.mountain_dwarf.forge_hardened.description",
   "subpowers": [
     "armor_bonus",
-    "health_bonus",
-    "badge"
+    "health_bonus"
   ],
 
   "armor_bonus": {
@@ -26,11 +25,5 @@
       "value": 4.0,
       "name": "Forge Hardened Health"
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants +2 armor and +2 hearts from forge-hardened constitution. Forge Blessing active ability coming in Phase 3."
   }
 }

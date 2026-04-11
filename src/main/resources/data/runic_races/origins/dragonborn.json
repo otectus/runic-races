@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2011}"
+    "item": "runic_races:dragonborn_icon"
   },
   "order": 301,
   "name": "origin.runic_races.dragonborn.name",

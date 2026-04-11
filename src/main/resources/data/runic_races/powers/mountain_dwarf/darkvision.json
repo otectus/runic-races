@@ -4,8 +4,7 @@
   "description": "power.runic_races.mountain_dwarf.darkvision.description",
   "subpowers": [
     "night_vision",
-    "mining_speed_bonus",
-    "badge"
+    "mining_speed_bonus"
   ],
 
   "night_vision": {
@@ -14,18 +13,10 @@
   },
 
   "mining_speed_bonus": {
-    "type": "origins:attribute",
+    "type": "origins:modify_break_speed",
     "modifier": {
-      "attribute": "minecraft:generic.attack_speed",
-      "operation": "multiply_total",
-      "value": 0.15,
-      "name": "Darkvision Mining Speed"
+      "operation": "multiply_base",
+      "value": 0.15
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Grants permanent night vision and +15%% attack speed representing faster tool use. True mining speed boost coming in Phase 2."
   }
 }

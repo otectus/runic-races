@@ -86,9 +86,17 @@ versionRange="[0,)"
 ordering="AFTER"
 side="BOTH"
 
-# Optional: Passive Skill Tree
+# Optional: Pehkui
 [[dependencies.${mod_id}]]
-modId="skilltree"
+modId="pehkui"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+
+# Optional: Feather's Mod
+[[dependencies.${mod_id}]]
+modId="feathers"
 mandatory=false
 versionRange="[0,)"
 ordering="AFTER"

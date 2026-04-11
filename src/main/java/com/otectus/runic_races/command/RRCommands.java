@@ -2,18 +2,12 @@ package com.otectus.runic_races.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.otectus.runic_races.RunicRacesMod;
-import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
-import io.github.edwinmindcraft.origins.api.origin.Origin;
-import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
+import com.otectus.runic_races.util.RaceHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
-
-import java.util.Map;
 
 public class RRCommands {
 
@@ -53,36 +47,9 @@ public class RRCommands {
     }
 
     private static int showRaceInfo(CommandContext<CommandSourceStack> context, ServerPlayer player) {
-        try {
-            IOriginContainer container = IOriginContainer.get(player).orElse(null);
-            if (container == null) {
-                context.getSource().sendSuccess(() ->
-                        Component.literal(player.getName().getString() + " has no origin data."), false);
-                return 1;
-            }
-
-            Map<ResourceKey<OriginLayer>, ResourceKey<Origin>> origins = container.getOrigins();
-            StringBuilder sb = new StringBuilder();
-            sb.append(player.getName().getString()).append("'s race: ");
-
-            boolean found = false;
-            for (Map.Entry<ResourceKey<OriginLayer>, ResourceKey<Origin>> entry : origins.entrySet()) {
-                ResourceKey<Origin> origin = entry.getValue();
-                sb.append(origin.location().toString());
-                found = true;
-                break;
-            }
-
-            if (!found) {
-                sb.append("none selected");
-            }
-
-            String message = sb.toString();
-            context.getSource().sendSuccess(() -> Component.literal(message), false);
-        } catch (Exception e) {
-            context.getSource().sendSuccess(() ->
-                    Component.literal(player.getName().getString() + "'s race: (unable to read - Origins may not be loaded)"), false);
-        }
+        String raceId = RaceHelper.getRaceId(player).map(Object::toString).orElse("none selected");
+        context.getSource().sendSuccess(() ->
+                Component.literal(player.getName().getString() + "'s race: " + raceId), false);
         return 1;
     }
 

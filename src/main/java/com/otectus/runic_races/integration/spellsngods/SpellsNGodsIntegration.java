@@ -84,10 +84,10 @@ public class SpellsNGodsIntegration implements ModIntegration {
             event.setFavorValue(originalFavor * multiplier);
 
             if (multiplier == 0.0f) {
-                RunicRacesMod.LOGGER.debug("[RunicRaces] Blocked offering from {} ({}) to {} -- forbidden pairing",
+                RunicRacesMod.debug("[RunicRaces] Blocked offering from {} ({}) to {} -- forbidden pairing",
                         player.getName().getString(), raceName, godId);
             } else {
-                RunicRacesMod.LOGGER.debug("[RunicRaces] Modified offering for {} ({}) to {}: {}x multiplier",
+                RunicRacesMod.debug("[RunicRaces] Modified offering for {} ({}) to {}: {}x multiplier",
                         player.getName().getString(), raceName, godId, multiplier);
             }
         }

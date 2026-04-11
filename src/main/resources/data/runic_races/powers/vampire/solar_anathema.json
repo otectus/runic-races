@@ -5,8 +5,7 @@
   "subpowers": [
     "sunlight_damage",
     "health_penalty",
-    "magic_vulnerability",
-    "badge"
+    "magic_vulnerability"
   ],
 
   "sunlight_damage": {
@@ -48,11 +47,5 @@
       "operation": "multiply_total_multiplicative",
       "value": 0.30
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Take 1 heart per second in direct sunlight, suffer -2 hearts max health, and take +30%% magic damage. The sun is your bane."
   }
 }

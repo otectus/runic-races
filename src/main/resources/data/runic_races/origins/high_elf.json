@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2005}"
+    "item": "runic_races:high_elf_icon"
   },
   "order": 200,
   "name": "origin.runic_races.high_elf.name",

@@ -4,31 +4,30 @@
   "description": "power.runic_races.mountain_dwarf.surface_discomfort.description",
   "subpowers": [
     "speed_penalty",
-    "hunger_penalty",
-    "badge"
+    "hunger_penalty"
   ],
 
   "speed_penalty": {
-    "type": "origins:attribute",
+    "type": "origins:conditioned_attribute",
     "modifier": {
       "attribute": "minecraft:generic.movement_speed",
       "operation": "multiply_total",
       "value": -0.05,
       "name": "Surface Discomfort Speed Penalty"
+    },
+    "condition": {
+      "type": "origins:exposed_to_sky"
     }
   },
 
   "hunger_penalty": {
     "type": "origins:modify_exhaustion",
+    "condition": {
+      "type": "origins:exposed_to_sky"
+    },
     "modifier": {
       "operation": "multiply_total_multiplicative",
       "value": 0.15
     }
-  },
-
-  "badge": {
-    "type": "origins:tooltip",
-    "sprite": "origins:textures/gui/badge/star.png",
-    "text": "Suffer -5%% movement speed and +15%% hunger drain. Dwarves are uncomfortable on the surface and eat heartily. Biome-specific conditions coming in Phase 2."
   }
 }

@@ -1,7 +1,6 @@
 {
   "icon": {
-    "item": "minecraft:ink_sac",
-    "tag": "{CustomModelData:2003}"
+    "item": "runic_races:nomad_icon"
   },
   "order": 102,
   "name": "origin.runic_races.nomad.name",
