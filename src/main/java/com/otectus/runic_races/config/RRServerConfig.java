@@ -15,6 +15,9 @@ public class RRServerConfig {
     public static final ForgeConfigSpec.BooleanValue PEHKUI_INTEGRATION;
     public static final ForgeConfigSpec.BooleanValue FEATHERS_INTEGRATION;
 
+    // Resource gating
+    public static final ForgeConfigSpec.BooleanValue FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING;
+
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
@@ -43,6 +46,12 @@ public class RRServerConfig {
         FEATHERS_INTEGRATION = builder
                 .comment("Enable Feather's Mod integration (racial stamina pools for physical powers)")
                 .define("feathers", true);
+        builder.pop();
+
+        builder.comment("Resource gating — controls behavior when optional resource mods are absent").push("resourceGating");
+        FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING = builder
+                .comment("When true, mana/stamina-gated powers are disabled when Iron's Spellbooks or Feather's is absent. When false (default), those powers become free to use.")
+                .define("failClosedWhenResourceModMissing", false);
         builder.pop();
 
         SPEC = builder.build();

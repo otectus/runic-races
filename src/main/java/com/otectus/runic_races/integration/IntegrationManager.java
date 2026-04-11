@@ -23,8 +23,14 @@ public class IntegrationManager {
     private static final String LAST_SYNCED_RACE = "runic_races:last_synced_race";
     private static final List<ModIntegration> loadedIntegrations = new ArrayList<>();
     private static boolean syncHandlerRegistered = false;
+    private static boolean initialized = false;
 
     public static void init() {
+        if (initialized) {
+            RunicRacesMod.LOGGER.warn("[RunicRaces] IntegrationManager.init() called more than once, ignoring");
+            return;
+        }
+        initialized = true;
         RunicRacesMod.LOGGER.info("[RunicRaces] Initializing integration manager...");
 
         tryLoad("ars_nouveau", "Ars Nouveau",
@@ -83,7 +89,7 @@ public class IntegrationManager {
             loadedIntegrations.add(integration);
             RunicRacesMod.LOGGER.info("[RunicRaces] {} integration loaded successfully", modName);
         } catch (Exception e) {
-            RunicRacesMod.LOGGER.error("[RunicRaces] Failed to load {} integration: {}", modName, e.getMessage());
+            RunicRacesMod.LOGGER.error("[RunicRaces] Failed to load {} integration", modName, e);
         }
     }
 

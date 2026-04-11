@@ -16,9 +16,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.Biome;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Custom Apoli power: grants attribute modifiers when the player is in specific biomes.
@@ -40,6 +40,7 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
     private static final UUID HOME_DAMAGE_UUID = UUID.fromString("a7b3c8d2-1234-4567-89ab-cdef01234567");
     private static final UUID HOSTILE_SPEED_UUID = UUID.fromString("a7b3c8d3-1234-4567-89ab-cdef01234567");
     private static final UUID HOSTILE_DAMAGE_UUID = UUID.fromString("a7b3c8d4-1234-4567-89ab-cdef01234567");
+    private static final ConcurrentHashMap<String, TagKey<Biome>> TAG_CACHE = new ConcurrentHashMap<>();
 
     public record Configuration(
             Optional<String> homeBiomeTag,
@@ -81,12 +82,10 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
         Holder<Biome> biomeHolder = player.level().getBiome(player.blockPosition());
 
         boolean inHome = config.homeBiomeTag().isPresent() &&
-                biomeHolder.is(TagKey.create(net.minecraft.core.registries.Registries.BIOME,
-                        new ResourceLocation(config.homeBiomeTag().get())));
+                biomeHolder.is(resolveTag(config.homeBiomeTag().get()));
 
         boolean inHostile = config.hostileBiomeTag().isPresent() &&
-                biomeHolder.is(TagKey.create(net.minecraft.core.registries.Registries.BIOME,
-                        new ResourceLocation(config.hostileBiomeTag().get())));
+                biomeHolder.is(resolveTag(config.hostileBiomeTag().get()));
 
         applyModifier(player, Attributes.MOVEMENT_SPEED, HOME_SPEED_UUID,
                 "Runic Races Home Speed", inHome ? config.speedBonus() : 0.0, inHome);
@@ -126,6 +125,11 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
         } else if (existing != null) {
             instance.removeModifier(uuid);
         }
+    }
+
+    private static TagKey<Biome> resolveTag(String tagString) {
+        return TAG_CACHE.computeIfAbsent(tagString,
+                s -> TagKey.create(net.minecraft.core.registries.Registries.BIOME, new ResourceLocation(s)));
     }
 
     private void removeModifier(Player player, net.minecraft.world.entity.ai.attributes.Attribute attribute, UUID uuid) {

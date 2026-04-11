@@ -1,6 +1,7 @@
 package com.otectus.runic_races.util;
 
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.config.RRServerConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,7 +44,9 @@ public final class ManaHelper {
      * Returns the player's current mana, or {@link Float#MAX_VALUE} if Iron's is not installed.
      */
     public static float getPlayerMana(Entity entity) {
-        if (!isAvailable() || !(entity instanceof LivingEntity living)) return Float.MAX_VALUE;
+        if (!isAvailable() || !(entity instanceof LivingEntity living)) {
+            return RRServerConfig.FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING.get() ? 0.0f : Float.MAX_VALUE;
+        }
         try {
             Object magicData = getPlayerMagicData.invoke(null, living);
             return (float) getMana.invoke(magicData);

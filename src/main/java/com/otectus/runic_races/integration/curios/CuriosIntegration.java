@@ -2,14 +2,13 @@ package com.otectus.runic_races.integration.curios;
 
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.integration.ModIntegration;
+import com.otectus.runic_races.race.RaceDefinition;
+import com.otectus.runic_races.race.RaceRegistry;
 import com.otectus.runic_races.util.RaceHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import top.theillusivec4.curios.api.SlotAttribute;
-
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Curios integration: Grants extra accessory slots based on race.
@@ -20,39 +19,14 @@ import java.util.UUID;
  *
  * Uses SlotAttribute (Curios API) which allows dynamic slot counts
  * via standard Minecraft attribute modifiers.
+ *
+ * Race-specific slot grants are defined in {@link RaceRegistry}.
  */
 public class CuriosIntegration implements ModIntegration {
 
-    private static final UUID GOBLIN_RING_UUID = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789001");
-    private static final UUID GOBLIN_CHARM_UUID = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789002");
-    private static final UUID DWARF_BELT_UUID = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789003");
-    private static final UUID ELF_NECKLACE_UUID = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789004");
-
-    // Slot grants by race: race_name -> (slot_id, uuid, amount)
-    private static final Map<String, SlotGrant[]> RACE_SLOTS = Map.of(
-            "goblin", new SlotGrant[]{
-                    new SlotGrant("ring", GOBLIN_RING_UUID, 1),
-                    new SlotGrant("charm", GOBLIN_CHARM_UUID, 1)
-            },
-            "mountain_dwarf", new SlotGrant[]{
-                    new SlotGrant("belt", DWARF_BELT_UUID, 1)
-            },
-            "deep_dwarf", new SlotGrant[]{
-                    new SlotGrant("belt", DWARF_BELT_UUID, 1)
-            },
-            "high_elf", new SlotGrant[]{
-                    new SlotGrant("necklace", ELF_NECKLACE_UUID, 1)
-            },
-            "wood_elf", new SlotGrant[]{
-                    new SlotGrant("necklace", ELF_NECKLACE_UUID, 1)
-            }
-    );
-
-    private record SlotGrant(String slotId, UUID uuid, int amount) {}
-
     @Override
     public void init() {
-        RunicRacesMod.LOGGER.info("[RunicRaces] Curios integration initialized — slot grants active for 5 races");
+        RunicRacesMod.LOGGER.info("[RunicRaces] Curios integration initialized — slot grants active");
     }
 
     @Override
@@ -73,14 +47,14 @@ public class CuriosIntegration implements ModIntegration {
 
         // Apply grants for current race
         if (race == null) return;
-        SlotGrant[] grants = RACE_SLOTS.get(race);
-        if (grants == null) return;
+        RaceDefinition.SlotGrant[] grants = RaceRegistry.getSlotGrants(race);
+        if (grants.length == 0) return;
 
-        for (SlotGrant grant : grants) {
+        for (RaceDefinition.SlotGrant grant : grants) {
             try {
                 AttributeInstance instance = player.getAttribute(SlotAttribute.getOrCreate(grant.slotId()));
                 if (instance != null && instance.getModifier(grant.uuid()) == null) {
-                    instance.addPermanentModifier(new AttributeModifier(
+                    instance.addTransientModifier(new AttributeModifier(
                             grant.uuid(),
                             "Runic Races " + grant.slotId() + " slot",
                             grant.amount(),
@@ -94,14 +68,11 @@ public class CuriosIntegration implements ModIntegration {
     }
 
     private void removeAllSlotGrants(ServerPlayer player) {
-        UUID[] allUuids = {GOBLIN_RING_UUID, GOBLIN_CHARM_UUID, DWARF_BELT_UUID, ELF_NECKLACE_UUID};
-        String[] allSlots = {"ring", "charm", "belt", "necklace"};
-
-        for (int i = 0; i < allSlots.length; i++) {
+        for (RaceDefinition.SlotGrant grant : RaceRegistry.allSlotGrants()) {
             try {
-                AttributeInstance instance = player.getAttribute(SlotAttribute.getOrCreate(allSlots[i]));
+                AttributeInstance instance = player.getAttribute(SlotAttribute.getOrCreate(grant.slotId()));
                 if (instance != null) {
-                    instance.removeModifier(allUuids[i]);
+                    instance.removeModifier(grant.uuid());
                 }
             } catch (Exception ignored) {
             }

@@ -2,6 +2,7 @@ package com.otectus.runic_races.integration.apotheosis;
 
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.integration.ModIntegration;
+import com.otectus.runic_races.race.RaceRegistry;
 import com.otectus.runic_races.util.RaceHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -54,9 +55,9 @@ public class ApotheosisIntegration implements ModIntegration {
 
         if (race == null) return;
 
-        double luckBonus = getLuckBonus(race);
+        double luckBonus = RaceRegistry.getLuckBonus(race);
         if (luckBonus != 0.0) {
-            luckAttr.addPermanentModifier(new AttributeModifier(
+            luckAttr.addTransientModifier(new AttributeModifier(
                     RACE_LUCK_UUID,
                     "Runic Races Loot Luck",
                     luckBonus,
@@ -65,16 +66,4 @@ public class ApotheosisIntegration implements ModIntegration {
         }
     }
 
-    private double getLuckBonus(String race) {
-        return switch (race) {
-            case "goblin" -> 2.0;       // Best treasure hunter
-            case "halfling" -> 1.5;     // Lucky by nature
-            case "mountain_dwarf" -> 1.0; // Craftsman's eye
-            case "deep_dwarf" -> 0.5;   // Underground treasures
-            case "human" -> 0.5;        // Adaptable fortune
-            case "elder_drake" -> -2.0; // Too proud for trinkets
-            case "troll" -> -1.0;       // Oblivious to quality
-            default -> 0.0;
-        };
-    }
 }

@@ -1,5 +1,6 @@
 package com.otectus.runic_races.util;
 
+import com.otectus.runic_races.RunicRacesMod;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.core.Holder;
@@ -19,12 +20,16 @@ public final class OriginsPowerHelper {
     public static boolean isResourceReady(ServerPlayer player, ResourceLocation powerId) {
         IPowerContainer container = IPowerContainer.get(player).orElse(null);
         if (container == null || !container.hasPower(powerId)) {
-            return true;
+            RunicRacesMod.debug("[RunicRaces] isResourceReady fail-closed: power {} not found for {}",
+                    powerId, player.getName().getString());
+            return false;
         }
 
         Holder holder = container.getPower(powerId);
         if (holder == null || !holder.isBound()) {
-            return true;
+            RunicRacesMod.debug("[RunicRaces] isResourceReady fail-closed: holder unbound for power {} on {}",
+                    powerId, player.getName().getString());
+            return false;
         }
 
         ConfiguredPower configuredPower = (ConfiguredPower) holder.value();

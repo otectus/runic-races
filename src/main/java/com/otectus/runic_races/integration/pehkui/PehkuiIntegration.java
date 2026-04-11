@@ -3,7 +3,9 @@ package com.otectus.runic_races.integration.pehkui;
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.event.RacialEventHandler;
 import com.otectus.runic_races.integration.ModIntegration;
+import com.otectus.runic_races.race.RaceRegistry;
 import com.otectus.runic_races.util.RaceHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.phys.AABB;
@@ -11,7 +13,11 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import virtuoel.pehkui.api.ScaleData;
+import virtuoel.pehkui.api.ScaleOperations;
+import virtuoel.pehkui.api.ScaleRegistries;
+import virtuoel.pehkui.api.ScaleType;
 import virtuoel.pehkui.api.ScaleTypes;
+import virtuoel.pehkui.api.TypedScaleModifier;
 
 import java.util.Optional;
 
@@ -22,10 +28,25 @@ import java.util.Optional;
 public class PehkuiIntegration implements ModIntegration {
     private static final float SCALE_EPSILON = 0.001f;
     private static final int RESIZE_PROTECTION_TICKS = 40;
+    private static ScaleType RACE_SCALE_TYPE;
 
     @Override
     public void init() {
-        RunicRacesMod.LOGGER.info("[RunicRaces] Pehkui integration initialized with {} race scales", RaceHelper.RACE_SCALES.size());
+        // Register a custom ScaleType so racial scaling doesn't clobber BASE
+        ResourceLocation typeId = new ResourceLocation(RunicRacesMod.MOD_ID, "race_scale");
+        RACE_SCALE_TYPE = ScaleType.Builder.create()
+                .defaultBaseScale(1.0f)
+                .build();
+        ScaleRegistries.register(ScaleRegistries.SCALE_TYPES, typeId, RACE_SCALE_TYPE);
+
+        // Link our type into BASE via a multiplicative modifier
+        TypedScaleModifier raceModifier = new TypedScaleModifier(() -> RACE_SCALE_TYPE, ScaleOperations.MULTIPLY);
+        ResourceLocation modifierId = new ResourceLocation(RunicRacesMod.MOD_ID, "race_scale_modifier");
+        ScaleRegistries.register(ScaleRegistries.SCALE_MODIFIERS, modifierId, raceModifier);
+        ScaleTypes.BASE.getDefaultBaseValueModifiers().add(raceModifier);
+
+        RunicRacesMod.LOGGER.info("[RunicRaces] Pehkui integration initialized — custom race_scale type registered with {} race scales",
+                RaceRegistry.raceCount());
     }
 
     @Override
@@ -40,10 +61,11 @@ public class PehkuiIntegration implements ModIntegration {
 
     private void applyRaceScale(ServerPlayer player) {
         String race = RaceHelper.getRaceName(player).orElse(null);
+        if (race == null) return;
         float scale = RaceHelper.getRaceScale(race);
 
         try {
-            ScaleData scaleData = ScaleTypes.BASE.getScaleData(player);
+            ScaleData scaleData = RACE_SCALE_TYPE.getScaleData(player);
             float currentScale = scaleData.getScale();
             if (Math.abs(currentScale - scale) <= SCALE_EPSILON) {
                 return;

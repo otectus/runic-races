@@ -1,7 +1,9 @@
 {
-  "layer.origins.origin.name": "Race",
-  "layer.origins.origin.missing_origin.name": "No Race",
-  "layer.origins.origin.missing_origin.description": "You have not yet chosen a race.",
+  "layer.runic_races.race.name": "Race",
+  "layer.runic_races.race.choose": "Choose your Race",
+  "layer.runic_races.race.view": "View Race",
+  "layer.runic_races.race.missing_origin.name": "No Race",
+  "layer.runic_races.race.missing_origin.description": "You have not yet chosen a race.",
   "origin.runic_races.human.name": "Human (Mortal)",
   "origin.runic_races.human.description": "Humans live as though the world subtly bends around them, turning coincidence into opportunity. They are adaptable generalists with steady luck and a stubborn refusal to fall, but possess no overt supernatural gift.",
   "origin.runic_races.halfling.name": "Halfling (Mortal)",

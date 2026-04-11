@@ -1,6 +1,7 @@
 package com.otectus.runic_races.util;
 
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.config.RRServerConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.fml.ModList;
@@ -44,7 +45,9 @@ public final class StaminaHelper {
      * Returns the player's current feathers (stamina), or {@link Integer#MAX_VALUE} if Feather's is not installed.
      */
     public static int getPlayerStamina(Entity entity) {
-        if (!isAvailable() || !(entity instanceof ServerPlayer player)) return Integer.MAX_VALUE;
+        if (!isAvailable() || !(entity instanceof ServerPlayer player)) {
+            return RRServerConfig.FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING.get() ? 0 : Integer.MAX_VALUE;
+        }
         try {
             return (int) getFeathers.invoke(null, player);
         } catch (Exception e) {

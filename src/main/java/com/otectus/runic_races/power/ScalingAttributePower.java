@@ -2,16 +2,18 @@ package com.otectus.runic_races.power;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.otectus.runic_races.RunicRacesMod;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -67,7 +69,7 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
         boolean isDaytime = player.level().isDay();
         double value = isDaytime ? config.dayValue() : config.nightValue();
 
-        net.minecraft.world.entity.ai.attributes.Attribute attr = resolveAttribute(config.attribute());
+        Attribute attr = resolveAttribute(config.attribute());
         if (attr == null) return;
 
         AttributeModifier.Operation op = resolveOperation(config.operation());
@@ -90,23 +92,23 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
     public void onRemoved(ConfiguredPower<Configuration, ?> power, Entity entity) {
         if (!(entity instanceof Player player)) return;
         Configuration config = power.getConfiguration();
-        net.minecraft.world.entity.ai.attributes.Attribute attr = resolveAttribute(config.attribute());
+        Attribute attr = resolveAttribute(config.attribute());
         if (attr == null) return;
         AttributeInstance instance = player.getAttribute(attr);
         if (instance != null) instance.removeModifier(SCALING_UUID);
     }
 
-    private net.minecraft.world.entity.ai.attributes.Attribute resolveAttribute(String name) {
-        return switch (name) {
-            case "generic.attack_damage" -> Attributes.ATTACK_DAMAGE;
-            case "generic.movement_speed" -> Attributes.MOVEMENT_SPEED;
-            case "generic.max_health" -> Attributes.MAX_HEALTH;
-            case "generic.armor" -> Attributes.ARMOR;
-            case "generic.attack_speed" -> Attributes.ATTACK_SPEED;
-            case "generic.knockback_resistance" -> Attributes.KNOCKBACK_RESISTANCE;
-            case "generic.luck" -> Attributes.LUCK;
-            default -> null;
-        };
+    private Attribute resolveAttribute(String name) {
+        ResourceLocation rl = ResourceLocation.tryParse(name);
+        if (rl == null) {
+            RunicRacesMod.LOGGER.warn("[RunicRaces] Invalid attribute name '{}' in ScalingAttributePower config", name);
+            return null;
+        }
+        Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(rl);
+        if (attr == null) {
+            RunicRacesMod.LOGGER.warn("[RunicRaces] Unknown attribute '{}' in ScalingAttributePower — is the target mod loaded?", rl);
+        }
+        return attr;
     }
 
     private AttributeModifier.Operation resolveOperation(String name) {

@@ -17,6 +17,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -46,6 +48,8 @@ public class RacialEventHandler {
     private static final String REVENANT_DEATH_Z = "runic_races:death_z";
     private static final String REVENANT_DEATH_DIM = "runic_races:death_dim";
     private static final String RESIZE_PROTECTION_UNTIL = "runic_races:resize_protection_until";
+    private static final String REVENANT_REVIVAL_ATTEMPTS = "runic_races:revenant_revival_attempts";
+    private static final int MAX_REVIVAL_ATTEMPTS = 3;
 
     // Cooldowns in ticks
     private static final int NINE_LIVES_CD_TICKS = 12000; // 10 minutes
@@ -110,6 +114,15 @@ public class RacialEventHandler {
         long now = player.level().getGameTime();
 
         if (isCooldownReady(data, REVENANT_REVIVAL_COOLDOWN, now, REVENANT_REVIVAL_CD_TICKS)) {
+            int attempts = data.getInt(REVENANT_REVIVAL_ATTEMPTS);
+            if (attempts >= MAX_REVIVAL_ATTEMPTS) {
+                data.putInt(REVENANT_REVIVAL_ATTEMPTS, 0);
+                RunicRacesMod.LOGGER.warn("[RunicRaces] Revenant {} exceeded max revival attempts, using normal respawn",
+                        player.getName().getString());
+                return;
+            }
+            data.putInt(REVENANT_REVIVAL_ATTEMPTS, attempts + 1);
+
             // Record death position for revival
             data.putDouble(REVENANT_DEATH_X, player.getX());
             data.putDouble(REVENANT_DEATH_Y, player.getY());
@@ -143,14 +156,22 @@ public class RacialEventHandler {
         ServerLevel targetLevel = dimensionId == null ? null
                 : player.server.getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
         if (targetLevel != null) {
-            player.teleportTo(targetLevel, x, y, z, player.getYRot(), player.getXRot());
-            player.setHealth(6.0f); // 3 hearts
-            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 600, 4)); // Resistance V, 30s
-            player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 600)); // Visible to others
-            player.sendSystemMessage(Component.literal("\u00A75\u00A7lDeath cannot hold you. You rise where you fell."));
+            Vec3 safePos = findSafeRevivalPosition(targetLevel, x, y, z);
+            if (safePos != null) {
+                player.teleportTo(targetLevel, safePos.x, safePos.y, safePos.z, player.getYRot(), player.getXRot());
+                player.setHealth(6.0f); // 3 hearts
+                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 600, 4)); // Resistance V, 30s
+                player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 600)); // Visible to others
+                player.sendSystemMessage(Component.literal("\u00A75\u00A7lDeath cannot hold you. You rise where you fell."));
+                data.putInt(REVENANT_REVIVAL_ATTEMPTS, 0);
 
-            RunicRacesMod.debug("[RunicRaces] Revenant {} revived at death site ({}, {}, {})",
-                    player.getName().getString(), x, y, z);
+                RunicRacesMod.debug("[RunicRaces] Revenant {} revived at safe position ({}, {}, {})",
+                        player.getName().getString(), safePos.x, safePos.y, safePos.z);
+            } else {
+                RunicRacesMod.LOGGER.warn("[RunicRaces] No safe revival position for Revenant {} near ({}, {}, {}), using normal respawn",
+                        player.getName().getString(), x, y, z);
+                player.sendSystemMessage(Component.literal("\u00A77\u00A7oThe grave rejects your return... you awaken elsewhere."));
+            }
         } else {
             RunicRacesMod.LOGGER.warn("[RunicRaces] Could not restore Revenant {} to death dimension '{}'",
                     player.getName().getString(), dim);
@@ -242,6 +263,36 @@ public class RacialEventHandler {
         return source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.CRAMMING) || source.is(DamageTypes.FALL);
     }
 
+    /**
+     * Scan upward from the death position to find 2 air blocks above a solid, non-hazardous floor.
+     * Returns null if no safe position is found within 10 blocks vertically.
+     */
+    private static Vec3 findSafeRevivalPosition(ServerLevel level, double x, double y, double z) {
+        int minY = level.getMinBuildHeight();
+        if (y < minY + 1) y = minY + 1;
+
+        net.minecraft.core.BlockPos.MutableBlockPos pos = new net.minecraft.core.BlockPos.MutableBlockPos();
+        for (int dy = 0; dy <= 10; dy++) {
+            int checkY = (int) y + dy;
+            pos.set((int) x, checkY, (int) z);
+
+            BlockState below = level.getBlockState(pos.below());
+            BlockState atFeet = level.getBlockState(pos);
+            BlockState atHead = level.getBlockState(pos.above());
+
+            boolean standable = below.blocksMotion();
+            boolean feetClear = !atFeet.blocksMotion() && atFeet.getFluidState().isEmpty();
+            boolean headClear = !atHead.blocksMotion() && atHead.getFluidState().isEmpty();
+            boolean notHazardous = !below.is(Blocks.LAVA) && !below.is(Blocks.FIRE)
+                    && !below.is(Blocks.MAGMA_BLOCK) && !below.is(Blocks.CAMPFIRE)
+                    && !below.is(Blocks.SOUL_CAMPFIRE) && !below.is(Blocks.SOUL_FIRE);
+
+            if (standable && feetClear && headClear && notHazardous) {
+                return new Vec3(x, checkY, z);
+            }
+        }
+        return null;
+    }
 
     // ==================== JUMP COMPENSATION ====================
 
@@ -273,14 +324,20 @@ public class RacialEventHandler {
      * Copy persistent race data (cooldowns, revival locations) when player
      * clones (death/respawn, end portal, etc).
      */
+    /** Keys that should only persist across death clones, not end-portal returns. */
+    private static final java.util.Set<String> EPHEMERAL_KEYS = java.util.Set.of(
+            RESIZE_PROTECTION_UNTIL, "runic_races:last_synced_race"
+    );
+
     @SubscribeEvent
     public void onPlayerClone(PlayerEvent.Clone event) {
         CompoundTag oldData = event.getOriginal().getPersistentData();
         CompoundTag newData = event.getEntity().getPersistentData();
 
-        // Copy all runic_races persistent data
         for (String key : oldData.getAllKeys()) {
             if (key.startsWith("runic_races:")) {
+                // Skip ephemeral keys on non-death clones (e.g. End portal return)
+                if (!event.isWasDeath() && EPHEMERAL_KEYS.contains(key)) continue;
                 newData.put(key, oldData.get(key).copy());
             }
         }

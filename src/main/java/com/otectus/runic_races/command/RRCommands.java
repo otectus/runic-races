@@ -2,12 +2,18 @@ package com.otectus.runic_races.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.otectus.runic_races.race.RaceDefinition;
+import com.otectus.runic_races.race.RaceRegistry;
 import com.otectus.runic_races.util.RaceHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
 
 public class RRCommands {
 
@@ -53,16 +59,38 @@ public class RRCommands {
         return 1;
     }
 
+    private static final Map<String, String> FAMILY_COLORS = Map.of(
+            "mortal", "\u00A7e",
+            "fae", "\u00A7d",
+            "beast", "\u00A7a",
+            "underfolk", "\u00A78",
+            "dragon", "\u00A7c",
+            "cursed", "\u00A75"
+    );
+
     private static int listRaces(CommandContext<CommandSourceStack> context) {
-        context.getSource().sendSuccess(() -> Component.literal(
-                "§6§lRunic Races §r§7— 24 races across 6 families\n" +
-                "§eMortal:§r Human, Halfling, Nomad, Giant-Blooded\n" +
-                "§dFae:§r High Elf, Wood Elf, Sprite, Changeling, Dryad\n" +
-                "§aBeast:§r Wolfkin, Dragonborn, Catfolk, Minotaur, Serpentfolk\n" +
-                "§8Underfolk:§r Mountain Dwarf, Deep Dwarf, Goblin, Troll, Kobold\n" +
-                "§cDragon:§r Wyvern-Blooded, Elder Drake\n" +
-                "§5Cursed:§r Vampire, Lycanthrope, Revenant"
-        ), false);
+        StringBuilder sb = new StringBuilder();
+        sb.append("\u00A76\u00A7lRunic Races \u00A7r\u00A77\u2014 ")
+                .append(RaceRegistry.raceCount())
+                .append(" races across ")
+                .append(RaceRegistry.allFamilies().size())
+                .append(" families\n");
+
+        for (String family : RaceRegistry.allFamilies()) {
+            String color = FAMILY_COLORS.getOrDefault(family, "\u00A7f");
+            String familyDisplay = family.substring(0, 1).toUpperCase() + family.substring(1);
+            sb.append(color).append(familyDisplay).append(":\u00A7r ");
+
+            List<RaceDefinition> races = RaceRegistry.racesInFamily(family);
+            StringJoiner joiner = new StringJoiner(", ");
+            for (RaceDefinition race : races) {
+                joiner.add(race.displayName());
+            }
+            sb.append(joiner).append("\n");
+        }
+
+        String message = sb.toString().stripTrailing();
+        context.getSource().sendSuccess(() -> Component.literal(message), false);
         return 1;
     }
 
