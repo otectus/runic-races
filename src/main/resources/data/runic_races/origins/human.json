@@ -3,6 +3,7 @@
     "item": "runic_races:human_icon"
   },
   "order": 100,
+  "impact": 0,
   "name": "origin.runic_races.human.name",
   "description": "origin.runic_races.human.description",
   "powers": [

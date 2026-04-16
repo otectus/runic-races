@@ -5,7 +5,6 @@
   "subpowers": [
     "venom_on_hit"
   ],
-
   "venom_on_hit": {
     "type": "origins:self_action_on_hit",
     "bientity_action": {
@@ -42,29 +41,12 @@
           "pitch": 0.5
         },
         {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:dust",
-            "color": { "x": 0.1, "y": 0.8, "z": 0.1 },
-            "scale": 0.6
-          },
-          "count": 10,
-          "speed": 0.3,
-          "spread": { "x": 0.4, "y": 0.5, "z": 0.4 }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:item",
-            "item": { "id": "minecraft:spider_eye" }
-          },
-          "count": 8,
-          "speed": 0.2,
-          "spread": { "x": 0.3, "y": 0.5, "z": 0.3 }
+          "type": "origins:execute_command",
+          "command": "particle minecraft:dust 0.1 0.8 0.1 0.6 ~ ~1 ~ 0.4 0.5 0.4 0.3 10 force"
         },
         {
           "type": "origins:execute_command",
-          "command": "particle minecraft:dust 0.1 0.75 0.1 0.5 ~ ~0.8 ~ 0.4 0.4 0.4 0.1 15 force"
+          "command": "particle minecraft:item minecraft:spider_eye ~ ~1 ~ 0.3 0.5 0.3 0.2 8 force"
         }
       ]
     }

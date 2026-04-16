@@ -7,7 +7,6 @@
     "cooldown_decay",
     "active_ability"
   ],
-
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,
@@ -21,7 +20,6 @@
     "min_action": null,
     "max_action": null
   },
-
   "cooldown_decay": {
     "type": "origins:action_over_time",
     "interval": 1,
@@ -40,7 +38,6 @@
       }
     }
   },
-
   "active_ability": {
     "type": "origins:active_self",
     "key": {
@@ -98,22 +95,15 @@
           "particle": "minecraft:reverse_portal",
           "count": 20,
           "speed": 0.5,
-          "spread": { "x": 0.3, "y": 0.8, "z": 0.3 }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:dust",
-            "color": { "x": 0.3, "y": 0.9, "z": 0.9 },
-            "scale": 0.5
-          },
-          "count": 15,
-          "speed": 0.3,
-          "spread": { "x": 0.5, "y": 0.5, "z": 0.5 }
+          "spread": {
+            "x": 0.3,
+            "y": 0.8,
+            "z": 0.3
+          }
         },
         {
           "type": "origins:execute_command",
-          "command": "particle minecraft:reverse_portal ~ ~1 ~ 0.1 0.5 0.1 0.5 30 force"
+          "command": "particle minecraft:dust 0.3 0.9 0.9 0.5 ~ ~1 ~ 0.5 0.5 0.5 0.3 15 force"
         }
       ]
     }

@@ -7,7 +7,6 @@
     "cooldown_decay",
     "activation"
   ],
-
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,
@@ -21,7 +20,6 @@
     "min_action": null,
     "max_action": null
   },
-
   "cooldown_decay": {
     "type": "origins:action_over_time",
     "interval": 1,
@@ -40,7 +38,6 @@
       }
     }
   },
-
   "activation": {
     "type": "origins:active_self",
     "key": {
@@ -68,28 +65,9 @@
           }
         },
         {
-          "type": "origins:area_of_effect",
-          "radius": 16,
-          "bientity_action": {
-            "type": "origins:target_action",
-            "action": {
-              "type": "origins:apply_effect",
-              "effect": {
-                "effect": "minecraft:glowing",
-                "duration": 200,
-                "amplifier": 0,
-                "is_ambient": false,
-                "show_particles": false,
-                "show_icon": false
-              }
-            }
-          },
-          "bientity_condition": {
-            "type": "origins:target_condition",
-            "condition": {
-              "type": "origins:living"
-            }
-          }
+          "type": "runic_races:glow_hostiles",
+          "radius": 10.0,
+          "duration_ticks": 140
         },
         {
           "type": "origins:change_resource",
@@ -115,24 +93,17 @@
         {
           "type": "origins:spawn_particles",
           "particle": "minecraft:composter",
-          "count": 25,
+          "count": 30,
           "speed": 0.3,
-          "spread": { "x": 1.0, "y": 1.0, "z": 1.0 }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:dust",
-            "color": { "x": 0.15, "y": 0.5, "z": 0.1 },
-            "scale": 0.5
-          },
-          "count": 15,
-          "speed": 0.2,
-          "spread": { "x": 1.5, "y": 1.5, "z": 1.5 }
+          "spread": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          }
         },
         {
           "type": "origins:execute_command",
-          "command": "particle minecraft:composter ~ ~3 ~ 2.0 0.5 2.0 0.01 30 force"
+          "command": "particle minecraft:dust 0.15 0.5 0.1 0.5 ~ ~1 ~ 1.5 1.5 1.5 0.2 20 force"
         }
       ]
     }

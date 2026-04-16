@@ -7,7 +7,6 @@
     "cooldown_decay",
     "on_hit_trigger"
   ],
-
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,
@@ -21,7 +20,6 @@
     "min_action": null,
     "max_action": null
   },
-
   "cooldown_decay": {
     "type": "origins:action_over_time",
     "interval": 1,
@@ -40,7 +38,6 @@
       }
     }
   },
-
   "on_hit_trigger": {
     "type": "origins:self_action_when_hit",
     "condition": {
@@ -85,29 +82,12 @@
           "pitch": 1.5
         },
         {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:dust",
-            "color": { "x": 0.5, "y": 0.5, "z": 0.5 },
-            "scale": 1.0
-          },
-          "count": 15,
-          "speed": 0.3,
-          "spread": { "x": 0.6, "y": 1.0, "z": 0.6 }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:block",
-            "params": "minecraft:stone"
-          },
-          "count": 20,
-          "speed": 0.3,
-          "spread": { "x": 0.5, "y": 0.8, "z": 0.5 }
+          "type": "origins:execute_command",
+          "command": "particle minecraft:dust 0.5 0.5 0.5 1.0 ~ ~1 ~ 0.6 1.0 0.6 0.3 15 force"
         },
         {
           "type": "origins:execute_command",
-          "command": "particle minecraft:dust 0.55 0.55 0.55 1.0 ~ ~1 ~ 0.8 1.2 0.8 0.02 30 force"
+          "command": "particle minecraft:block minecraft:stone ~ ~1 ~ 0.5 0.8 0.5 0.3 20 force"
         }
       ]
     }

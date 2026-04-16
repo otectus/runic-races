@@ -1,0 +1,28 @@
+{
+  "type": "origins:action_over_time",
+  "name": "power.runic_races.nomad.water_discipline.name",
+  "description": "power.runic_races.nomad.water_discipline.description",
+  "interval": 80,
+  "entity_action": {
+    "type": "origins:if_else",
+    "condition": {
+      "type": "origins:and",
+      "conditions": [
+        { "type": "origins:daytime" },
+        { "type": "apoli:biome", "biome": "minecraft:desert" },
+        { "type": "origins:exposed_to_sky" }
+      ]
+    },
+    "if_action": {
+      "type": "origins:apply_effect",
+      "effect": {
+        "effect": "minecraft:regeneration",
+        "duration": 100,
+        "amplifier": 0,
+        "is_ambient": true,
+        "show_particles": false,
+        "show_icon": false
+      }
+    }
+  }
+}

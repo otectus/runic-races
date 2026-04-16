@@ -3,6 +3,7 @@
     "item": "runic_races:revenant_icon"
   },
   "order": 602,
+  "impact": 3,
   "name": "origin.runic_races.revenant.name",
   "description": "origin.runic_races.revenant.description",
   "powers": [

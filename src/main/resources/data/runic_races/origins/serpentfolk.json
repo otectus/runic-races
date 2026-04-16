@@ -3,6 +3,7 @@
     "item": "runic_races:serpentfolk_icon"
   },
   "order": 304,
+  "impact": 1,
   "name": "origin.runic_races.serpentfolk.name",
   "description": "origin.runic_races.serpentfolk.description",
   "powers": [

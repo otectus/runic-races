@@ -9,11 +9,9 @@
   "damage_bonus": {
     "type": "origins:modify_damage_dealt",
     "damage_condition": {
-      "type": "origins:invert",
-      "condition": {
-        "type": "origins:name",
-        "name": "magic"
-      }
+      "type": "origins:name",
+      "name": "magic",
+      "inverted": true
     },
     "modifier": {
       "operation": "multiply_total_multiplicative",

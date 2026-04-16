@@ -14,12 +14,16 @@ import net.minecraftforge.fml.common.Mod;
 /**
  * Client-side input handler for flight controls.
  * <p>
- * While the player is gliding ({@code isFallFlying()}):
- * <ul>
- *   <li>Single jump press → flap wings (buffered 4 ticks for double-tap detection)</li>
- *   <li>Double-tap jump within 4 ticks → cancel glide</li>
- * </ul>
- * When NOT gliding, jump key is left to vanilla/Origins for normal jump and elytra activation.
+ * Two control schemes coexist:
+ * <ol>
+ *   <li><b>Dedicated keybinds</b> ({@link RRKeyBindings#FLAP} / {@link RRKeyBindings#CANCEL_GLIDE}):
+ *       when bound, pressing them while gliding sends the flap/cancel packets directly.
+ *       Single-press, no double-tap window.</li>
+ *   <li><b>Jump override fallback</b> (unchanged legacy behavior): when {@code FLAP} is unbound,
+ *       jump presses during glide are buffered — single press → flap, double-tap within 4 ticks
+ *       → cancel glide. Preserves usability for users who never open the Controls screen.</li>
+ * </ol>
+ * When NOT gliding, the jump key is left to vanilla for normal jump and elytra activation.
  */
 @Mod.EventBusSubscriber(modid = RunicRacesMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class FlightInputHandler {
@@ -38,18 +42,50 @@ public class FlightInputHandler {
         LocalPlayer player = mc.player;
         if (player == null || mc.screen != null) return;
 
+        // Drain dedicated keybind queues regardless of gliding state so held-down
+        // presses don't leak once the player starts gliding.
+        boolean dedicatedFlapPressed = false;
+        boolean dedicatedCancelPressed = false;
+        while (RRKeyBindings.FLAP.consumeClick()) dedicatedFlapPressed = true;
+        while (RRKeyBindings.CANCEL_GLIDE.consumeClick()) dedicatedCancelPressed = true;
+
+        if (!player.isFallFlying()) {
+            // Not gliding — reset fallback state, let vanilla handle everything
+            pendingFlap = false;
+            pendingFlapCountdown = 0;
+            wasJumpDown = mc.options.keyJump.isDown();
+            return;
+        }
+
+        // === Gliding ===
+
+        // Dedicated keybinds take priority if they were pressed this tick
+        if (dedicatedCancelPressed) {
+            NetworkHandler.sendToServer(new FlightCancelPacket());
+            pendingFlap = false;
+            pendingFlapCountdown = 0;
+            wasJumpDown = mc.options.keyJump.isDown();
+            return;
+        }
+        if (dedicatedFlapPressed) {
+            NetworkHandler.sendToServer(new FlightFlapPacket());
+            pendingFlap = false;
+            pendingFlapCountdown = 0;
+            wasJumpDown = mc.options.keyJump.isDown();
+            return;
+        }
+
+        // Fallback: jump-override only if FLAP is unbound, so players who
+        // deliberately rebound still get vanilla jump behavior during glide.
+        if (RRKeyBindings.flapIsBound()) {
+            wasJumpDown = mc.options.keyJump.isDown();
+            return;
+        }
+
         boolean isJumpDown = mc.options.keyJump.isDown();
         boolean justPressed = isJumpDown && !wasJumpDown;
         wasJumpDown = isJumpDown;
 
-        if (!player.isFallFlying()) {
-            // Not gliding — reset state, let vanilla handle everything
-            pendingFlap = false;
-            pendingFlapCountdown = 0;
-            return;
-        }
-
-        // Player is fall-flying — handle flap / cancel
         if (justPressed) {
             if (pendingFlap && pendingFlapCountdown > 0) {
                 // Second press within buffer window → cancel glide

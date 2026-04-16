@@ -1,15 +1,13 @@
 package com.otectus.runic_races.flight;
 
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.presentation.RunicPresentation;
+import com.otectus.runic_races.presentation.SignatureKey;
 import com.otectus.runic_races.util.OriginsPowerHelper;
 import com.otectus.runic_races.util.RaceHelper;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.core.particles.ParticleTypes;
 
+import java.util.Optional;
 import java.util.WeakHashMap;
 
 /**
@@ -47,16 +45,8 @@ public final class FlightServerHandler {
         OriginsPowerHelper.setResourceValue(player, config.getCooldownResource(), config.getCooldownTicks());
         lastFlapTick.put(player, now);
 
-        // Effects
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                config.getFlapSound(), SoundSource.PLAYERS, config.getFlapVolume(), config.getFlapPitch());
-
-        player.displayClientMessage(Component.literal(config.getFlapMessage()), true);
-
-        // Particles
-        if (player.level() instanceof ServerLevel serverLevel) {
-            spawnFlapParticles(serverLevel, player, config);
-        }
+        // Fire unified presentation (sfx + vfx + actionbar banner)
+        signatureKeyFor(config).ifPresent(key -> RunicPresentation.fire(player, key));
 
         RunicRacesMod.debug("[RunicRaces] {} flapped (race: {}, vel: +{})",
                 player.getName().getString(), race, config.getFlapVelocityY());
@@ -74,36 +64,17 @@ public final class FlightServerHandler {
         // Stop gliding — fall damage immunity is handled by Origins powers
         player.stopFallFlying();
 
-        // Feedback
-        player.displayClientMessage(
-                Component.literal("\u00A77You fold your wings."), true);
-
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.PHANTOM_FLAP, SoundSource.PLAYERS, 0.3f, 0.8f);
+        RunicPresentation.fire(player, SignatureKey.FLIGHT_CANCEL);
 
         RunicRacesMod.debug("[RunicRaces] {} canceled glide (race: {})",
                 player.getName().getString(), race);
     }
 
-    private static void spawnFlapParticles(ServerLevel level, ServerPlayer player, FlightConfig config) {
-        double x = player.getX();
-        double y = player.getY() + 0.3;
-        double z = player.getZ();
-
-        switch (config) {
-            case SPRITE -> {
-                level.sendParticles(ParticleTypes.END_ROD, x, y, z, 8, 0.3, 0.3, 0.3, 0.3);
-                level.sendParticles(ParticleTypes.CLOUD, x, y, z, 8, 0.3, 0.1, 0.3, 0.02);
-            }
-            case WYVERN -> {
-                level.sendParticles(ParticleTypes.CLOUD, x, y, z, 12, 0.5, 0.2, 0.5, 0.3);
-                level.sendParticles(ParticleTypes.CLOUD, x, y, z, 10, 0.5, 0.1, 0.5, 0.02);
-            }
-            case ELDER_DRAKE -> {
-                level.sendParticles(ParticleTypes.DRAGON_BREATH, x, y, z, 15, 0.8, 0.3, 0.8, 0.3);
-                level.sendParticles(ParticleTypes.SMOKE, x, y, z, 8, 0.5, 0.3, 0.5, 0.2);
-                level.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, x, y + 0.2, z, 5, 1.0, 0.1, 1.0, 0.01);
-            }
-        }
+    private static Optional<SignatureKey> signatureKeyFor(FlightConfig config) {
+        return switch (config) {
+            case SPRITE -> Optional.of(SignatureKey.SPRITE_WING_FLAP);
+            case WYVERN -> Optional.of(SignatureKey.WYVERN_WING_FLAP);
+            case ELDER_DRAKE -> Optional.of(SignatureKey.ELDER_DRAKE_WING_FLAP);
+        };
     }
 }

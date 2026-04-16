@@ -9,8 +9,8 @@ A flagship Origins add-on for the **Runecraft** modpack. 24 deeply designed race
 ### Mortal (4)
 | Race | Fantasy | Signature Mechanic |
 |------|---------|-------------------|
-| **Human** | Adaptable generalist | +10% XP, no weaknesses, no specialization |
-| **Halfling** | Lucky rogue | Lucky Dodge (10% evade), stealth burst |
+| **Human** | Adaptable generalist | +1 Luck, +5% speed, +1 heart, Determination low-HP surge |
+| **Halfling** | Lucky rogue | Lucky Dodge (10% evade), Lightfoot stealth burst |
 | **Nomad** | Desert survivor | Pathfinder's Mark dash, desert biome affinity |
 | **Giant-Blooded** | Towering tank | Massive reach, knockback immunity, slow bulk |
 
@@ -44,7 +44,7 @@ A flagship Origins add-on for the **Runecraft** modpack. 24 deeply designed race
 ### Dragon (2)
 | Race | Fantasy | Signature Mechanic |
 |------|---------|-------------------|
-| **Wyvern-Blooded** | Aerial hunter | Updraft dive-bomb, permanent glide, claustrophobia |
+| **Wyvern-Blooded** | Aerial hunter | Updraft soar, permanent glide, claustrophobia |
 | **Elder Drake** | Ancient power | Fire immune, powerful roar, ancient pride penalties |
 
 ### Cursed (3)
@@ -78,8 +78,18 @@ All integrations are optional and config-toggleable. If a mod is absent, its fea
 
 Config files are generated in `config/runic_races/`:
 
-- `runic_races-server.toml` — Integration toggles
-- `runic_races-common.toml` — Debug logging
+- `runic_races-server.toml` — Integration toggles, resource gating posture (`failClosedWhenResourceModMissing` defaults to **true** for predictable standalone play; flip to `false` inside a pack that guarantees Iron's Spellbooks / Feather's are present).
+- `runic_races-client.toml` — Racial HUD (anchor, offset, scale, opacity, minimal mode, ability names, ready glow) and ambient state effects (passive state particles, screen cues).
+- `runic_races-common.toml` — Debug logging.
+
+## Keybinds
+
+Runic Races adds a **Runic Races** category to the vanilla Controls screen:
+
+- **Flap Wings** *(unbound by default)* — while gliding, press to flap upward.
+- **Fold Wings** *(unbound by default)* — while gliding, press to cancel the glide.
+
+If you leave both unbound, the legacy fallback stays active: while gliding, press **Jump** to flap and **double-tap Jump** within 4 ticks to fold your wings.
 
 ## Commands
 

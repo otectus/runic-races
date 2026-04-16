@@ -3,6 +3,7 @@
     "item": "runic_races:dragonborn_icon"
   },
   "order": 301,
+  "impact": 2,
   "name": "origin.runic_races.dragonborn.name",
   "description": "origin.runic_races.dragonborn.description",
   "powers": [

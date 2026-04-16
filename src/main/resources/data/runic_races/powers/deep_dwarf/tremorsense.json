@@ -4,7 +4,9 @@
   "description": "power.runic_races.deep_dwarf.tremorsense.description",
   "subpowers": [
     "night_vision",
-    "detect_nearby"
+    "cooldown_timer",
+    "cooldown_decay",
+    "active_ping"
   ],
 
   "night_vision": {
@@ -12,32 +14,65 @@
     "strength": 1.0
   },
 
-  "detect_nearby": {
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 300,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 1
+    },
+    "min_action": null,
+    "max_action": null
+  },
+
+  "cooldown_decay": {
     "type": "origins:action_over_time",
-    "interval": 100,
+    "interval": 1,
     "entity_action": {
-      "type": "origins:area_of_effect",
-      "radius": 12,
-      "bientity_action": {
-        "type": "origins:target_action",
-        "action": {
-          "type": "origins:apply_effect",
-          "effect": {
-            "effect": "minecraft:glowing",
-            "duration": 100,
-            "amplifier": 0,
-            "is_ambient": true,
-            "show_particles": false,
-            "show_icon": false
-          }
-        }
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:deep_dwarf/tremorsense_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
       },
-      "bientity_condition": {
-        "type": "origins:target_condition",
-        "condition": {
-          "type": "origins:living"
-        }
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:deep_dwarf/tremorsense_cooldown_timer",
+        "change": -1
       }
+    }
+  },
+
+  "active_ping": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.secondary_active",
+      "continuous": false
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "runic_races:deep_dwarf/tremorsense_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "runic_races:tremor_ping",
+          "radius": 18.0,
+          "duration_ticks": 40
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:deep_dwarf/tremorsense_cooldown_timer",
+          "change": 300
+        }
+      ]
     }
   }
 }

@@ -3,6 +3,7 @@
     "item": "runic_races:wyvern_blooded_icon"
   },
   "order": 500,
+  "impact": 2,
   "name": "origin.runic_races.wyvern_blooded.name",
   "description": "origin.runic_races.wyvern_blooded.description",
   "powers": [

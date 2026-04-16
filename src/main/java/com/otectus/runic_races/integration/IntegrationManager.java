@@ -67,9 +67,37 @@ public class IntegrationManager {
 
         RunicRacesMod.LOGGER.info("[RunicRaces] {} integrations loaded", loadedIntegrations.size());
 
+        logMissingGatingMods();
+
         if (!syncHandlerRegistered) {
             MinecraftForge.EVENT_BUS.register(new SyncHandler());
             syncHandlerRegistered = true;
+        }
+    }
+
+    /**
+     * Warn the pack author when a known resource-gating mod (Iron's Spellbooks, Feather's)
+     * is absent so they notice degraded-but-silent behavior. Message severity is chosen
+     * based on the {@code failClosed} posture: WARN when fail-open (surprise power swings),
+     * INFO when fail-closed (predictable — just informational).
+     */
+    private static void logMissingGatingMods() {
+        List<String> missing = new ArrayList<>();
+        if (!ModList.get().isLoaded("irons_spellbooks")) missing.add("Iron's Spellbooks (mana gating)");
+        if (!ModList.get().isLoaded("feathers")) missing.add("Feather's Mod (stamina gating)");
+
+        if (missing.isEmpty()) return;
+
+        boolean failClosed = RRServerConfig.FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING.get();
+        String posture = failClosed ? "failClosed=true → gated powers disabled" : "failClosed=false → gated powers FREE";
+
+        if (failClosed) {
+            RunicRacesMod.LOGGER.info("[RunicRaces] Resource gating mods not present ({}): {}",
+                    posture, String.join(", ", missing));
+        } else {
+            RunicRacesMod.LOGGER.warn("[RunicRaces] Resource gating mods not present ({}): {}. " +
+                            "Flip 'failClosedWhenResourceModMissing' in runic_races-server.toml for predictable standalone behavior.",
+                    posture, String.join(", ", missing));
         }
     }
 

@@ -3,6 +3,7 @@
     "item": "runic_races:lycanthrope_icon"
   },
   "order": 601,
+  "impact": 3,
   "name": "origin.runic_races.lycanthrope.name",
   "description": "origin.runic_races.lycanthrope.description",
   "powers": [

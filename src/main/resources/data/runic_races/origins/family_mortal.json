@@ -1,0 +1,8 @@
+{
+  "icon": { "item": "minecraft:iron_sword" },
+  "order": 10,
+  "impact": 0,
+  "name": "origin.runic_races.family_mortal.name",
+  "description": "origin.runic_races.family_mortal.description",
+  "powers": []
+}

@@ -7,7 +7,6 @@
     "cooldown_decay",
     "active_ability"
   ],
-
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,
@@ -21,7 +20,6 @@
     "min_action": null,
     "max_action": null
   },
-
   "cooldown_decay": {
     "type": "origins:action_over_time",
     "interval": 1,
@@ -40,7 +38,6 @@
       }
     }
   },
-
   "active_ability": {
     "type": "origins:active_self",
     "key": {
@@ -57,24 +54,8 @@
       "type": "origins:and",
       "actions": [
         {
-          "type": "origins:execute_command",
-          "command": "effect clear @s minecraft:poison"
-        },
-        {
-          "type": "origins:execute_command",
-          "command": "effect clear @s minecraft:wither"
-        },
-        {
-          "type": "origins:execute_command",
-          "command": "effect clear @s minecraft:weakness"
-        },
-        {
-          "type": "origins:execute_command",
-          "command": "effect clear @s minecraft:slowness"
-        },
-        {
-          "type": "origins:execute_command",
-          "command": "effect clear @s minecraft:mining_fatigue"
+          "type": "runic_races:clear_effects_by_category",
+          "category": "harmful"
         },
         {
           "type": "origins:apply_effect",
@@ -109,29 +90,12 @@
           "pitch": 0.6
         },
         {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:item",
-            "item": { "id": "minecraft:leather" }
-          },
-          "count": 15,
-          "speed": 0.3,
-          "spread": { "x": 0.5, "y": 1.0, "z": 0.5 }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:dust",
-            "color": { "x": 0.7, "y": 0.9, "z": 0.6 },
-            "scale": 0.7
-          },
-          "count": 15,
-          "speed": 0.2,
-          "spread": { "x": 0.8, "y": 1.5, "z": 0.8 }
+          "type": "origins:execute_command",
+          "command": "particle minecraft:item minecraft:leather ~ ~1 ~ 0.5 1.0 0.5 0.3 20 force"
         },
         {
           "type": "origins:execute_command",
-          "command": "particle minecraft:dust 0.75 0.9 0.65 0.8 ~ ~1 ~ 0.8 1.5 0.8 0.03 30 force"
+          "command": "particle minecraft:dust 0.7 0.9 0.6 0.7 ~ ~1 ~ 0.8 1.5 0.8 0.2 25 force"
         }
       ]
     }

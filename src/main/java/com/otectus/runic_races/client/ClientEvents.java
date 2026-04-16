@@ -3,13 +3,16 @@ package com.otectus.runic_races.client;
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.client.render.WingModel;
 import com.otectus.runic_races.client.render.WingRenderLayer;
+import com.otectus.runic_races.registry.ModEntities;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.ZombieRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -24,13 +27,31 @@ public class ClientEvents {
                 "racial_cooldowns",
                 new RacialCooldownOverlay()
         );
-        RunicRacesMod.LOGGER.info("[RunicRaces] Registered racial cooldown HUD overlay");
+        event.registerAbove(
+                VanillaGuiOverlay.HOTBAR.id(),
+                "racial_state_runes",
+                new StateRuneOverlay()
+        );
+        RunicRacesMod.LOGGER.info("[RunicRaces] Registered racial HUD overlays (cooldowns + state runes)");
+    }
+
+    @SubscribeEvent
+    public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
+        event.register(RRKeyBindings.FLAP);
+        event.register(RRKeyBindings.CANCEL_GLIDE);
+        RunicRacesMod.LOGGER.info("[RunicRaces] Registered flight keybinds (flap, cancel_glide — both unbound by default)");
     }
 
     @SubscribeEvent
     public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(WingRenderLayer.WING_MODEL_LAYER, WingModel::createLayer);
         RunicRacesMod.LOGGER.info("[RunicRaces] Registered wing model layer definition");
+    }
+
+    @SubscribeEvent
+    public static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        // Grave Servant reuses the vanilla zombie renderer — purpose-built art can swap in later.
+        event.registerEntityRenderer(ModEntities.GRAVE_SERVANT.get(), ZombieRenderer::new);
     }
 
     @SuppressWarnings("unchecked")

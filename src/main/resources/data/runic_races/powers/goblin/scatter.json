@@ -7,7 +7,6 @@
     "cooldown_decay",
     "on_hit_trigger"
   ],
-
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,
@@ -21,7 +20,6 @@
     "min_action": null,
     "max_action": null
   },
-
   "cooldown_decay": {
     "type": "origins:action_over_time",
     "interval": 1,
@@ -40,7 +38,6 @@
       }
     }
   },
-
   "on_hit_trigger": {
     "type": "origins:self_action_when_hit",
     "condition": {
@@ -100,18 +97,22 @@
           "particle": "minecraft:smoke",
           "count": 25,
           "speed": 0.5,
-          "spread": { "x": 0.5, "y": 0.5, "z": 0.5 }
+          "spread": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          }
         },
         {
           "type": "origins:spawn_particles",
           "particle": "minecraft:firework",
           "count": 5,
           "speed": 0.3,
-          "spread": { "x": 0.3, "y": 0.3, "z": 0.3 }
-        },
-        {
-          "type": "origins:execute_command",
-          "command": "particle minecraft:smoke ~ ~0.5 ~ 0.8 0.5 0.8 0.05 35 force"
+          "spread": {
+            "x": 0.3,
+            "y": 0.3,
+            "z": 0.3
+          }
         }
       ]
     }

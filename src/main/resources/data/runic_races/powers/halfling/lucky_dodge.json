@@ -5,9 +5,8 @@
   "subpowers": [
     "cooldown_timer",
     "cooldown_decay",
-    "dodge_modifier"
+    "dodge_trigger"
   ],
-
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,
@@ -21,7 +20,6 @@
     "min_action": null,
     "max_action": null
   },
-
   "cooldown_decay": {
     "type": "origins:action_over_time",
     "interval": 1,
@@ -40,69 +38,63 @@
       }
     }
   },
-
-  "dodge_modifier": {
-    "type": "origins:modify_damage_taken",
+  "dodge_trigger": {
+    "type": "origins:self_action_when_hit",
     "condition": {
-      "type": "origins:and",
-      "conditions": [
-        {
-          "type": "origins:resource",
-          "resource": "runic_races:halfling/lucky_dodge_cooldown_timer",
-          "comparison": "==",
-          "compare_to": 0
-        },
-        {
-          "type": "origins:chance",
-          "chance": 0.1
-        }
-      ]
+      "type": "origins:resource",
+      "resource": "runic_races:halfling/lucky_dodge_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
     },
-    "modifier": {
-      "operation": "multiply_total_multiplicative",
-      "value": -1.0
-    },
-    "self_action": {
-      "type": "origins:and",
-      "actions": [
-        {
-          "type": "origins:change_resource",
-          "resource": "runic_races:halfling/lucky_dodge_cooldown_timer",
-          "change": 600
-        },
-        {
-          "type": "origins:execute_command",
-          "command": "title @s actionbar {\"text\":\"You dodge with uncanny luck!\",\"color\":\"green\",\"bold\":true}"
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.enderman.teleport",
-          "volume": 0.5,
-          "pitch": 2.0
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:happy_villager",
-          "count": 10,
-          "speed": 0.3,
-          "spread": { "x": 0.5, "y": 0.5, "z": 0.5 }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:dust",
-            "color": { "x": 0.3, "y": 1.0, "z": 0.3 },
-            "scale": 0.6
+    "entity_action": {
+      "type": "apoli:chance",
+      "action": {
+        "type": "origins:and",
+        "actions": [
+          {
+            "type": "origins:apply_effect",
+            "effect": {
+              "effect": "minecraft:resistance",
+              "duration": 1,
+              "amplifier": 255,
+              "is_ambient": true,
+              "show_particles": false,
+              "show_icon": false
+            }
           },
-          "count": 12,
-          "speed": 0.3,
-          "spread": { "x": 0.4, "y": 0.8, "z": 0.4 }
-        },
-        {
-          "type": "origins:execute_command",
-          "command": "particle minecraft:enchanted_hit ~ ~1 ~ 0.4 0.8 0.4 0.1 15 force"
-        }
-      ]
+          {
+            "type": "origins:change_resource",
+            "resource": "runic_races:halfling/lucky_dodge_cooldown_timer",
+            "change": 600
+          },
+          {
+            "type": "origins:execute_command",
+            "command": "title @s actionbar {\"text\":\"You dodge with uncanny luck!\",\"color\":\"green\",\"bold\":true}"
+          },
+          {
+            "type": "origins:play_sound",
+            "sound": "minecraft:entity.enderman.teleport",
+            "volume": 0.5,
+            "pitch": 2.0
+          },
+          {
+            "type": "origins:spawn_particles",
+            "particle": "minecraft:happy_villager",
+            "count": 10,
+            "speed": 0.3,
+            "spread": {
+              "x": 0.5,
+              "y": 0.5,
+              "z": 0.5
+            }
+          },
+          {
+            "type": "origins:execute_command",
+            "command": "particle minecraft:dust 0.3 1.0 0.3 0.6 ~ ~1 ~ 0.4 0.8 0.4 0.3 12 force"
+          }
+        ]
+      },
+      "chance": 0.1
     }
   }
 }

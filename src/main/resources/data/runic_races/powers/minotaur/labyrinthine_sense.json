@@ -7,7 +7,6 @@
     "cooldown_decay",
     "active_ability"
   ],
-
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,
@@ -21,7 +20,6 @@
     "min_action": null,
     "max_action": null
   },
-
   "cooldown_decay": {
     "type": "origins:action_over_time",
     "interval": 1,
@@ -40,7 +38,6 @@
       }
     }
   },
-
   "active_ability": {
     "type": "origins:active_self",
     "key": {
@@ -68,28 +65,9 @@
           }
         },
         {
-          "type": "origins:area_of_effect",
-          "radius": 30,
-          "bientity_action": {
-            "type": "origins:target_action",
-            "action": {
-              "type": "origins:apply_effect",
-              "effect": {
-                "effect": "minecraft:glowing",
-                "duration": 300,
-                "amplifier": 0,
-                "is_ambient": false,
-                "show_particles": false,
-                "show_icon": false
-              }
-            }
-          },
-          "bientity_condition": {
-            "type": "origins:target_condition",
-            "condition": {
-              "type": "origins:living"
-            }
-          }
+          "type": "runic_races:glow_hostiles",
+          "radius": 18.0,
+          "duration_ticks": 300
         },
         {
           "type": "origins:change_resource",
@@ -102,37 +80,30 @@
         },
         {
           "type": "origins:play_sound",
-          "sound": "minecraft:entity.warden.sonic_boom",
-          "volume": 0.3,
-          "pitch": 2.0
+          "sound": "minecraft:entity.ravager.stunned",
+          "volume": 0.6,
+          "pitch": 1.2
         },
         {
           "type": "origins:play_sound",
-          "sound": "minecraft:entity.ravager.stunned",
+          "sound": "minecraft:block.amethyst_block.resonate",
           "volume": 0.5,
-          "pitch": 2.0
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:sonic_boom",
-          "count": 5,
-          "speed": 0.2,
-          "spread": { "x": 3.0, "y": 1.0, "z": 3.0 }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:dust",
-            "color": { "x": 0.2, "y": 0.8, "z": 0.8 },
-            "scale": 0.6
-          },
-          "count": 20,
-          "speed": 0.3,
-          "spread": { "x": 3.0, "y": 1.5, "z": 3.0 }
+          "pitch": 0.8
         },
         {
           "type": "origins:execute_command",
-          "command": "particle minecraft:dust 0.2 0.85 0.85 0.7 ~ ~1 ~ 5.0 0.3 5.0 0.01 60 force"
+          "command": "particle minecraft:dust 0.85 0.7 0.35 0.8 ~ ~1 ~ 3.0 1.5 3.0 0.3 35 force"
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:enchant",
+          "count": 25,
+          "speed": 0.4,
+          "spread": {
+            "x": 2.5,
+            "y": 1.2,
+            "z": 2.5
+          }
         }
       ]
     }

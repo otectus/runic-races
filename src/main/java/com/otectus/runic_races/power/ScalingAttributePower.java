@@ -3,10 +3,13 @@ package com.otectus.runic_races.power;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.common.state.RaceStateFlags;
+import com.otectus.runic_races.common.state.RaceStateTracker;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -86,6 +89,13 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
         } else if (existing != null) {
             instance.removeModifier(SCALING_UUID);
         }
+
+        // "Night empowered" = not daytime AND the night value is the stronger (non-zero) side.
+        // Used by the HUD state-rune overlay to signal to vampire-style races that their buff is live.
+        if (player instanceof ServerPlayer serverPlayer) {
+            boolean nightEmpowered = !isDaytime && config.nightValue() > 0.0;
+            RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.NIGHT_EMPOWERED, nightEmpowered);
+        }
     }
 
     @Override
@@ -96,6 +106,9 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
         if (attr == null) return;
         AttributeInstance instance = player.getAttribute(attr);
         if (instance != null) instance.removeModifier(SCALING_UUID);
+        if (player instanceof ServerPlayer serverPlayer) {
+            RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.NIGHT_EMPOWERED, false);
+        }
     }
 
     private Attribute resolveAttribute(String name) {

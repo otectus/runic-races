@@ -1,30 +1,85 @@
 {
-  "order": 1,
+  "replace": true,
+  "order": 10,
   "origins": [
-    "runic_races:human",
-    "runic_races:halfling",
-    "runic_races:nomad",
-    "runic_races:giant_blooded",
-    "runic_races:high_elf",
-    "runic_races:wood_elf",
-    "runic_races:sprite",
-    "runic_races:changeling",
-    "runic_races:dryad",
-    "runic_races:wolfkin",
-    "runic_races:dragonborn",
-    "runic_races:catfolk",
-    "runic_races:minotaur",
-    "runic_races:serpentfolk",
-    "runic_races:mountain_dwarf",
-    "runic_races:deep_dwarf",
-    "runic_races:goblin",
-    "runic_races:troll",
-    "runic_races:kobold",
-    "runic_races:wyvern_blooded",
-    "runic_races:elder_drake",
-    "runic_races:vampire",
-    "runic_races:lycanthrope",
-    "runic_races:revenant"
+    {
+      "condition": {
+        "type": "origins:origin",
+        "origin": "runic_races:family_mortal",
+        "layer": "runic_races:family"
+      },
+      "origins": [
+        "runic_races:human",
+        "runic_races:halfling",
+        "runic_races:nomad",
+        "runic_races:giant_blooded"
+      ]
+    },
+    {
+      "condition": {
+        "type": "origins:origin",
+        "origin": "runic_races:family_fae",
+        "layer": "runic_races:family"
+      },
+      "origins": [
+        "runic_races:high_elf",
+        "runic_races:wood_elf",
+        "runic_races:sprite",
+        "runic_races:changeling",
+        "runic_races:dryad"
+      ]
+    },
+    {
+      "condition": {
+        "type": "origins:origin",
+        "origin": "runic_races:family_beast",
+        "layer": "runic_races:family"
+      },
+      "origins": [
+        "runic_races:wolfkin",
+        "runic_races:dragonborn",
+        "runic_races:catfolk",
+        "runic_races:minotaur",
+        "runic_races:serpentfolk"
+      ]
+    },
+    {
+      "condition": {
+        "type": "origins:origin",
+        "origin": "runic_races:family_underfolk",
+        "layer": "runic_races:family"
+      },
+      "origins": [
+        "runic_races:mountain_dwarf",
+        "runic_races:deep_dwarf",
+        "runic_races:goblin",
+        "runic_races:troll",
+        "runic_races:kobold"
+      ]
+    },
+    {
+      "condition": {
+        "type": "origins:origin",
+        "origin": "runic_races:family_dragon",
+        "layer": "runic_races:family"
+      },
+      "origins": [
+        "runic_races:wyvern_blooded",
+        "runic_races:elder_drake"
+      ]
+    },
+    {
+      "condition": {
+        "type": "origins:origin",
+        "origin": "runic_races:family_cursed",
+        "layer": "runic_races:family"
+      },
+      "origins": [
+        "runic_races:vampire",
+        "runic_races:lycanthrope",
+        "runic_races:revenant"
+      ]
+    }
   ],
   "name": "layer.runic_races.race.name",
   "missing_origin": {

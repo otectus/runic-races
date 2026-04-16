@@ -8,24 +8,19 @@
 
   "physical_vulnerability": {
     "type": "origins:modify_damage_taken",
-    "condition": {
-      "type": "origins:not",
-      "condition": {
-        "type": "origins:damage_condition",
-        "damage_condition": {
-          "type": "origins:or",
-          "conditions": [
-            {
-              "type": "origins:name",
-              "name": "magic"
-            },
-            {
-              "type": "origins:name",
-              "name": "indirectMagic"
-            }
-          ]
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "magic"
+        },
+        {
+          "type": "origins:name",
+          "name": "indirectMagic"
         }
-      }
+      ],
+      "inverted": true
     },
     "modifier": {
       "operation": "multiply_total_multiplicative",

@@ -3,6 +3,7 @@
     "item": "runic_races:high_elf_icon"
   },
   "order": 200,
+  "impact": 1,
   "name": "origin.runic_races.high_elf.name",
   "description": "origin.runic_races.high_elf.description",
   "powers": [

@@ -3,6 +3,7 @@
     "item": "runic_races:vampire_icon"
   },
   "order": 600,
+  "impact": 3,
   "name": "origin.runic_races.vampire.name",
   "description": "origin.runic_races.vampire.description",
   "powers": [

@@ -3,6 +3,7 @@
     "item": "runic_races:deep_dwarf_icon"
   },
   "order": 401,
+  "impact": 1,
   "name": "origin.runic_races.deep_dwarf.name",
   "description": "origin.runic_races.deep_dwarf.description",
   "powers": [

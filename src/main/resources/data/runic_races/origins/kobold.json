@@ -3,6 +3,7 @@
     "item": "runic_races:kobold_icon"
   },
   "order": 404,
+  "impact": 1,
   "name": "origin.runic_races.kobold.name",
   "description": "origin.runic_races.kobold.description",
   "powers": [

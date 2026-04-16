@@ -57,35 +57,11 @@
       "type": "origins:and",
       "actions": [
         {
-          "type": "origins:area_of_effect",
-          "radius": 5,
-          "bientity_action": {
-            "type": "origins:and",
-            "actions": [
-              {
-                "type": "origins:damage",
-                "amount": 6.0,
-                "source": {
-                  "name": "onFire",
-                  "bypasses_armor": false,
-                  "fire": true
-                }
-              },
-              {
-                "type": "origins:target_action",
-                "action": {
-                  "type": "origins:set_on_fire",
-                  "duration": 8
-                }
-              }
-            ]
-          },
-          "bientity_condition": {
-            "type": "origins:target_condition",
-            "condition": {
-              "type": "origins:living"
-            }
-          }
+          "type": "runic_races:cone_breath",
+          "range": 7.0,
+          "half_angle_degrees": 22.0,
+          "damage": 6.0,
+          "fire_seconds": 8
         },
         {
           "type": "origins:change_resource",
@@ -107,39 +83,6 @@
           "sound": "minecraft:entity.blaze.shoot",
           "volume": 0.6,
           "pitch": 0.6
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:flame",
-          "count": 60,
-          "speed": 0.3,
-          "spread": { "x": 3.0, "y": 1.0, "z": 3.0 }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:lava",
-          "count": 15,
-          "speed": 0.1,
-          "spread": { "x": 2.0, "y": 0.5, "z": 2.0 }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:dust",
-            "color": { "x": 1.0, "y": 0.5, "z": 0.0 },
-            "scale": 1.2
-          },
-          "count": 20,
-          "speed": 0.3,
-          "spread": { "x": 2.5, "y": 1.0, "z": 2.5 }
-        },
-        {
-          "type": "origins:execute_command",
-          "command": "particle minecraft:flame ~ ~1 ~2 1.5 0.5 1.5 0.1 80 force"
-        },
-        {
-          "type": "origins:execute_command",
-          "command": "particle minecraft:smoke ~ ~1 ~2 2.0 1.0 2.0 0.05 30 force"
         }
       ]
     }

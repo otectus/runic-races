@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "minecraft:block/tripwire",
+    "top": "minecraft:block/tripwire"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 1, 16],
+      "faces": {
+        "down":  { "texture": "#top", "cullface": "down" },
+        "up":    { "texture": "#top" },
+        "north": { "texture": "#top" },
+        "south": { "texture": "#top" },
+        "east":  { "texture": "#top" },
+        "west":  { "texture": "#top" }
+      }
+    }
+  ]
+}

@@ -3,6 +3,7 @@
     "item": "runic_races:nomad_icon"
   },
   "order": 102,
+  "impact": 1,
   "name": "origin.runic_races.nomad.name",
   "description": "origin.runic_races.nomad.description",
   "powers": [
@@ -10,6 +11,7 @@
     "runic_races:nomad/pathfinders_mark",
     "runic_races:nomad/desert_stride",
     "runic_races:nomad/cold_vulnerability",
-    "runic_races:nomad/biome_affinity"
+    "runic_races:nomad/biome_affinity",
+    "runic_races:nomad/water_discipline"
   ]
 }

@@ -3,6 +3,7 @@
     "item": "runic_races:wolfkin_icon"
   },
   "order": 300,
+  "impact": 1,
   "name": "origin.runic_races.wolfkin.name",
   "description": "origin.runic_races.wolfkin.description",
   "powers": [

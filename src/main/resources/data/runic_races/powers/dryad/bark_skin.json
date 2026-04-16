@@ -7,7 +7,6 @@
     "cooldown_decay",
     "bark_trigger"
   ],
-
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,
@@ -21,7 +20,6 @@
     "min_action": null,
     "max_action": null
   },
-
   "cooldown_decay": {
     "type": "origins:action_over_time",
     "interval": 1,
@@ -40,7 +38,6 @@
       }
     }
   },
-
   "bark_trigger": {
     "type": "origins:action_over_time",
     "interval": 20,
@@ -102,22 +99,15 @@
             "particle": "minecraft:composter",
             "count": 15,
             "speed": 0.3,
-            "spread": { "x": 0.5, "y": 0.8, "z": 0.5 }
-          },
-          {
-            "type": "origins:spawn_particles",
-            "particle": {
-              "type": "minecraft:dust",
-              "color": { "x": 0.55, "y": 0.35, "z": 0.15 },
-              "scale": 1.2
-            },
-            "count": 20,
-            "speed": 0.2,
-            "spread": { "x": 0.6, "y": 1.0, "z": 0.6 }
+            "spread": {
+              "x": 0.5,
+              "y": 0.8,
+              "z": 0.5
+            }
           },
           {
             "type": "origins:execute_command",
-            "command": "particle minecraft:dust 0.55 0.35 0.15 1.2 ~ ~1 ~ 0.6 1.0 0.6 0.02 30 force"
+            "command": "particle minecraft:dust 0.55 0.35 0.15 1.2 ~ ~1 ~ 0.6 1.0 0.6 0.2 20 force"
           }
         ]
       }

@@ -1,0 +1,21 @@
+{
+  "replace": true,
+  "order": 0,
+  "origins": [
+    "runic_races:family_mortal",
+    "runic_races:family_fae",
+    "runic_races:family_beast",
+    "runic_races:family_underfolk",
+    "runic_races:family_dragon",
+    "runic_races:family_cursed"
+  ],
+  "name": "layer.runic_races.family.name",
+  "missing_origin": {
+    "name": "layer.runic_races.family.missing_origin.name",
+    "description": "layer.runic_races.family.missing_origin.description"
+  },
+  "gui_title": {
+    "choose_origin": "layer.runic_races.family.choose",
+    "view_origin": "layer.runic_races.family.view"
+  }
+}

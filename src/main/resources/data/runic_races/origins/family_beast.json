@@ -1,0 +1,8 @@
+{
+  "icon": { "item": "minecraft:bone" },
+  "order": 30,
+  "impact": 1,
+  "name": "origin.runic_races.family_beast.name",
+  "description": "origin.runic_races.family_beast.description",
+  "powers": []
+}

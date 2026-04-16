@@ -3,6 +3,7 @@
     "item": "runic_races:giant_blooded_icon"
   },
   "order": 103,
+  "impact": 1,
   "name": "origin.runic_races.giant_blooded.name",
   "description": "origin.runic_races.giant_blooded.description",
   "powers": [

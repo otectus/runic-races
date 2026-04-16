@@ -2,12 +2,14 @@ package com.otectus.runic_races.power;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.otectus.runic_races.common.state.RaceStateFlags;
+import com.otectus.runic_races.common.state.RaceStateTracker;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -95,6 +97,12 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
                 "Runic Races Hostile Speed", inHostile ? config.speedPenalty() : 0.0, inHostile);
         applyModifier(player, Attributes.ATTACK_DAMAGE, HOSTILE_DAMAGE_UUID,
                 "Runic Races Hostile Damage", inHostile ? config.damagePenalty() : 0.0, inHostile);
+
+        // Mirror state to the HUD via the race-state tracker (server-side only).
+        if (player instanceof ServerPlayer serverPlayer) {
+            RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.BIOME_HOME, inHome);
+            RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.BIOME_HOSTILE, inHostile);
+        }
     }
 
     @Override
@@ -104,6 +112,10 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
             removeModifier(player, Attributes.ATTACK_DAMAGE, HOME_DAMAGE_UUID);
             removeModifier(player, Attributes.MOVEMENT_SPEED, HOSTILE_SPEED_UUID);
             removeModifier(player, Attributes.ATTACK_DAMAGE, HOSTILE_DAMAGE_UUID);
+            if (player instanceof ServerPlayer serverPlayer) {
+                RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.BIOME_HOME, false);
+                RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.BIOME_HOSTILE, false);
+            }
         }
     }
 

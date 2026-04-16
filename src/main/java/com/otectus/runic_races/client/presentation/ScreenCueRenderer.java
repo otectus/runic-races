@@ -1,0 +1,133 @@
+package com.otectus.runic_races.client.presentation;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.presentation.CueType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderGuiEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+
+import java.util.EnumMap;
+import java.util.Map;
+
+/**
+ * Client-side renderer for {@link CueType} screen overlays. State is a map of
+ * active cue -> ticks remaining; {@code TickEvent.ClientTickEvent} decrements each tick,
+ * {@code RenderGuiEvent.Pre} draws all non-expired cues on top of the HUD.
+ *
+ * Kept deliberately simple: each cue is a solid-color fullscreen quad with per-cue
+ * alpha curve. The goal is a consistent audiovisual "stamp" for signature moments —
+ * not a polished post-processing pipeline.
+ */
+@Mod.EventBusSubscriber(modid = RunicRacesMod.MOD_ID, value = Dist.CLIENT)
+public final class ScreenCueRenderer {
+
+    private static final Map<CueType, ActiveCue> ACTIVE = new EnumMap<>(CueType.class);
+
+    private ScreenCueRenderer() {}
+
+    public static void enqueue(CueType cue, int durationTicks) {
+        if (cue == null || durationTicks <= 0) return;
+        ACTIVE.put(cue, new ActiveCue(durationTicks, durationTicks));
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
+        ACTIVE.entrySet().removeIf(e -> {
+            e.getValue().ticksRemaining--;
+            return e.getValue().ticksRemaining <= 0;
+        });
+    }
+
+    @SubscribeEvent
+    public static void onRenderGui(RenderGuiEvent.Post event) {
+        if (ACTIVE.isEmpty() || Minecraft.getInstance().level == null) return;
+        GuiGraphics graphics = event.getGuiGraphics();
+        int w = graphics.guiWidth();
+        int h = graphics.guiHeight();
+
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
+        for (Map.Entry<CueType, ActiveCue> e : ACTIVE.entrySet()) {
+            ActiveCue cue = e.getValue();
+            float progress = 1.0f - ((float) cue.ticksRemaining / (float) cue.totalTicks);
+            drawCue(graphics, e.getKey(), w, h, progress);
+        }
+
+        RenderSystem.disableBlend();
+    }
+
+    private static void drawCue(GuiGraphics graphics, CueType cue, int w, int h, float progress) {
+        // progress is 0.0 at enqueue, 1.0 at expiry
+        switch (cue) {
+            case FREEZE_FRAME -> {
+                // Brief white flash, fades out fast
+                float alpha = clamp((1.0f - progress) * 0.5f);
+                int color = (int) (alpha * 255) << 24 | 0xFFFFFF;
+                graphics.fill(0, 0, w, h, color);
+            }
+            case HEARTBEAT_FLASH -> {
+                // Red vignette edges, pulse shape
+                float pulse = (float) Math.sin(progress * Math.PI);
+                float alpha = clamp(pulse * 0.6f);
+                int color = (int) (alpha * 255) << 24 | 0xAA0000;
+                int edge = Math.min(w, h) / 6;
+                graphics.fill(0, 0, w, edge, color);
+                graphics.fill(0, h - edge, w, h, color);
+                graphics.fill(0, 0, edge, h, color);
+                graphics.fill(w - edge, 0, w, h, color);
+            }
+            case VIGNETTE_PULSE -> {
+                float pulse = (float) Math.sin(progress * Math.PI);
+                float alpha = clamp(pulse * 0.45f);
+                int color = (int) (alpha * 255) << 24 | 0x220033;
+                int edge = Math.min(w, h) / 4;
+                graphics.fill(0, 0, w, edge, color);
+                graphics.fill(0, h - edge, w, h, color);
+                graphics.fill(0, 0, edge, h, color);
+                graphics.fill(w - edge, 0, w, h, color);
+            }
+            case HEAT_SHIMMER -> {
+                float alpha = clamp((1.0f - progress) * 0.3f);
+                int color = (int) (alpha * 255) << 24 | 0xFF4400;
+                graphics.fill(0, 0, w, h, color);
+            }
+            case SHAKE -> {
+                // No visual overlay — real camera shake would need a mixin;
+                // draw a very subtle dark frame flicker as a placeholder cue.
+                float alpha = clamp((1.0f - progress) * 0.15f);
+                int color = (int) (alpha * 255) << 24;
+                graphics.fill(0, 0, w, h, color);
+            }
+            case LIFE_RUNE_FLASH -> {
+                float pulse = (float) Math.sin(progress * Math.PI);
+                float alpha = clamp(pulse * 0.55f);
+                int color = (int) (alpha * 255) << 24 | 0xFFDD55;
+                int size = Math.min(w, h) / 4;
+                int cx = w / 2 - size / 2;
+                int cy = h / 2 - size / 2;
+                graphics.fill(cx, cy, cx + size, cy + size, color);
+            }
+        }
+    }
+
+    private static float clamp(float v) {
+        return v < 0 ? 0 : (v > 1 ? 1 : v);
+    }
+
+    private static final class ActiveCue {
+        final int totalTicks;
+        int ticksRemaining;
+
+        ActiveCue(int totalTicks, int ticksRemaining) {
+            this.totalTicks = totalTicks;
+            this.ticksRemaining = ticksRemaining;
+        }
+    }
+}

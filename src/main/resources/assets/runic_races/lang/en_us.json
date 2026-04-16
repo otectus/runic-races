@@ -252,9 +252,37 @@
   "power.runic_races.wyvern_blooded.biome_affinity.description": "Empowered on mountain peaks, weakened underground.",
 
   "power.runic_races.sprite.fae_wings.name": "Fae Wings",
-  "power.runic_races.sprite.fae_wings.description": "Gossamer wings grant elytra-style flight. Tap secondary active to flap upward while airborne. 1.5-second cooldown.",
+  "power.runic_races.sprite.fae_wings.description": "Gossamer wings grant elytra-style flight. Press Jump while gliding to flap upward; double-tap Jump to fold your wings. (Rebindable under Controls → Runic Races.) 1.5-second cooldown.",
   "power.runic_races.wyvern_blooded.wyvern_wings.name": "Wyvern Wings",
-  "power.runic_races.wyvern_blooded.wyvern_wings.description": "Leathery wings grant elytra-style flight. Tap secondary active to flap upward while airborne. 3-second cooldown.",
+  "power.runic_races.wyvern_blooded.wyvern_wings.description": "Leathery wings grant elytra-style flight. Press Jump while gliding to flap upward; double-tap Jump to fold your wings. (Rebindable under Controls → Runic Races.) 3-second cooldown.",
   "power.runic_races.elder_drake.ancient_wings.name": "Ancient Wings",
-  "power.runic_races.elder_drake.ancient_wings.description": "Massive draconic wings grant elytra-style flight. Tap secondary active to flap upward while airborne. 5-second cooldown."
+  "power.runic_races.elder_drake.ancient_wings.description": "Massive draconic wings grant elytra-style flight. Press Jump while gliding to flap upward; double-tap Jump to fold your wings. (Rebindable under Controls → Runic Races.) 5-second cooldown.",
+
+  "key.categories.runic_races": "Runic Races",
+  "key.runic_races.flap": "Flap Wings",
+  "key.runic_races.cancel_glide": "Fold Wings",
+
+  "power.runic_races.nomad.water_discipline.name": "Water Discipline",
+  "power.runic_races.nomad.water_discipline.description": "Long years in the waste have taught you to ignore thirst. In full desert daylight, you recover slowly while in the open sun.",
+
+  "block.runic_races.trap_marker": "Improvised Trap",
+
+  "layer.runic_races.family.name": "Heritage",
+  "layer.runic_races.family.choose": "Choose your heritage",
+  "layer.runic_races.family.view": "Your heritage",
+  "layer.runic_races.family.missing_origin.name": "Undecided",
+  "layer.runic_races.family.missing_origin.description": "You have yet to decide which heritage you are born into.",
+
+  "origin.runic_races.family_mortal.name": "Mortal",
+  "origin.runic_races.family_mortal.description": "The adaptable, the cunning, the bold. Mortals have no magic in their blood and no ancient curse on their heel — what they are, they earn. Choose Mortal if you want balanced races with clear, learnable strengths and few permanent drawbacks.",
+  "origin.runic_races.family_fae.name": "Fae",
+  "origin.runic_races.family_fae.description": "The old woods remember. Fae are bound to arcane currents, green places, and glass-thin moments of magic. Choose Fae for wing-light mobility, environmental affinity, and signature tricks that reward finesse.",
+  "origin.runic_races.family_beast.name": "Beast",
+  "origin.runic_races.family_beast.description": "Tooth and claw in a walking shape. Beast races carry the instincts of older hunters — pack tactics, breath weapons, the poised silence before a pounce. Choose Beast for physical signature abilities and predator identity.",
+  "origin.runic_races.family_underfolk.name": "Underfolk",
+  "origin.runic_races.family_underfolk.description": "Stone, forge, and tunnel. The Underfolk are short, tough, and at home below the sky — and uncomfortable above it. Choose Underfolk for tanky frames, craft-centric bonuses, and races that trade daylight for depth.",
+  "origin.runic_races.family_dragon.name": "Dragon",
+  "origin.runic_races.family_dragon.description": "Fire in the blood, wings on the back. The Dragon lineages are powerful, proud, and feared — the sky is theirs, and enclosed spaces crush their spirit. Choose Dragon for strong numbers, permanent glide, and claustrophobia as a real cost.",
+  "origin.runic_races.family_cursed.name": "Cursed",
+  "origin.runic_races.family_cursed.description": "Not dead, not quite alive. The Cursed carry a condition that cannot be undone — sunlight, silver, the silence of the grave. Choose Cursed only if you want your identity to fight you back in exchange for ancient, uncanny power."
 }

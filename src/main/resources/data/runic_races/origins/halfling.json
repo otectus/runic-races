@@ -3,6 +3,7 @@
     "item": "runic_races:halfling_icon"
   },
   "order": 101,
+  "impact": 1,
   "name": "origin.runic_races.halfling.name",
   "description": "origin.runic_races.halfling.description",
   "powers": [

@@ -43,3 +43,11 @@
 - All optional mod compat uses `ModList.isLoaded()` guards with reflection-based loading
 - Dependencies via local JARs in `Dependencies/` (compileOnly)
 - License: All Rights Reserved
+
+## VFX Density Guideline
+Tier every ability's particle count so VFX grammar stays consistent:
+- **Minor** (passive procs, ambient states): 10–20 particles
+- **Major** (signature actives, cooldown abilities): 30–60 particles
+- **Mythic** (rare life-saving moments, Nine Lives, Death Revival): 80+ particles
+
+Pick one VFX path per ability — never both `origins:spawn_particles` AND `execute_command particle ... force`. Use `execute_command ... force` only for mythic tier.

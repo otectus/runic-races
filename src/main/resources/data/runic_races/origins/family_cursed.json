@@ -1,0 +1,8 @@
+{
+  "icon": { "item": "minecraft:wither_skeleton_skull" },
+  "order": 60,
+  "impact": 3,
+  "name": "origin.runic_races.family_cursed.name",
+  "description": "origin.runic_races.family_cursed.description",
+  "powers": []
+}

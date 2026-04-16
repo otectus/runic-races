@@ -10,21 +10,18 @@
 
   "magic_damage_bonus": {
     "type": "origins:modify_damage_dealt",
-    "condition": {
-      "type": "origins:damage_condition",
-      "damage_condition": {
-        "type": "origins:or",
-        "conditions": [
-          {
-            "type": "origins:name",
-            "name": "magic"
-          },
-          {
-            "type": "origins:name",
-            "name": "indirectMagic"
-          }
-        ]
-      }
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "magic"
+        },
+        {
+          "type": "origins:name",
+          "name": "indirectMagic"
+        }
+      ]
     },
     "modifier": {
       "operation": "multiply_total_multiplicative",

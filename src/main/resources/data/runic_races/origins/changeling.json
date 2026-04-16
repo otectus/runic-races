@@ -3,6 +3,7 @@
     "item": "runic_races:changeling_icon"
   },
   "order": 203,
+  "impact": 2,
   "name": "origin.runic_races.changeling.name",
   "description": "origin.runic_races.changeling.description",
   "powers": [

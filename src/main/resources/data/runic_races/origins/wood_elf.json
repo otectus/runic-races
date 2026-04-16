@@ -3,6 +3,7 @@
     "item": "runic_races:wood_elf_icon"
   },
   "order": 201,
+  "impact": 1,
   "name": "origin.runic_races.wood_elf.name",
   "description": "origin.runic_races.wood_elf.description",
   "powers": [

@@ -3,6 +3,7 @@
     "item": "runic_races:goblin_icon"
   },
   "order": 402,
+  "impact": 2,
   "name": "origin.runic_races.goblin.name",
   "description": "origin.runic_races.goblin.description",
   "powers": [

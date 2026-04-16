@@ -16,10 +16,8 @@
       "name": "Tunnel Rat Movement Speed"
     },
     "condition": {
-      "type": "origins:invert",
-      "condition": {
-        "type": "origins:exposed_to_sky"
-      }
+      "type": "origins:exposed_to_sky",
+      "inverted": true
     }
   },
 
@@ -32,10 +30,8 @@
       "name": "Tunnel Rat Attack Speed"
     },
     "condition": {
-      "type": "origins:invert",
-      "condition": {
-        "type": "origins:exposed_to_sky"
-      }
+      "type": "origins:exposed_to_sky",
+      "inverted": true
     }
   }
 }

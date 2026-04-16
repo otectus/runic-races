@@ -3,6 +3,7 @@
     "item": "runic_races:mountain_dwarf_icon"
   },
   "order": 400,
+  "impact": 1,
   "name": "origin.runic_races.mountain_dwarf.name",
   "description": "origin.runic_races.mountain_dwarf.description",
   "powers": [

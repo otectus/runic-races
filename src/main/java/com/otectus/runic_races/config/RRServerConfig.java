@@ -50,8 +50,10 @@ public class RRServerConfig {
 
         builder.comment("Resource gating — controls behavior when optional resource mods are absent").push("resourceGating");
         FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING = builder
-                .comment("When true, mana/stamina-gated powers are disabled when Iron's Spellbooks or Feather's is absent. When false (default), those powers become free to use.")
-                .define("failClosedWhenResourceModMissing", false);
+                .comment("When true (default), mana/stamina-gated powers are disabled when Iron's Spellbooks or Feather's is absent — predictable, fair standalone behavior.",
+                        "When false, those powers become free to use (in-pack mode: assumes the gating mod will be re-added later).",
+                        "A startup warning is logged either way when a known gating mod is missing.")
+                .define("failClosedWhenResourceModMissing", true);
         builder.pop();
 
         SPEC = builder.build();

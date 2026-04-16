@@ -1,5 +1,8 @@
 package com.otectus.runic_races.client;
 
+import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.presentation.FamilyAccent;
+import com.otectus.runic_races.race.RaceRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -8,7 +11,9 @@ import java.util.*;
 
 /**
  * Maps each race's cooldown abilities to thematic vanilla item icons
- * for the custom HUD overlay.
+ * for the custom HUD overlay. Each icon carries its owning family accent
+ * (resolved at registration time from {@link RaceRegistry}) so the overlay
+ * can tint frames without doing a second lookup per frame.
  */
 public class AbilityIconRegistry {
 
@@ -16,7 +21,8 @@ public class AbilityIconRegistry {
             ResourceLocation resourceId,
             ItemStack icon,
             String name,
-            int sortOrder
+            int sortOrder,
+            FamilyAccent accent
     ) {}
 
     private static final Map<String, List<AbilityIcon>> RACE_ABILITIES = new LinkedHashMap<>();
@@ -95,6 +101,10 @@ public class AbilityIconRegistry {
         register("revenant",
                 icon("revenant/deathless_spite_cooldown_timer", Items.WITHER_ROSE, "Deathless Spite", 1),
                 icon("revenant/grave_call_cooldown_timer", Items.SOUL_LANTERN, "Grave Call", 2));
+
+        int totalAbilities = RACE_ABILITIES.values().stream().mapToInt(List::size).sum();
+        RunicRacesMod.LOGGER.info("[RunicRaces] AbilityIconRegistry: {} races, {} abilities. Races: {}",
+                RACE_ABILITIES.size(), totalAbilities, RACE_ABILITIES.keySet());
     }
 
     public static List<AbilityIcon> getForRace(String raceName) {
@@ -110,11 +120,17 @@ public class AbilityIconRegistry {
                 new ResourceLocation("runic_races", resourcePath),
                 new ItemStack(item),
                 name,
-                order
+                order,
+                FamilyAccent.UNKNOWN // overwritten in register() once we know the owning race
         );
     }
 
     private static void register(String race, AbilityIcon... icons) {
-        RACE_ABILITIES.put(race, List.of(icons));
+        FamilyAccent accent = FamilyAccent.forFamily(RaceRegistry.getFamily(race));
+        List<AbilityIcon> tinted = new ArrayList<>(icons.length);
+        for (AbilityIcon raw : icons) {
+            tinted.add(new AbilityIcon(raw.resourceId(), raw.icon(), raw.name(), raw.sortOrder(), accent));
+        }
+        RACE_ABILITIES.put(race, List.copyOf(tinted));
     }
 }

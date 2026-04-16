@@ -8,7 +8,6 @@
     "passive_regen",
     "critical_regen"
   ],
-
   "upgrade_cooldown": {
     "type": "origins:resource",
     "min": 0,
@@ -22,7 +21,6 @@
     "min_action": null,
     "max_action": null
   },
-
   "cooldown_decay": {
     "type": "origins:action_over_time",
     "interval": 1,
@@ -41,7 +39,6 @@
       }
     }
   },
-
   "passive_regen": {
     "type": "origins:action_over_time",
     "interval": 30,
@@ -62,7 +59,6 @@
       }
     }
   },
-
   "critical_regen": {
     "type": "origins:action_over_time",
     "interval": 1,
@@ -122,22 +118,15 @@
           "particle": "minecraft:heart",
           "count": 15,
           "speed": 0.2,
-          "spread": { "x": 0.5, "y": 1.0, "z": 0.5 }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": {
-            "type": "minecraft:dust",
-            "color": { "x": 0.6, "y": 0.1, "z": 0.1 },
-            "scale": 0.7
-          },
-          "count": 15,
-          "speed": 0.3,
-          "spread": { "x": 0.8, "y": 1.0, "z": 0.8 }
+          "spread": {
+            "x": 0.5,
+            "y": 1.0,
+            "z": 0.5
+          }
         },
         {
           "type": "origins:execute_command",
-          "command": "particle minecraft:heart ~ ~1.5 ~ 0.3 0.5 0.3 0.01 10 force"
+          "command": "particle minecraft:dust 0.6 0.1 0.1 0.7 ~ ~1 ~ 0.8 1.0 0.8 0.3 15 force"
         }
       ]
     }
