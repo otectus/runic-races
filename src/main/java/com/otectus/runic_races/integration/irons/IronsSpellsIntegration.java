@@ -61,16 +61,19 @@ public class IronsSpellsIntegration implements ModIntegration {
      */
     private float getDamageMultiplier(String race) {
         return switch (race) {
-            case "dragonborn"  -> 1.10f;  // fire-focused, general spell boost
-            case "high_elf"    -> 1.10f;  // arcane aptitude
-            case "wood_elf"    -> 1.05f;  // nature affinity
-            case "vampire"     -> 1.10f;  // blood magic affinity
-            case "revenant"    -> 1.08f;  // blood / ender affinity
-            case "serpentfolk" -> 1.05f;  // blood / ender affinity
-            case "dryad"       -> 1.05f;  // nature affinity
-            case "troll"       -> 0.80f;  // poor magical aptitude
-            case "elder_drake" -> 0.95f;  // fire strong but others weak, net mild penalty
-            default            -> 1.0f;
+            case "magi"      -> 1.15f;  // born of raw magic
+            case "high_elf"  -> 1.10f;  // arcane aptitude
+            case "blood_elf" -> 1.10f;  // blood magic affinity
+            case "kitsune"   -> 1.10f;  // fox-spirit sorcery
+            case "demon"     -> 1.10f;  // infernal magic
+            case "runic_one" -> 1.08f;  // rune-craft
+            case "moon_elf"  -> 1.05f;  // silvered spellcraft
+            case "nymph"     -> 1.05f;  // nature affinity
+            case "wraith"    -> 1.05f;  // soul magic
+            case "reaper"    -> 1.05f;  // soul magic
+            case "iron_one"  -> 0.85f;  // poor magical aptitude
+            case "valen"     -> 0.90f;  // warrior, not mage
+            default          -> 1.0f;
         };
     }
 }

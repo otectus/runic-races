@@ -2,12 +2,13 @@
   "replace": true,
   "order": 0,
   "origins": [
-    "runic_races:family_mortal",
-    "runic_races:family_fae",
-    "runic_races:family_beast",
-    "runic_races:family_underfolk",
-    "runic_races:family_dragon",
-    "runic_races:family_cursed"
+    "runic_races:family_human",
+    "runic_races:family_elven",
+    "runic_races:family_dwarven",
+    "runic_races:family_bestial",
+    "runic_races:family_faeborne",
+    "runic_races:family_undead",
+    "runic_races:family_draconic"
   ],
   "name": "layer.runic_races.family.name",
   "missing_origin": {

@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:reaper_icon"
+  },
+  "order": 604,
+  "impact": 3,
+  "name": "origin.runic_races.reaper.name",
+  "description": "origin.runic_races.reaper.description",
+  "powers": [
+    "runic_races:reaper/soul_harvest",
+    "runic_races:reaper/harbinger_of_death",
+    "runic_races:reaper/touch_of_the_grave"
+  ]
+}

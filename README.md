@@ -1,58 +1,75 @@
 # Runic Races
 
-A flagship Origins add-on for the **Runecraft** modpack. 24 deeply designed races across 6 families, each with unique mechanics, environmental interactions, and deep integration with Runecraft's mod ecosystem.
+A flagship Origins add-on for the **Runecraft** modpack. 37 deeply designed races across 7 families, each with exactly one active ability, one passive strength, and one weakness — plus environmental interactions and deep integration with Runecraft's mod ecosystem. Pick a **family** first, then a **race** within it. With Pehkui installed, each race also has its own **height** (0.45–1.30), clustered by family so a party reads at a glance.
 
 **Minecraft 1.20.1 | Forge | Requires Origins Forge**
 
 ## Races
 
-### Mortal (4)
-| Race | Fantasy | Signature Mechanic |
-|------|---------|-------------------|
-| **Human** | Adaptable generalist | +1 Luck, +5% speed, +1 heart, Determination low-HP surge |
-| **Halfling** | Lucky rogue | Lucky Dodge (10% evade), Lightfoot stealth burst |
-| **Nomad** | Desert survivor | Pathfinder's Mark dash, desert biome affinity |
-| **Giant-Blooded** | Towering tank | Massive reach, knockback immunity, slow bulk |
+### Human (4) — adaptable generalists
+| Race | Active | Passive / Weakness |
+|------|--------|--------------------|
+| **Primian** | Stroke of Fortune | Luck + adaptability / no specialization |
+| **Celeron** | Messenger's Dash | speed & wit / fragile frame |
+| **Magi** | Arcane Overflow | born of magic / frail body |
+| **Valen** | Unbreakable Stand | armored bulwark / slow |
 
-### Fae (5)
-| Race | Fantasy | Signature Mechanic |
-|------|---------|-------------------|
-| **High Elf** | Arcane master | Arcane reflex, caster affinity, iron weakness |
-| **Wood Elf** | Forest ranger | Canopy Meld stealth, forest biome affinity, fire vulnerability |
-| **Sprite** | Glass cannon | Permanent gliding, +30% speed, -3 hearts |
-| **Changeling** | Shapeshifter | Assume Form invisibility burst, gods distrust (-15% favor) |
-| **Dryad** | Plant support | Photosynthesis healing, player heal burst, 3x fire damage |
+### Elven (5) — arcane grace, frail bodies
+| Race | Active | Passive / Weakness |
+|------|--------|--------------------|
+| **High Elf** | Arcane Reflex | arcane mastery / physical frailty |
+| **Dark Elf** | Shadowmeld | night power / sunlight |
+| **Moon Elf** | Moonlit Veil | moon/tide magic / waning by day |
+| **Blood Elf** | Blood Frenzy | bloodcraft lifesteal / reduced healing |
+| **Ice Elf** | Frostbind | frost mastery / fire |
 
-### Beast (5)
-| Race | Fantasy | Signature Mechanic |
-|------|---------|-------------------|
-| **Wolfkin** | Pack hunter | Pack Howl speed buff, pursuit mobility |
-| **Dragonborn** | Fire-blooded bruiser | Dragon Breath AOE, natural armor |
-| **Catfolk** | Parkour assassin | **Nine Lives** (survive lethal blow, 10min CD), water aversion |
-| **Minotaur** | Momentum fighter | Bullrush melee power, Labyrinthine Sense |
-| **Serpentfolk** | Ambush predator | Venomstrike poison on hit, Shed Skin debuff removal |
+### Dwarven (6) — tough, subterranean
+| Race | Active | Passive / Weakness |
+|------|--------|--------------------|
+| **Deep One** | Tremorsense | darkvision miner / sunlight |
+| **Forge One** | Forge Blessing | fire-forged smith / heavy in water |
+| **Frost One** | Glacial Resolve | cold-immune / fire |
+| **Iron One** | Shield Wall | fortress tank / slow & magic-poor |
+| **Sky One** | Mountain Leap | sure-footed climber / claustrophobia |
+| **Runic One** | Rune of Warding | rune-smith party support / scholarly frailty |
 
-### Underfolk (5)
-| Race | Fantasy | Signature Mechanic |
-|------|---------|-------------------|
-| **Mountain Dwarf** | Forgemaster | **Forge Blessing** (crafting bonus), darkvision, magic cap |
-| **Deep Dwarf** | Abyssal explorer | Mining Fatigue immune, Tremorsense, sunlight burns |
-| **Goblin** | Treasure hunter | +2 Curios slots, +2 Apotheosis luck, frail frame |
-| **Troll** | Unkillable tank | Permanent Regen I, 2x fire damage |
-| **Kobold** | Trapmaster | Improvised Trap placement, stronger in tight spaces |
+### Bestial (6) — sharp senses, predatory
+| Race | Active | Passive / Weakness |
+|------|--------|--------------------|
+| **Arachnid** | Web Snare | venom & vibration sense / fire |
+| **Avian** | Wind Burst | feathered flight / hollow bones |
+| **Canine** | Howl of the Pack | pack hunter / ravenous |
+| **Feline** | Pounce | **Nine Lives** / hydrophobia |
+| **Kitsune** | Foxfire Illusion | fox-spirit magic / spirit-frail |
+| **Serpen** | Shed Skin | venom & heat / cold-blooded |
 
-### Dragon (2)
-| Race | Fantasy | Signature Mechanic |
-|------|---------|-------------------|
-| **Wyvern-Blooded** | Aerial hunter | Updraft soar, permanent glide, claustrophobia |
-| **Elder Drake** | Ancient power | Fire immune, powerful roar, ancient pride penalties |
+### Faeborne (5) — magic, illusion, often winged
+| Race | Active | Passive / Weakness |
+|------|--------|--------------------|
+| **Changeling** | Mirror Shift | many faces / hollow identity |
+| **Dryad** | Verdant Bloom | grove healer / 3× fire |
+| **Sprite** | Phase Shift | gossamer flight / glass cannon |
+| **Nymph** | Siren's Charm | water spirit / bound to water |
+| **Faerie** | Faerie Bargain | pixie glamour / cold iron |
 
-### Cursed (3)
-| Race | Fantasy | Signature Mechanic |
-|------|---------|-------------------|
-| **Vampire** | Nocturnal predator | Day/night power scaling, frenzy, sunlight kills |
-| **Lycanthrope** | Involuntary werewolf | Beast surge on low HP (buffs with reduced control) |
-| **Revenant** | Undying returned | **Death-site revival** (respawn where you died), healing halved |
+### Undead (5) — undeath immunities, night power
+| Race | Active | Passive / Weakness |
+|------|--------|--------------------|
+| **Zombie** | Undying Hunger | deathless flesh / sunlight decay |
+| **Skeleton** | Conscript the Dead | bonecraft archer / brittle bones |
+| **Wraith** | Spectral Phase | soul-touched / sunlight & holy |
+| **Demon** | Infernal Wrath | infernal fire / holy & water |
+| **Reaper** | Soul Harvest | **death revival** / −50% healing |
+
+### Draconic (6) — elemental breath, scales, flight
+| Race | Active | Passive / Weakness |
+|------|--------|--------------------|
+| **Fire Drake** | Dragonfire Breath | fire immune / cold & water |
+| **Ice Drake** | Frost Breath | freeze immune / fire |
+| **Sea Serpen** | Tidal Breath | ocean leviathan / landbound |
+| **Terra Drake** | Seismic Breath | living stone / ponderous |
+| **Volt Drake** | Lightning Breath | storm speed / grounded & wet |
+| **Wind Wyrm** | Galeforce Breath | supreme flyer / caged underground |
 
 ## Mod Integrations
 
@@ -60,17 +77,15 @@ All integrations are optional and config-toggleable. If a mod is absent, its fea
 
 | Mod | Integration |
 |-----|-------------|
-| **Runic Skills** | Starting skill bonuses per race (e.g. Dwarf: +2 Building) |
-| **Runic Gods** | Divine affinity (+20% favor for aligned gods), Vampire/Viren forbidden |
-| **Ars Nouveau** | Fae: -15% Source cost, +20% max mana. Trolls: +30% cost |
-| **Iron's Spellbooks** | Per-race spell damage modifiers |
-| **Curios** | Goblin +ring/+charm, Dwarves +belt, Elves +necklace |
-| **Apotheosis** | Luck modifiers (Goblin +2, Elder Drake -2) |
+| **Ars Nouveau** | Casters: −15% Source cost, +20% max mana. Iron One: +15% cost |
+| **Iron's Spellbooks** | Per-race spell damage modifiers (Magi +15%) |
+| **Curios** | Elven +necklace, Dwarven +belt, Faeborne +ring, Undead +charm |
+| **Apotheosis** | Luck modifiers (Primian/Faerie +1, Wind Wyrm −2) |
 
 ## Installation
 
 1. Requires **Origins Forge** (1.10.0.9+) installed in the modpack
-2. Drop `runic_races-0.9.0.jar` into the `mods/` folder
+2. Drop `runic_races-1.1.0.jar` into the `mods/` folder
 3. **Remove** the old KubeJS Runic Races datapack if present (`kubejs/data/runic_races/`)
 4. Existing players with preserved race names will keep their selection
 
@@ -79,8 +94,29 @@ All integrations are optional and config-toggleable. If a mod is absent, its fea
 Config files are generated in `config/runic_races/`:
 
 - `runic_races-server.toml` — Integration toggles, resource gating posture (`failClosedWhenResourceModMissing` defaults to **true** for predictable standalone play; flip to `false` inside a pack that guarantees Iron's Spellbooks / Feather's are present).
-- `runic_races-client.toml` — Racial HUD (anchor, offset, scale, opacity, minimal mode, ability names, ready glow) and ambient state effects (passive state particles, screen cues).
-- `runic_races-common.toml` — Debug logging.
+- `runic_races-client.toml` — Racial HUD (anchor, offset, scale, opacity, minimal mode, ability names, ready glow), ambient state effects (passive state particles, screen cues), and state-rune pulse.
+- `runic_races-common.toml` — Debug logging; **`disableDefaultOriginLayer`** (see Origins Compatibility below).
+
+## Origins Compatibility
+
+By default Runic Races shows only its two-layer **Family → Race** selection and hides the
+vanilla `origins:origin` layer — which is where most other Origins add-ons register their
+origins, so they don't appear.
+
+### Let other origin mods coexist
+
+Set `disableDefaultOriginLayer = false` in `runic_races-common.toml`. Other add-ons' origins
+then reappear as the standard Origins screen alongside Family/Race. This is shipped as a built-in
+datapack toggled by the config, so the change is read at **world load** — quit to title and rejoin
+(or restart the server) for it to take effect; `/reload` alone won't pick it up.
+
+### Add origins into a Runic Races family
+
+Origins merges layer membership across datapacks, so a datapack can append origins (from any mod,
+or your own) into a family's race list with `"replace": false`. See the ready-to-edit template at
+[`examples/datapacks/runic_races_extra_races/`](examples/datapacks/runic_races_extra_races/).
+Note: an injected foreign origin keeps its own powers but isn't treated as a native race (no Runic
+Races HUD/notifications/scale/Curios slots).
 
 ## Keybinds
 
@@ -94,7 +130,7 @@ If you leave both unbound, the legacy fallback stays active: while gliding, pres
 ## Commands
 
 - `/runicraces info [player]` — Show selected race
-- `/runicraces list` — List all 24 races by family
+- `/runicraces list` — List all 37 races by family
 - `/runicraces debug` — Show current attribute values
 
 ## Design Philosophy
@@ -108,7 +144,15 @@ If you leave both unbound, the legacy fallback stays active: while gliding, pres
 ## Building
 
 ```bash
-# Requires Origins, Apoli, Calio jars in Dependencies/
+# Place the compile-only dependency jars in Dependencies/ (gitignored), then:
 ./gradlew build
-# Output: build/libs/runic_races-0.9.0.jar
+# Output: build/libs/runic_races-1.1.0.jar
 ```
+
+**Required:** `origins-forge`, `apoli-forge`, `calio-forge`. Apoli and Calio ship *inside*
+the Origins `-all` jar under `META-INF/jarjar/` — extract them:
+`unzip -o -j Dependencies/origins-forge-*-all.jar 'META-INF/jarjar/apoli-forge-*.jar' 'META-INF/jarjar/calio-forge-*.jar' -d Dependencies/`.
+
+**Optional** (only needed to compile their integration classes): `ars_nouveau`, `irons_spellbooks`,
+`curios` (local jars from Modrinth). **Apotheosis**, **Pehkui**, and **Feathers** resolve from
+Maven automatically (CurseMaven / Modrinth) — no local jar needed.

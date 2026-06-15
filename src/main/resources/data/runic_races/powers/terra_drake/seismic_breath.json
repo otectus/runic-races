@@ -1,0 +1,81 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.terra_drake.seismic_breath.name",
+  "description": "power.runic_races.terra_drake.seismic_breath.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "active_ability"
+  ],
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 800,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:terra_drake/seismic_breath_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:terra_drake/seismic_breath_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+  "active_ability": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": false
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "runic_races:terra_drake/seismic_breath_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "runic_races:cone_breath",
+          "range": 6.0,
+          "half_angle_degrees": 28.0,
+          "damage": 7.0,
+          "fire_seconds": 0,
+          "element": "earth"
+        },
+        {
+          "type": "runic_races:tremor_ping",
+          "radius": 14.0,
+          "duration_ticks": 40
+        },
+        {
+          "type": "runic_races:signature_presentation",
+          "key": "TERRA_DRAKE_BREATH"
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:terra_drake/seismic_breath_cooldown_timer",
+          "change": 800
+        }
+      ]
+    }
+  }
+}

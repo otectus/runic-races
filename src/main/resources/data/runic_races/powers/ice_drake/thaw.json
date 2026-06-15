@@ -1,0 +1,44 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.ice_drake.thaw.name",
+  "description": "power.runic_races.ice_drake.thaw.description",
+  "subpowers": [
+    "fire",
+    "hunger"
+  ],
+  "fire": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "inFire"
+        },
+        {
+          "type": "origins:name",
+          "name": "onFire"
+        },
+        {
+          "type": "origins:name",
+          "name": "lava"
+        },
+        {
+          "type": "origins:name",
+          "name": "hotFloor"
+        }
+      ]
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.3
+    }
+  },
+  "hunger": {
+    "type": "origins:modify_exhaustion",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.2
+    }
+  }
+}

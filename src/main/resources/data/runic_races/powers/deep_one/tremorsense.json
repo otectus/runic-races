@@ -1,0 +1,93 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.deep_one.tremorsense.name",
+  "description": "power.runic_races.deep_one.tremorsense.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "active_ability"
+  ],
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 300,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:deep_one/tremorsense_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:deep_one/tremorsense_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+  "active_ability": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": false
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "runic_races:deep_one/tremorsense_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "runic_races:tremor_ping",
+          "radius": 18.0,
+          "duration_ticks": 60
+        },
+        {
+          "type": "runic_races:show_banner",
+          "translation_key": "message.runic_races.deep_one.tremorsense",
+          "args": [],
+          "color": "gray",
+          "bold": true
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.warden.heartbeat",
+          "volume": 0.7,
+          "pitch": 0.8
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:crit",
+          "count": 16,
+          "speed": 0.1,
+          "spread": {
+            "x": 1.0,
+            "y": 0.1,
+            "z": 1.0
+          }
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:deep_one/tremorsense_cooldown_timer",
+          "change": 300
+        }
+      ]
+    }
+  }
+}

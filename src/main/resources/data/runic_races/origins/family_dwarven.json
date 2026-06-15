@@ -1,0 +1,10 @@
+{
+  "icon": {
+    "item": "runic_races:deep_one_icon"
+  },
+  "order": 30,
+  "impact": 1,
+  "name": "origin.runic_races.family_dwarven.name",
+  "description": "origin.runic_races.family_dwarven.description",
+  "powers": []
+}

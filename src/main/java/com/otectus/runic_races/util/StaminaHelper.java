@@ -21,6 +21,9 @@ public final class StaminaHelper {
     private static Method getMaxFeathers;
     private static Method setMaxFeathers;
 
+    // One-shot so a persistent API mismatch doesn't spam the log every tick.
+    private static boolean invokeFailureWarned = false;
+
     static {
         if (FEATHERS_LOADED) {
             try {
@@ -41,17 +44,28 @@ public final class StaminaHelper {
         return FEATHERS_LOADED && getFeathers != null;
     }
 
+    private static boolean failClosed() {
+        return RRServerConfig.FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING.get();
+    }
+
     /**
      * Returns the player's current feathers (stamina), or {@link Integer#MAX_VALUE} if Feather's is not installed.
      */
     public static int getPlayerStamina(Entity entity) {
         if (!isAvailable() || !(entity instanceof ServerPlayer player)) {
-            return RRServerConfig.FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING.get() ? 0 : Integer.MAX_VALUE;
+            return failClosed() ? 0 : Integer.MAX_VALUE;
         }
         try {
             return (int) getFeathers.invoke(null, player);
         } catch (Exception e) {
-            return Integer.MAX_VALUE;
+            // Reflection failed at runtime (likely a Feathers API change). Honor the configured
+            // policy instead of always failing open, which would hand out free stamina-gated abilities.
+            if (!invokeFailureWarned) {
+                invokeFailureWarned = true;
+                RunicRacesMod.LOGGER.warn("[RunicRaces] Feather's Mod stamina API call failed (version mismatch?); "
+                        + "stamina checks will use the fail-{} default", failClosed() ? "closed" : "open", e);
+            }
+            return failClosed() ? 0 : Integer.MAX_VALUE;
         }
     }
 

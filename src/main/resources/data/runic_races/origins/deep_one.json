@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:deep_one_icon"
+  },
+  "order": 300,
+  "impact": 1,
+  "name": "origin.runic_races.deep_one.name",
+  "description": "origin.runic_races.deep_one.description",
+  "powers": [
+    "runic_races:deep_one/tremorsense",
+    "runic_races:deep_one/deep_dweller",
+    "runic_races:deep_one/sunlight_blindness"
+  ]
+}

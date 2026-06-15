@@ -1,0 +1,44 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.zombie.sunlight_decay.name",
+  "description": "power.runic_races.zombie.sunlight_decay.description",
+  "subpowers": [
+    "speed",
+    "sun_burn",
+    "healing"
+  ],
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Shamble"
+    }
+  },
+  "sun_burn": {
+    "type": "origins:damage_over_time",
+    "interval": 20,
+    "damage": 1.0,
+    "damage_easy": 1.0,
+    "damage_type": "minecraft:on_fire",
+    "condition": {
+      "type": "origins:and",
+      "conditions": [
+        {
+          "type": "origins:exposed_to_sun"
+        },
+        {
+          "type": "origins:daytime"
+        }
+      ]
+    }
+  },
+  "healing": {
+    "type": "origins:modify_healing",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -0.25
+    }
+  }
+}

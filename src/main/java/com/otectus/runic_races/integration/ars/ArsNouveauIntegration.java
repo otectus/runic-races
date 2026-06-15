@@ -51,18 +51,22 @@ public class ArsNouveauIntegration implements ModIntegration {
     private double getManaMultiplier(String race, Player player) {
         // Specific race overrides first
         return switch (race) {
-            case "high_elf"    -> 1.20;  // +20% (overrides fae family default)
-            case "sprite"      -> 1.20;  // +20%
-            case "dryad"       -> 1.10;  // +10%
-            case "troll"       -> 0.85;  // -15%
-            case "elder_drake" -> 0.90;  // -10%
+            case "high_elf" -> 1.20;  // +20% (overrides elven family default)
+            case "magi"     -> 1.20;  // +20%
+            case "sprite"   -> 1.20;  // +20%
+            case "faerie"   -> 1.20;  // +20%
+            case "kitsune"  -> 1.15;
+            case "runic_one"-> 1.15;
+            case "iron_one" -> 0.85;  // -15% (heavy, magic-poor)
             default -> {
                 // Fall back to family defaults
                 String family = RaceHelper.getRaceFamily(race);
                 yield switch (family) {
-                    case "fae"   -> 1.15;  // +15%
-                    case "beast" -> 0.95;  // -5%
-                    default      -> 1.0;
+                    case "elven"    -> 1.10;  // +10%
+                    case "faeborne" -> 1.15;  // +15%
+                    case "dwarven"  -> 0.90;  // -10%
+                    case "draconic" -> 0.90;  // -10%
+                    default         -> 1.0;
                 };
             }
         };
@@ -97,15 +101,17 @@ public class ArsNouveauIntegration implements ModIntegration {
      */
     private double getCostMultiplier(String race, Player player) {
         return switch (race) {
-            case "high_elf"    -> 0.85;  // -15% (overrides fae family default)
-            case "troll"       -> 1.30;  // +30%
-            case "elder_drake" -> 1.20;  // +20%
+            case "high_elf"  -> 0.85;  // -15% (overrides elven family default)
+            case "magi"      -> 0.85;  // -15%
+            case "runic_one" -> 0.90;  // -10%
+            case "iron_one"  -> 1.15;  // +15%
             default -> {
                 String family = RaceHelper.getRaceFamily(race);
                 yield switch (family) {
-                    case "fae"   -> 0.90;  // -10%
-                    case "beast" -> 1.05;  // +5%
-                    default      -> 1.0;
+                    case "elven"    -> 0.92;  // -8%
+                    case "faeborne" -> 0.90;  // -10%
+                    case "draconic" -> 1.10;  // +10%
+                    default         -> 1.0;
                 };
             }
         };

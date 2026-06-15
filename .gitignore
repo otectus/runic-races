@@ -26,3 +26,7 @@ Thumbs.db
 
 # Dependencies (local jars - download yourself)
 Dependencies/*.jar
+
+# Decompiled/extracted dependency classes (never commit binary dep cruft)
+/io/
+Dependencies/io/

@@ -1,0 +1,45 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.canine.pack_hunter.name",
+  "description": "power.runic_races.canine.pack_hunter.description",
+  "subpowers": [
+    "speed",
+    "night_vision",
+    "melee",
+    "forest_home"
+  ],
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": 0.12,
+      "name": "Pack Speed"
+    }
+  },
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1.0
+  },
+  "melee": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "multiply_total",
+      "value": 0.1,
+      "name": "Hunter's Bite"
+    }
+  },
+  "forest_home": {
+    "type": "runic_races:biome_affinity",
+    "name": "power.runic_races.canine.pack_hunter.name",
+    "description": "power.runic_races.canine.pack_hunter.description",
+    "home_biome_tag": "forge:is_forest",
+    "speed_bonus": 0.06,
+    "damage_bonus": 0.05,
+    "hostile_biome_tag": "forge:is_forest",
+    "speed_penalty": 0.0,
+    "damage_penalty": 0.0,
+    "check_interval": 40
+  }
+}

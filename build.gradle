@@ -85,9 +85,10 @@ dependencies {
     compileOnly files('Dependencies/ars_nouveau-1.20.1-4.12.7-all.jar')
     compileOnly files('Dependencies/irons_spellbooks-1.20.1-3.15.4.jar')
     compileOnly files('Dependencies/curios-forge-5.14.1+1.20.1.jar')
-    compileOnly files('Dependencies/runic-skills_1.0.0.jar')
-    compileOnly files('Dependencies/spells_n_gods-0.1.0.jar')
-    compileOnly files('Dependencies/Apotheosis-1.20.1-7.4.8.jar')
+
+    // Optional: Apotheosis (resolved via CurseMaven so a clean checkout builds without a local jar)
+    // curse.maven:apotheosis-<projectId>:<fileId> -> Apotheosis-1.20.1-7.4.8.jar
+    compileOnly "curse.maven:apotheosis-313970:6461960"
 
     // Optional: Pehkui (racial height scaling)
     compileOnly "maven.modrinth:pehkui:3.8.2+1.20.1-forge"
@@ -118,3 +119,9 @@ test {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+// Guarantee the published jar is reobfuscated to SRG names. ForgeGradle attaches
+// reobfJar to the build/assemble lifecycle, but NOT to a bare `./gradlew jar` — a
+// standalone jar invocation would otherwise emit a dev (Mojmap) jar that throws
+// NoSuchMethodError at runtime. Finalizing jar with reobfJar makes every jar build safe.
+tasks.named('jar') { finalizedBy 'reobfJar' }

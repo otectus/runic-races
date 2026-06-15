@@ -3,27 +3,25 @@
   "name": "power.runic_races.sprite.fragile_essence.name",
   "description": "power.runic_races.sprite.fragile_essence.description",
   "subpowers": [
-    "health_reduction",
-    "knockback_weakness"
+    "health",
+    "kb"
   ],
-
-  "health_reduction": {
+  "health": {
     "type": "origins:attribute",
     "modifier": {
       "attribute": "minecraft:generic.max_health",
       "operation": "addition",
       "value": -6.0,
-      "name": "Fragile Essence Health Reduction"
+      "name": "Fragile Essence"
     }
   },
-
-  "knockback_weakness": {
+  "kb": {
     "type": "origins:attribute",
     "modifier": {
       "attribute": "minecraft:generic.knockback_resistance",
       "operation": "addition",
       "value": -0.5,
-      "name": "Fragile Essence Knockback Weakness"
+      "name": "Weightless"
     }
   }
 }

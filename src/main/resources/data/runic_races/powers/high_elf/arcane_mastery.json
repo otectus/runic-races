@@ -1,0 +1,33 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.high_elf.arcane_mastery.name",
+  "description": "power.runic_races.high_elf.arcane_mastery.description",
+  "subpowers": [
+    "magic",
+    "night_vision"
+  ],
+  "magic": {
+    "type": "origins:modify_damage_dealt",
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "magic"
+        },
+        {
+          "type": "origins:name",
+          "name": "indirectMagic"
+        }
+      ]
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.15
+    }
+  },
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1.0
+  }
+}

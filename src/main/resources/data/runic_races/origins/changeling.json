@@ -2,14 +2,13 @@
   "icon": {
     "item": "runic_races:changeling_icon"
   },
-  "order": 203,
+  "order": 500,
   "impact": 2,
   "name": "origin.runic_races.changeling.name",
   "description": "origin.runic_races.changeling.description",
   "powers": [
-    "runic_races:changeling/mirror_form",
-    "runic_races:changeling/assume_form",
-    "runic_races:changeling/elusive_nature",
-    "runic_races:changeling/divine_distrust"
+    "runic_races:changeling/mirror_shift",
+    "runic_races:changeling/manyfaces",
+    "runic_races:changeling/hollow_identity"
   ]
 }

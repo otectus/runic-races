@@ -16,6 +16,7 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -51,6 +52,14 @@ public final class ClientRacialAmbienceHandler {
     private static long lastGleamTick = 0;
     private static long lastWingEnvTick = 0;
 
+    // Scent-trail search cache: the 24-block entity scan is the heaviest ambience cost, so reuse
+    // the result while the player is roughly stationary and re-query only on movement / staleness.
+    private static List<LivingEntity> cachedWounded = java.util.Collections.emptyList();
+    private static long lastScentQueryTick = Long.MIN_VALUE;
+    private static double lastScentQueryX, lastScentQueryY, lastScentQueryZ;
+    private static final int SCENT_QUERY_MAX_AGE = 20;
+    private static final double SCENT_REQUERY_DIST_SQ = 4.0; // 2 blocks
+
     private ClientRacialAmbienceHandler() {}
 
     @SubscribeEvent
@@ -69,9 +78,11 @@ public final class ClientRacialAmbienceHandler {
         long gameTime = level.getGameTime();
 
         switch (race) {
-            case "wolfkin" -> maybeRunScentTrail(player, level, gameTime);
-            case "goblin" -> maybeRunGleamSense(player, level, gameTime);
-            case "wyvern_blooded", "elder_drake", "sprite" -> maybeRunWingEnv(player, level, race, gameTime);
+            case "canine" -> maybeRunScentTrail(player, level, gameTime);
+            case "deep_one" -> maybeRunGleamSense(player, level, gameTime);
+            case "sprite", "faerie", "avian", "wind_wyrm",
+                 "fire_drake", "ice_drake", "terra_drake", "volt_drake" ->
+                    maybeRunWingEnv(player, level, race, gameTime);
             default -> { /* no ambience for other races yet */ }
         }
     }
@@ -83,15 +94,28 @@ public final class ClientRacialAmbienceHandler {
         if (gameTime - lastScentTrailTick < SCENT_TRAIL_INTERVAL) return;
         lastScentTrailTick = gameTime;
 
-        AABB box = player.getBoundingBox().inflate(24.0);
-        List<LivingEntity> wounded = level.getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != player && e.isAlive() && (e instanceof Enemy || (e instanceof Mob m && m.getTarget() != null))
-                        && e.getHealth() / e.getMaxHealth() < 0.5f);
+        double dxq = player.getX() - lastScentQueryX;
+        double dyq = player.getY() - lastScentQueryY;
+        double dzq = player.getZ() - lastScentQueryZ;
+        boolean stale = gameTime - lastScentQueryTick >= SCENT_QUERY_MAX_AGE;
+        boolean moved = dxq * dxq + dyq * dyq + dzq * dzq > SCENT_REQUERY_DIST_SQ;
+        if (stale || moved) {
+            AABB box = player.getBoundingBox().inflate(24.0);
+            cachedWounded = level.getEntitiesOfClass(LivingEntity.class, box,
+                    e -> e != player && e.isAlive() && (e instanceof Enemy || (e instanceof Mob m && m.getTarget() != null))
+                            && e.getHealth() / e.getMaxHealth() < 0.5f);
+            lastScentQueryTick = gameTime;
+            lastScentQueryX = player.getX();
+            lastScentQueryY = player.getY();
+            lastScentQueryZ = player.getZ();
+        }
 
+        List<LivingEntity> wounded = cachedWounded;
         if (wounded.isEmpty()) return;
 
         Vec3 origin = player.position().add(0, player.getEyeHeight() * 0.5, 0);
         for (LivingEntity target : wounded) {
+            if (!target.isAlive()) continue; // cached list may be up to SCENT_QUERY_MAX_AGE ticks old
             Vec3 dir = target.position().add(0, target.getBbHeight() * 0.5, 0).subtract(origin);
             double dist = dir.length();
             if (dist < 2.0 || dist > 24.0) continue;
@@ -144,18 +168,27 @@ public final class ClientRacialAmbienceHandler {
     }
 
     private static Iterable<BlockEntity> nearbyBlockEntities(ClientLevel level, BlockPos center, int radius) {
-        // ClientLevel doesn't expose a bulk block-entity iterator cleanly; fall back to
-        // scanning the bounding box via AABB and filtering. For 18-block radius this is
-        // ~46k iterations on worst case, but runs at most every 8s, so acceptable.
+        // Iterate only the block-entity maps of the loaded chunks in range — O(actual block
+        // entities) instead of the old O(volume) ~46k-position scan. Filtered to a cylinder of
+        // the requested radius so behaviour matches the previous box scan closely enough.
         java.util.List<BlockEntity> result = new java.util.ArrayList<>();
-        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
-        int r = radius;
-        for (int dx = -r; dx <= r; dx += 2) {
-            for (int dy = -r / 2; dy <= r / 2; dy += 2) {
-                for (int dz = -r; dz <= r; dz += 2) {
-                    cursor.set(center.getX() + dx, center.getY() + dy, center.getZ() + dz);
-                    BlockEntity be = level.getBlockEntity(cursor);
-                    if (be != null) result.add(be);
+        int minCX = (center.getX() - radius) >> 4;
+        int maxCX = (center.getX() + radius) >> 4;
+        int minCZ = (center.getZ() - radius) >> 4;
+        int maxCZ = (center.getZ() + radius) >> 4;
+        int r2 = radius * radius;
+        for (int cx = minCX; cx <= maxCX; cx++) {
+            for (int cz = minCZ; cz <= maxCZ; cz++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+                if (chunk == null) continue;
+                for (BlockEntity be : chunk.getBlockEntities().values()) {
+                    BlockPos p = be.getBlockPos();
+                    int dx = p.getX() - center.getX();
+                    int dy = p.getY() - center.getY();
+                    int dz = p.getZ() - center.getZ();
+                    if (dx * dx + dz * dz <= r2 && Math.abs(dy) <= radius) {
+                        result.add(be);
+                    }
                 }
             }
         }
@@ -173,7 +206,10 @@ public final class ClientRacialAmbienceHandler {
         double by = player.getY() + 1.2;
         double bz = player.getZ();
 
-        if ("elder_drake".equals(race) && player.isOnFire()) {
+        boolean isDrake = race.endsWith("_drake") || "wind_wyrm".equals(race);
+        boolean isPixie = "sprite".equals(race) || "faerie".equals(race);
+
+        if (isDrake && player.isOnFire()) {
             // Smoke wisps trail from the wings while burning.
             for (int i = 0; i < 3; i++) {
                 level.addParticle(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,
@@ -182,7 +218,7 @@ public final class ClientRacialAmbienceHandler {
                         bz + (Math.random() - 0.5) * 0.8,
                         0, 0.03, 0);
             }
-        } else if ("wyvern_blooded".equals(race) && (player.isInWaterOrRain())) {
+        } else if (("wind_wyrm".equals(race) || isDrake) && player.isInWaterOrRain()) {
             // Drip particles when wet.
             for (int i = 0; i < 2; i++) {
                 level.addParticle(ParticleTypes.FALLING_WATER,
@@ -191,9 +227,16 @@ public final class ClientRacialAmbienceHandler {
                         bz + (Math.random() - 0.5) * 0.7,
                         0, 0, 0);
             }
-        } else if ("sprite".equals(race) && !player.onGround() && !player.isFallFlying()) {
+        } else if (isPixie && !player.onGround() && !player.isFallFlying()) {
             // Idle flutter sparkle while hovering.
             level.addParticle(ParticleTypes.END_ROD,
+                    bx + (Math.random() - 0.5) * 0.5,
+                    by,
+                    bz + (Math.random() - 0.5) * 0.5,
+                    0, -0.01, 0);
+        } else if ("avian".equals(race) && !player.onGround() && !player.isFallFlying()) {
+            // Soft feather-cloud while airborne.
+            level.addParticle(ParticleTypes.CLOUD,
                     bx + (Math.random() - 0.5) * 0.5,
                     by,
                     bz + (Math.random() - 0.5) * 0.5,

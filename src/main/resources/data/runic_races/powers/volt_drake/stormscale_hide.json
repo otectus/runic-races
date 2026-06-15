@@ -1,0 +1,54 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.volt_drake.stormscale_hide.name",
+  "description": "power.runic_races.volt_drake.stormscale_hide.description",
+  "subpowers": [
+    "elytra_flight",
+    "lightning_imm",
+    "armor",
+    "speed",
+    "attack_speed"
+  ],
+  "elytra_flight": {
+    "type": "origins:elytra_flight",
+    "render_elytra": false
+  },
+  "lightning_imm": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "lightningBolt"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -1.0
+    }
+  },
+  "armor": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.armor",
+      "operation": "addition",
+      "value": 2.0,
+      "name": "Stormscale"
+    }
+  },
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": 0.15,
+      "name": "Storm Speed"
+    }
+  },
+  "attack_speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_speed",
+      "operation": "multiply_total",
+      "value": 0.1,
+      "name": "Storm Flurry"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:skeleton_icon"
+  },
+  "order": 601,
+  "impact": 1,
+  "name": "origin.runic_races.skeleton.name",
+  "description": "origin.runic_races.skeleton.description",
+  "powers": [
+    "runic_races:skeleton/conscript_the_dead",
+    "runic_races:skeleton/marrow_deep_aim",
+    "runic_races:skeleton/brittle_bones"
+  ]
+}

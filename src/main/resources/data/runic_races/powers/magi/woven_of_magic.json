@@ -1,0 +1,28 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.magi.woven_of_magic.name",
+  "description": "power.runic_races.magi.woven_of_magic.description",
+  "subpowers": [
+    "magic"
+  ],
+  "magic": {
+    "type": "origins:modify_damage_dealt",
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "magic"
+        },
+        {
+          "type": "origins:name",
+          "name": "indirectMagic"
+        }
+      ]
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.15
+    }
+  }
+}

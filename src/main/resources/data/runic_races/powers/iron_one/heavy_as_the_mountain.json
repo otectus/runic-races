@@ -1,0 +1,48 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.iron_one.heavy_as_the_mountain.name",
+  "description": "power.runic_races.iron_one.heavy_as_the_mountain.description",
+  "subpowers": [
+    "speed",
+    "attack_speed",
+    "magic"
+  ],
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Mountain Weight"
+    }
+  },
+  "attack_speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_speed",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Ponderous Swing"
+    }
+  },
+  "magic": {
+    "type": "origins:modify_damage_dealt",
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "magic"
+        },
+        {
+          "type": "origins:name",
+          "name": "indirectMagic"
+        }
+      ]
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -0.1
+    }
+  }
+}

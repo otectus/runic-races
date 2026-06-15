@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:runic_one_icon"
+  },
+  "order": 305,
+  "impact": 3,
+  "name": "origin.runic_races.runic_one.name",
+  "description": "origin.runic_races.runic_one.description",
+  "powers": [
+    "runic_races:runic_one/rune_of_warding",
+    "runic_races:runic_one/runebound",
+    "runic_races:runic_one/bound_by_tradition"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.moon_elf.tidecallers_grace.name",
+  "description": "power.runic_races.moon_elf.tidecallers_grace.description",
+  "subpowers": [
+    "water_breathing",
+    "night_vision",
+    "night_regen"
+  ],
+  "water_breathing": {
+    "type": "origins:water_breathing"
+  },
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1.0
+  },
+  "night_regen": {
+    "type": "runic_races:scaling_attribute",
+    "name": "power.runic_races.moon_elf.tidecallers_grace.name",
+    "description": "power.runic_races.moon_elf.tidecallers_grace.description",
+    "attribute": "generic.max_health",
+    "day_value": 0.0,
+    "night_value": 0.0,
+    "operation": "multiply_total",
+    "check_interval": 40
+  }
+}

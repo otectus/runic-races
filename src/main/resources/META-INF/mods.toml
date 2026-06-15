@@ -10,10 +10,10 @@ displayName="${mod_name}"
 authors="Otectus"
 description='''
 Runic Races — a flagship Origins add-on built for the Runecraft modpack.
-Pick from 24 hand-designed races across 6 families (Mortal, Fae, Beast, Underfolk, Dragon, Cursed),
-each with signature active abilities, environmental affinities, and reflection-guarded
-integration with Ars Nouveau, Iron's Spellbooks, Curios, Apotheosis, Pehkui, Feathers, Runic Skills and Runic Gods.
-Race is identity — static, fantasy-consistent, and orthogonal to Skills and Gods progression.
+Pick from 37 hand-designed races across 7 families (Human, Elven, Dwarven, Bestial, Faeborne, Undead, Draconic),
+each with one signature active ability, one passive strength, one weakness, environmental affinities,
+and reflection-guarded integration with Ars Nouveau, Iron's Spellbooks, Curios, Apotheosis, Pehkui, and Feathers.
+Race is identity — static, fantasy-consistent, and orthogonal to other progression.
 '''
 
 # Required: Forge
@@ -67,22 +67,6 @@ side="BOTH"
 # Optional: Apotheosis
 [[dependencies.${mod_id}]]
 modId="apotheosis"
-mandatory=false
-versionRange="[0,)"
-ordering="AFTER"
-side="BOTH"
-
-# Optional: Runic Skills
-[[dependencies.${mod_id}]]
-modId="runicskills"
-mandatory=false
-versionRange="[0,)"
-ordering="AFTER"
-side="BOTH"
-
-# Optional: Runic Gods
-[[dependencies.${mod_id}]]
-modId="runic_gods"
 mandatory=false
 versionRange="[0,)"
 ordering="AFTER"

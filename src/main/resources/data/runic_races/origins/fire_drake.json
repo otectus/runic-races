@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:fire_drake_icon"
+  },
+  "order": 700,
+  "impact": 2,
+  "name": "origin.runic_races.fire_drake.name",
+  "description": "origin.runic_races.fire_drake.description",
+  "powers": [
+    "runic_races:fire_drake/dragonfire_breath",
+    "runic_races:fire_drake/emberscale_hide",
+    "runic_races:fire_drake/cold_quenches_fire"
+  ]
+}

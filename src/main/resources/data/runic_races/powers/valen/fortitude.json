@@ -1,0 +1,47 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.valen.fortitude.name",
+  "description": "power.runic_races.valen.fortitude.description",
+  "subpowers": [
+    "health",
+    "armor",
+    "kb",
+    "melee"
+  ],
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": 4.0,
+      "name": "Valen Fortitude"
+    }
+  },
+  "armor": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.armor",
+      "operation": "addition",
+      "value": 2.0,
+      "name": "Valen Armor"
+    }
+  },
+  "kb": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.knockback_resistance",
+      "operation": "addition",
+      "value": 0.4,
+      "name": "Valen Stability"
+    }
+  },
+  "melee": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "multiply_total",
+      "value": 0.1,
+      "name": "Valen Strength"
+    }
+  }
+}

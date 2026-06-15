@@ -1,0 +1,27 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.valen.stalwart_not_swift.name",
+  "description": "power.runic_races.valen.stalwart_not_swift.description",
+  "subpowers": [
+    "speed",
+    "attack_speed"
+  ],
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Stalwart Slowness"
+    }
+  },
+  "attack_speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_speed",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Stalwart Heft"
+    }
+  }
+}

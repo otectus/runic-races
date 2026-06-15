@@ -1,0 +1,39 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.fire_drake.cold_quenches_fire.name",
+  "description": "power.runic_races.fire_drake.cold_quenches_fire.description",
+  "subpowers": [
+    "cold",
+    "water",
+    "hunger"
+  ],
+  "cold": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "freeze"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.3
+    }
+  },
+  "water": {
+    "type": "origins:modify_damage_taken",
+    "condition": {
+      "type": "origins:submerged_in",
+      "fluid": "minecraft:water"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.3
+    }
+  },
+  "hunger": {
+    "type": "origins:modify_exhaustion",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.2
+    }
+  }
+}

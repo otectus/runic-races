@@ -1,0 +1,10 @@
+{
+  "icon": {
+    "item": "runic_races:fire_drake_icon"
+  },
+  "order": 70,
+  "impact": 1,
+  "name": "origin.runic_races.family_draconic.name",
+  "description": "origin.runic_races.family_draconic.description",
+  "powers": []
+}

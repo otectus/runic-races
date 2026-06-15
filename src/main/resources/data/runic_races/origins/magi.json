@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:magi_icon"
+  },
+  "order": 102,
+  "impact": 2,
+  "name": "origin.runic_races.magi.name",
+  "description": "origin.runic_races.magi.description",
+  "powers": [
+    "runic_races:magi/arcane_overflow",
+    "runic_races:magi/woven_of_magic",
+    "runic_races:magi/volatile_vessel"
+  ]
+}

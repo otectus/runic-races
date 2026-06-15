@@ -2,66 +2,89 @@
 
 ## Power Budget per Race
 
-Each race has a total power budget of roughly **0** when summing benefits and drawbacks.
-Positive numbers = benefit, negative = drawback.
+Each race nets **≈ 0** when summing benefits and drawbacks. Every race has exactly
+three powers: **one active** (cooldown-gated signature), **one passive positive**, and
+**one weakness** (passive negative, usually a conditional vulnerability). `impact` (1–3)
+rates intensity/uniqueness, not raw strength.
 
-This is a design-side reference, not a line-by-line dump of the live JSON. When in doubt, treat the power files under `src/main/resources/data/runic_races/powers/` as authoritative.
+This is a design-side reference. The power JSON under
+`src/main/resources/data/runic_races/powers/` is authoritative.
 
-| Race | HP | Speed | Armor | Damage | Utility | Drawback Summary | Net |
-|------|-----|-------|-------|--------|---------|------------------|-----|
-| Human | +1♥ | +5% | — | — | +1 luck, Determination (30% HP → Abs III + Regen I, 6s) | No active, no specialization | ~0 |
-| Halfling | — | +10% | — | — | Lucky Dodge, stealth | +25% hunger | ~0 |
-| Nomad | — | +10% | +1 | — | Pathfinding dash | Cold slow, armor penalty | ~0 |
-| Giant-Blooded | +2♥ | -15% | — | — | KB immune, reach | Can't stealth, +25% hunger | ~0 |
-| High Elf | -2♥ | — | — | +15% magic | Night vision, Arcane Reflex | Iron weakness, +15% phys taken | ~0 |
-| Wood Elf | — | +15% | — | — | Canopy Meld, regen | +25% fire, underground slow | ~0 |
-| Sprite | -3♥ | +30% | — | +15% atk spd | Slow falling, Phase Shift (90s CD) | 2x knockback | ~0 |
-| Changeling | -1♥ | +10% | — | — | Invisibility, mirror | -0.5 luck, -15% god favor | ~0 |
-| Dryad | — | -5% | — | — | Sun heal, poison immune | 3x fire, darkness penalty | ~0 |
-| Wolfkin | — | +15% | -2 | — | Night vision, pack buff | +20% phys taken, no invis | ~0 |
-| Dragonborn | -2♥ | — | +4 | -10% atk spd | Dragon Breath, -50% fire | +25% hunger | ~0 |
-| Catfolk | -2♥ | — | — | +15% atk spd | Nine Lives, night vision | +30% water dmg | ~0 |
-| Minotaur | +2♥ net | -5% | — | +25% melee | Labyrinthine Sense | +15% hunger | ~0 |
-| Serpentfolk | -1♥ | +10% | — | — | Guaranteed poison on hit, Shed Skin | +50% freeze, +15% fire | ~0 |
-| Mtn Dwarf | +2♥ | -5% | +2 | — | Darkvision, Forge Blessing | Magic cap -4, +15% hunger | ~0 |
-| Deep Dwarf | +2♥ | -5% | — | — | Tremorsense, Mine Fatigue imm | Sunlight damage | ~0 |
-| Goblin | -2♥ | +10% | — | +20% atk spd | +2 Curio slots, treasure sense | +15% damage taken | ~0 |
-| Troll | +4♥ | -10% | +2 | -15% atk spd | Regen I (above 50% HP), Wither imm | 2x fire, -30% magic dmg | ~0 |
-| Kobold | -3♥ | +15% | +1 | +1 flat | Traps, trap detection | +20% dmg in open, sun penalty | ~0 |
-| Wyvern | -2♥ | +10% | — | — | Updraft dive-bomb, glide | Underground penalties | ~0 |
-| Elder Drake | +3♥ | -10% | +3 | — | Fire immune, Roar, ancient wrath | -25% XP, +20% hunger, -2 luck | ~0 |
-| Vampire | -2♥ | +15% | — | +20% night | Mesmerize, Blood Frenzy | Sun damage, +30% magic taken | ~0 |
-| Lycanthrope | -1♥ | +10% | — | +1 flat | Beast form (+massive buffs) | Involuntary, +20% phys taken | ~0 |
-| Revenant | -1♥ | — | +2 | — | Death revival, Wither imm, Spite (25% HP → Str II + Res I) | -50% healing, sunlight decay | ~0 |
+### Human — gold · generalists, fortune, versatility
+| Race | Active | Passive | Weakness |
+|------|--------|---------|----------|
+| Primian | Stroke of Fortune (Luck/Abs/Speed) | +1♥, +1 luck, +5% spd, Adaptation | −10% magic, −5% melee |
+| Celeron | Messenger's Dash (Speed III) | +12% spd, +10% atk spd | −2♥, +knockback |
+| Magi | Arcane Overflow (AoE nova) | +15% magic | −2♥, +20% physical taken |
+| Valen | Unbreakable Stand (Res III) | +2♥, +2 armor, KB resist, +10% melee | −10% spd, −10% atk spd |
+
+### Elven — magenta · arcane grace, frail bodies
+| Race | Active | Passive | Weakness |
+|------|--------|---------|----------|
+| High Elf | Arcane Reflex (Abs+Res) | +15% magic, night vision | −2♥, +15% physical taken |
+| Dark Elf | Shadowmeld (invis+spd) | night vision, +10% spd, +night dmg | −1♥, sun-weakened |
+| Moon Elf | Moonlit Veil (invis/heal) | water breathing, night vision | −1.5♥, −10% magic, day-weak |
+| Blood Elf | Blood Frenzy (Str/lifesteal) | +10% melee, +10% magic | −1.5♥, −30% healing |
+| Ice Elf | Frostbind (AoE Slow III) | freeze immune, +10% magic/ranged | +25% fire taken |
+
+### Dwarven — slate · tough, subterranean, slow
+| Race | Active | Passive | Weakness |
+|------|--------|---------|----------|
+| Deep One | Tremorsense | night vision, +2 armor, mining | −5% spd, sun-blinded |
+| Forge One | Forge Blessing (Str/fire res) | 50% fire res, +2 armor, +10% melee | −10% spd/atk, water-slow |
+| Frost One | Glacial Resolve (Res/fire res) | freeze immune, +2♥, cold-home | +25% fire, −5% spd |
+| Iron One | Shield Wall (Res III/Abs) | +2♥, +3 armor, KB resist | −10% spd/atk, −10% magic |
+| Sky One | Mountain Leap | no fall dmg, mountain-home, +1 armor | −1♥, cave claustrophobia |
+| Runic One | Rune of Warding (party ward) | +10% magic, +2 armor, +1 luck | −2♥, −10% spd |
+
+### Bestial — green · senses + agility, predatory
+| Race | Active | Passive | Weakness |
+|------|--------|---------|----------|
+| Arachnid | Web Snare (root) | poison immune, venom, no fall, sense | −1.5♥, +20% fire |
+| Avian | Wind Burst | wings/glide, no fall, +10% spd | −2♥, +KB, −10% melee |
+| Canine | Howl of the Pack | scent, +12% spd, +10% melee, forest | +25% hunger, −2 armor |
+| Feline | Pounce | Nine Lives, night vision, +15% atk | −1.5♥, +30% water dmg |
+| Kitsune | Foxfire Illusion | +15% magic, night vision, +10% spd | −2♥, +15% physical |
+| Serpen | Shed Skin (cleanse) | venom, poison immune, hot-home | −1.5♥, +25% cold |
+
+### Faeborne — teal · magic + illusion, fragile, often winged
+| Race | Active | Passive | Weakness |
+|------|--------|---------|----------|
+| Changeling | Mirror Shift | +10% spd, +1 luck | −1♥, −0.5 luck |
+| Dryad | Verdant Bloom (heal/root) | poison immune, forest, sun-heal | 3× fire damage |
+| Sprite | Phase Shift (blink) | wings, +30% spd, +15% atk | −3♥, 2× knockback |
+| Nymph | Siren's Charm (pacify) | water breathing, +10% magic, water | −1.5♥, +20% fire, dry-weak |
+| Faerie | Faerie Bargain (glamour) | wings, +15% magic, +20% spd | −2.5♥, +20% physical |
+
+### Undead — purple · undeath immunities, night power
+| Race | Active | Passive | Weakness |
+|------|--------|---------|----------|
+| Zombie | Undying Hunger | +3♥, poison/hunger immune, KB resist | sun decay, −10% spd, −25% heal |
+| Skeleton | Conscript the Dead (summon) | +10% atk, poison/hunger immune | −2♥, +sun/fall damage |
+| Wraith | Spectral Phase (drain) | +night dmg, life drain, no fall | −2.5♥, sun-weak, +holy |
+| Demon | Infernal Wrath (hellfire) | fire immune, +15% melee, nether | +25% holy, +20% water, −25% heal |
+| Reaper | Soul Harvest (reap) | revival, wither immune, +15% melee | −2♥, −50% healing, sun-weak |
+
+### Draconic — red · elemental breath + scales + flight
+| Race | Active | Passive | Weakness |
+|------|--------|---------|----------|
+| Fire Drake | Dragonfire Breath | fire immune, +3 armor, wings, hot | +30% cold/water, +hunger |
+| Ice Drake | Frost Breath | freeze immune, +3 armor, wings, cold | +30% fire, +hunger |
+| Sea Serpen | Tidal Breath | water breathing, +3 armor, ocean | +20% fire, dry-weak, −1♥ |
+| Terra Drake | Seismic Breath | +4 armor, KB immune, mining, wings | −10% spd/atk, +hunger |
+| Volt Drake | Lightning Breath | lightning immune, +15% spd, wings | −1.5♥, +25% wet, sky-dependent |
+| Wind Wyrm | Galeforce Breath | best wings, +15% spd, no fall | −2♥, cave-crippled |
 
 ## Integration Modifiers
-
-### Runic Skills Starting Bonuses (max +3 total levels)
-- Largest: Mountain Dwarf (+2 Building, +1 Endurance), Elder Drake (+2 Str, +1 Con)
-- Smallest: Human (+1 to choice), Wood Elf (+1 Dex)
-
-### Ars Nouveau Mana Modifiers
-- Best: High Elf (+20% max, -15% cost), Sprite (+20% max)
-- Worst: Troll (-15% max, +30% cost), Elder Drake (-10% max, +20% cost)
-
-### Divine Affinity (Runic Gods)
-- Strongest: Vampire+Mortyss (+20%), Mountain Dwarf+Aurex (+20%)
-- Forbidden: Vampire+Viren (0x — blocked)
-- Family penalty: Cursed + light gods (-15%)
-
-### Apotheosis Luck
-- Best: Goblin (+2.0), Halfling (+1.5)
-- Worst: Elder Drake (-2.0), Troll (-1.0)
-
-### Curios Extra Slots
-- Goblin: +1 ring, +1 charm
-- Dwarves: +1 belt
-- Elves: +1 necklace
+- **Ars Nouveau** mana: best Magi/High Elf/Sprite/Faerie (+20%); worst Iron One (−15%), dwarven/draconic (−10%).
+- **Iron's Spellbooks** spell damage: Magi +15%, casters +5–10%; Iron One −15%, Valen −10%.
+- **Apotheosis** luck (in RaceRegistry): best Primian/Faerie (+1.0); worst Wind Wyrm (−2.0), drakes/demon/reaper (−1.0).
+- **Curios** slots: Elven +necklace, Dwarven +belt, Faeborne +ring, Undead +charm.
+- **Pehkui** heights: per-race `scale` in `RaceRegistry`, clustered by family — 0.45 (Sprite/Faerie) → 1.30 (Terra Drake); dwarves ~0.70, elves ~1.06, drakes 1.10–1.30. Cosmetic + hitbox; jump height is auto-compensated for small races.
 
 ## Balance Principles
-
-1. **Zero-sum within each race**: Every benefit is offset by a drawback of comparable impact
-2. **No universally best race**: Every race has content it excels at and content it struggles with
-3. **Diminishing racial advantage**: Race bonuses matter most early game; Skills/Gods/Gear dominate endgame
-4. **Counterplay exists for all drawbacks**: Fire weakness → fire resistance gear. Sun weakness → helmets + underground play
-5. **Multiplayer complementarity**: No single race handles all content efficiently; parties benefit from diversity
+1. **Zero-sum within each race**: every benefit is offset by a comparable drawback.
+2. **No universally best race**: each excels at some content and struggles with other.
+3. **Diminishing racial advantage**: race matters most early; Skills/Gods/Gear dominate endgame.
+4. **Counterplay for all drawbacks**: fire weakness → fire-res gear; sun weakness → helmets/underground; cave weakness → fight in the open.
+5. **Multiplayer complementarity**: parties benefit from family diversity.

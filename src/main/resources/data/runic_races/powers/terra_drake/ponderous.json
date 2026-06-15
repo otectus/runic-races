@@ -1,0 +1,35 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.terra_drake.ponderous.name",
+  "description": "power.runic_races.terra_drake.ponderous.description",
+  "subpowers": [
+    "speed",
+    "attack_speed",
+    "hunger"
+  ],
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Stone Weight"
+    }
+  },
+  "attack_speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_speed",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Slow Swing"
+    }
+  },
+  "hunger": {
+    "type": "origins:modify_exhaustion",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.2
+    }
+  }
+}

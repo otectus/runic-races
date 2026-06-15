@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:demon_icon"
+  },
+  "order": 603,
+  "impact": 3,
+  "name": "origin.runic_races.demon.name",
+  "description": "origin.runic_races.demon.description",
+  "powers": [
+    "runic_races:demon/infernal_wrath",
+    "runic_races:demon/infernal_blood",
+    "runic_races:demon/holy_vulnerability"
+  ]
+}

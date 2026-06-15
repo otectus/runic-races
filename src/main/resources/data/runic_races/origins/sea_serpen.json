@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:sea_serpen_icon"
+  },
+  "order": 702,
+  "impact": 2,
+  "name": "origin.runic_races.sea_serpen.name",
+  "description": "origin.runic_races.sea_serpen.description",
+  "powers": [
+    "runic_races:sea_serpen/tidal_breath",
+    "runic_races:sea_serpen/leviathans_gift",
+    "runic_races:sea_serpen/landbound_coils"
+  ]
+}

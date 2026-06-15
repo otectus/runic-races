@@ -1,0 +1,42 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.high_elf.fragile_grace.name",
+  "description": "power.runic_races.high_elf.fragile_grace.description",
+  "subpowers": [
+    "health",
+    "phys"
+  ],
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": -4.0,
+      "name": "Fragile Health"
+    }
+  },
+  "phys": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "player"
+        },
+        {
+          "type": "origins:name",
+          "name": "mob"
+        },
+        {
+          "type": "origins:name",
+          "name": "arrow"
+        }
+      ]
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.15
+    }
+  }
+}

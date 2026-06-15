@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:ice_drake_icon"
+  },
+  "order": 701,
+  "impact": 2,
+  "name": "origin.runic_races.ice_drake.name",
+  "description": "origin.runic_races.ice_drake.description",
+  "powers": [
+    "runic_races:ice_drake/frost_breath",
+    "runic_races:ice_drake/rimescale_hide",
+    "runic_races:ice_drake/thaw"
+  ]
+}

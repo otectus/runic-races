@@ -1,0 +1,27 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.celeron.fleet_and_sure.name",
+  "description": "power.runic_races.celeron.fleet_and_sure.description",
+  "subpowers": [
+    "speed",
+    "attack_speed"
+  ],
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": 0.12,
+      "name": "Celeron Speed"
+    }
+  },
+  "attack_speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_speed",
+      "operation": "multiply_total",
+      "value": 0.1,
+      "name": "Celeron Quickness"
+    }
+  }
+}

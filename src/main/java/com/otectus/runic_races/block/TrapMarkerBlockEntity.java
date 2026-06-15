@@ -48,7 +48,7 @@ public class TrapMarkerBlockEntity extends BlockEntity {
 
     public void serverTick(ServerLevel level, BlockPos pos) {
         if (expiresAt <= 0) return;
-        if ((level.getGameTime() & 19L) != 0) return; // check ~once per second
+        if (level.getGameTime() % 20L != 0) return; // check once per second
         if (level.getGameTime() >= expiresAt) {
             level.removeBlock(pos, false);
         }

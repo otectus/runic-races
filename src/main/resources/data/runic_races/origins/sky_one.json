@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:sky_one_icon"
+  },
+  "order": 304,
+  "impact": 2,
+  "name": "origin.runic_races.sky_one.name",
+  "description": "origin.runic_races.sky_one.description",
+  "powers": [
+    "runic_races:sky_one/mountain_leap",
+    "runic_races:sky_one/sure_footed_sentinel",
+    "runic_races:sky_one/thin_air_lungs"
+  ]
+}

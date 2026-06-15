@@ -1,0 +1,10 @@
+{
+  "icon": {
+    "item": "runic_races:high_elf_icon"
+  },
+  "order": 20,
+  "impact": 1,
+  "name": "origin.runic_races.family_elven.name",
+  "description": "origin.runic_races.family_elven.description",
+  "powers": []
+}

@@ -73,8 +73,9 @@ public final class FlightServerHandler {
     private static Optional<SignatureKey> signatureKeyFor(FlightConfig config) {
         return switch (config) {
             case SPRITE -> Optional.of(SignatureKey.SPRITE_WING_FLAP);
-            case WYVERN -> Optional.of(SignatureKey.WYVERN_WING_FLAP);
-            case ELDER_DRAKE -> Optional.of(SignatureKey.ELDER_DRAKE_WING_FLAP);
+            case FAERIE -> Optional.of(SignatureKey.FAERIE_WING_FLAP);
+            case AVIAN -> Optional.of(SignatureKey.AVIAN_WING_FLAP);
+            case WIND_WYRM -> Optional.of(SignatureKey.WIND_WYRM_WING_FLAP);
         };
     }
 }

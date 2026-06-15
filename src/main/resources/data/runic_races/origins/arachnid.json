@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:arachnid_icon"
+  },
+  "order": 400,
+  "impact": 2,
+  "name": "origin.runic_races.arachnid.name",
+  "description": "origin.runic_races.arachnid.description",
+  "powers": [
+    "runic_races:arachnid/web_snare",
+    "runic_races:arachnid/weavers_senses",
+    "runic_races:arachnid/fragile_carapace"
+  ]
+}

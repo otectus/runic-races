@@ -1,0 +1,10 @@
+{
+  "icon": {
+    "item": "runic_races:primian_icon"
+  },
+  "order": 10,
+  "impact": 1,
+  "name": "origin.runic_races.family_human.name",
+  "description": "origin.runic_races.family_human.description",
+  "powers": []
+}

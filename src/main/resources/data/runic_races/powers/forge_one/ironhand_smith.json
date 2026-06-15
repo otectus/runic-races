@@ -1,0 +1,56 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.forge_one.ironhand_smith.name",
+  "description": "power.runic_races.forge_one.ironhand_smith.description",
+  "subpowers": [
+    "fire_resist",
+    "armor",
+    "melee"
+  ],
+  "fire_resist": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "inFire"
+        },
+        {
+          "type": "origins:name",
+          "name": "onFire"
+        },
+        {
+          "type": "origins:name",
+          "name": "lava"
+        },
+        {
+          "type": "origins:name",
+          "name": "hotFloor"
+        }
+      ]
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -0.5
+    }
+  },
+  "armor": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.armor",
+      "operation": "addition",
+      "value": 2.0,
+      "name": "Smith's Plate"
+    }
+  },
+  "melee": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "multiply_total",
+      "value": 0.1,
+      "name": "Hammer Arm"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.sky_one.thin_air_lungs.name",
+  "description": "power.runic_races.sky_one.thin_air_lungs.description",
+  "subpowers": [
+    "health",
+    "cave_slow",
+    "cave_weak"
+  ],
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": -2.0,
+      "name": "Thin-Air Health"
+    }
+  },
+  "cave_slow": {
+    "type": "origins:conditioned_attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Claustrophobia"
+    },
+    "condition": {
+      "type": "origins:invert",
+      "condition": {
+        "type": "origins:exposed_to_sky"
+      }
+    }
+  },
+  "cave_weak": {
+    "type": "origins:modify_damage_taken",
+    "condition": {
+      "type": "origins:invert",
+      "condition": {
+        "type": "origins:exposed_to_sky"
+      }
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.1
+    }
+  }
+}

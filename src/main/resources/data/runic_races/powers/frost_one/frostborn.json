@@ -1,0 +1,52 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.frost_one.frostborn.name",
+  "description": "power.runic_races.frost_one.frostborn.description",
+  "subpowers": [
+    "freeze_imm",
+    "health",
+    "armor",
+    "cold_home"
+  ],
+  "freeze_imm": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "freeze"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -1.0
+    }
+  },
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": 4.0,
+      "name": "Frost Vitality"
+    }
+  },
+  "armor": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.armor",
+      "operation": "addition",
+      "value": 1.0,
+      "name": "Rimeplate"
+    }
+  },
+  "cold_home": {
+    "type": "runic_races:biome_affinity",
+    "name": "power.runic_races.frost_one.frostborn.name",
+    "description": "power.runic_races.frost_one.frostborn.description",
+    "home_biome_tag": "forge:is_cold",
+    "speed_bonus": 0.06,
+    "damage_bonus": 0.05,
+    "hostile_biome_tag": "forge:is_hot",
+    "speed_penalty": -0.06,
+    "damage_penalty": 0.0,
+    "check_interval": 40
+  }
+}

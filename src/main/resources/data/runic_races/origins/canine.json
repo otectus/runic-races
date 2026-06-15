@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:canine_icon"
+  },
+  "order": 402,
+  "impact": 1,
+  "name": "origin.runic_races.canine.name",
+  "description": "origin.runic_races.canine.description",
+  "powers": [
+    "runic_races:canine/howl_of_the_pack",
+    "runic_races:canine/pack_hunter",
+    "runic_races:canine/ravenous"
+  ]
+}

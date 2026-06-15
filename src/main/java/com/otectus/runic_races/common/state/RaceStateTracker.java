@@ -3,13 +3,16 @@ package com.otectus.runic_races.common.state;
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.network.NetworkHandler;
 import com.otectus.runic_races.network.S2CRaceStatePacket;
+import com.otectus.runic_races.notification.RaceNotificationService;
+import com.otectus.runic_races.util.RaceHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Server-side transient store of {@link RaceStateFlags} per player. Not persisted —
@@ -23,7 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Mod.EventBusSubscriber(modid = RunicRacesMod.MOD_ID)
 public final class RaceStateTracker {
 
-    private static final ConcurrentHashMap<UUID, Integer> FLAGS = new ConcurrentHashMap<>();
+    // Accessed only on the server thread (player ticks, events) — a plain HashMap avoids
+    // ConcurrentHashMap's lock-striping overhead.
+    private static final Map<UUID, Integer> FLAGS = new HashMap<>();
 
     private RaceStateTracker() {}
 
@@ -41,6 +46,8 @@ public final class RaceStateTracker {
         if (updated != current) {
             FLAGS.put(id, updated);
             NetworkHandler.sendToPlayer(player, new S2CRaceStatePacket(updated));
+            // A single-bit set only changes the field on a real edge, so 'on' is the new value.
+            RaceNotificationService.onFlagTransition(player, flag, on);
         }
     }
 
@@ -62,7 +69,9 @@ public final class RaceStateTracker {
 
     @SubscribeEvent
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-        FLAGS.remove(event.getEntity().getUUID());
+        UUID id = event.getEntity().getUUID();
+        FLAGS.remove(id);
+        RaceHelper.invalidate(id);
     }
 
     @SubscribeEvent

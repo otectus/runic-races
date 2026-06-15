@@ -1,0 +1,35 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.wraith.soul_touched.name",
+  "description": "power.runic_races.wraith.soul_touched.description",
+  "subpowers": [
+    "night_vision",
+    "no_fall",
+    "night_power"
+  ],
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1.0
+  },
+  "no_fall": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "fall"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -1.0
+    }
+  },
+  "night_power": {
+    "type": "runic_races:scaling_attribute",
+    "name": "power.runic_races.wraith.soul_touched.name",
+    "description": "power.runic_races.wraith.soul_touched.description",
+    "attribute": "generic.attack_damage",
+    "day_value": -0.05,
+    "night_value": 0.15,
+    "operation": "multiply_total",
+    "check_interval": 40
+  }
+}

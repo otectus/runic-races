@@ -1,0 +1,29 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.serpen.cold_blooded.name",
+  "description": "power.runic_races.serpen.cold_blooded.description",
+  "subpowers": [
+    "health",
+    "cold"
+  ],
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": -3.0,
+      "name": "Lean Coils"
+    }
+  },
+  "cold": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "freeze"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.25
+    }
+  }
+}

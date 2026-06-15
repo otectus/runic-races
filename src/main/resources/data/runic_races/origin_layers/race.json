@@ -5,79 +5,101 @@
     {
       "condition": {
         "type": "origins:origin",
-        "origin": "runic_races:family_mortal",
+        "origin": "runic_races:family_human",
         "layer": "runic_races:family"
       },
       "origins": [
-        "runic_races:human",
-        "runic_races:halfling",
-        "runic_races:nomad",
-        "runic_races:giant_blooded"
+        "runic_races:primian",
+        "runic_races:celeron",
+        "runic_races:magi",
+        "runic_races:valen"
       ]
     },
     {
       "condition": {
         "type": "origins:origin",
-        "origin": "runic_races:family_fae",
+        "origin": "runic_races:family_elven",
         "layer": "runic_races:family"
       },
       "origins": [
         "runic_races:high_elf",
-        "runic_races:wood_elf",
-        "runic_races:sprite",
+        "runic_races:dark_elf",
+        "runic_races:moon_elf",
+        "runic_races:blood_elf",
+        "runic_races:ice_elf"
+      ]
+    },
+    {
+      "condition": {
+        "type": "origins:origin",
+        "origin": "runic_races:family_dwarven",
+        "layer": "runic_races:family"
+      },
+      "origins": [
+        "runic_races:deep_one",
+        "runic_races:forge_one",
+        "runic_races:frost_one",
+        "runic_races:iron_one",
+        "runic_races:sky_one",
+        "runic_races:runic_one"
+      ]
+    },
+    {
+      "condition": {
+        "type": "origins:origin",
+        "origin": "runic_races:family_bestial",
+        "layer": "runic_races:family"
+      },
+      "origins": [
+        "runic_races:arachnid",
+        "runic_races:avian",
+        "runic_races:canine",
+        "runic_races:feline",
+        "runic_races:kitsune",
+        "runic_races:serpen"
+      ]
+    },
+    {
+      "condition": {
+        "type": "origins:origin",
+        "origin": "runic_races:family_faeborne",
+        "layer": "runic_races:family"
+      },
+      "origins": [
         "runic_races:changeling",
-        "runic_races:dryad"
+        "runic_races:dryad",
+        "runic_races:sprite",
+        "runic_races:nymph",
+        "runic_races:faerie"
       ]
     },
     {
       "condition": {
         "type": "origins:origin",
-        "origin": "runic_races:family_beast",
+        "origin": "runic_races:family_undead",
         "layer": "runic_races:family"
       },
       "origins": [
-        "runic_races:wolfkin",
-        "runic_races:dragonborn",
-        "runic_races:catfolk",
-        "runic_races:minotaur",
-        "runic_races:serpentfolk"
+        "runic_races:zombie",
+        "runic_races:skeleton",
+        "runic_races:wraith",
+        "runic_races:demon",
+        "runic_races:reaper"
       ]
     },
     {
       "condition": {
         "type": "origins:origin",
-        "origin": "runic_races:family_underfolk",
+        "origin": "runic_races:family_draconic",
         "layer": "runic_races:family"
       },
       "origins": [
-        "runic_races:mountain_dwarf",
-        "runic_races:deep_dwarf",
-        "runic_races:goblin",
-        "runic_races:troll",
-        "runic_races:kobold"
-      ]
-    },
-    {
-      "condition": {
-        "type": "origins:origin",
-        "origin": "runic_races:family_dragon",
-        "layer": "runic_races:family"
-      },
-      "origins": [
-        "runic_races:wyvern_blooded",
-        "runic_races:elder_drake"
-      ]
-    },
-    {
-      "condition": {
-        "type": "origins:origin",
-        "origin": "runic_races:family_cursed",
-        "layer": "runic_races:family"
-      },
-      "origins": [
-        "runic_races:vampire",
-        "runic_races:lycanthrope",
-        "runic_races:revenant"
+        "runic_races:fire_drake",
+        "runic_races:ice_drake",
+        "runic_races:sea_serpen",
+        "runic_races:terra_drake",
+        "runic_races:volt_drake",
+        "runic_races:wind_wyrm"
       ]
     }
   ],

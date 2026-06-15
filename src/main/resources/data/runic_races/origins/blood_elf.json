@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:blood_elf_icon"
+  },
+  "order": 203,
+  "impact": 2,
+  "name": "origin.runic_races.blood_elf.name",
+  "description": "origin.runic_races.blood_elf.description",
+  "powers": [
+    "runic_races:blood_elf/blood_frenzy",
+    "runic_races:blood_elf/bloodcraft",
+    "runic_races:blood_elf/price_of_power"
+  ]
+}

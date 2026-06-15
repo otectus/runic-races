@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:faerie_icon"
+  },
+  "order": 504,
+  "impact": 3,
+  "name": "origin.runic_races.faerie.name",
+  "description": "origin.runic_races.faerie.description",
+  "powers": [
+    "runic_races:faerie/faerie_bargain",
+    "runic_races:faerie/pixie_flight",
+    "runic_races:faerie/cold_iron"
+  ]
+}

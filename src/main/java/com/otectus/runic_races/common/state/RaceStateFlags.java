@@ -25,7 +25,9 @@ public enum RaceStateFlags {
     /** Lycanthrope is currently in Beast Surge (Strength III buff active). */
     BEAST_SURGE(1 << 7),
     /** Human Adaptation stack count > 0 (details tracked server-side). */
-    ADAPTATION_ACTIVE(1 << 8);
+    ADAPTATION_ACTIVE(1 << 8),
+    /** Player is exposed to the open sky and suffers for it (Kobold, Mountain Dwarf). */
+    OPEN_SKY(1 << 9);
 
     private final int mask;
 

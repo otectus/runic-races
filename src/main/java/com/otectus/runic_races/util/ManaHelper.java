@@ -21,6 +21,9 @@ public final class ManaHelper {
     private static Method getMana;
     private static Method addMana;
 
+    // One-shot so a persistent API mismatch doesn't spam the log every tick.
+    private static boolean invokeFailureWarned = false;
+
     static {
         if (IRONS_LOADED) {
             try {
@@ -40,18 +43,29 @@ public final class ManaHelper {
         return IRONS_LOADED && getPlayerMagicData != null;
     }
 
+    private static boolean failClosed() {
+        return RRServerConfig.FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING.get();
+    }
+
     /**
      * Returns the player's current mana, or {@link Float#MAX_VALUE} if Iron's is not installed.
      */
     public static float getPlayerMana(Entity entity) {
         if (!isAvailable() || !(entity instanceof LivingEntity living)) {
-            return RRServerConfig.FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING.get() ? 0.0f : Float.MAX_VALUE;
+            return failClosed() ? 0.0f : Float.MAX_VALUE;
         }
         try {
             Object magicData = getPlayerMagicData.invoke(null, living);
             return (float) getMana.invoke(magicData);
         } catch (Exception e) {
-            return Float.MAX_VALUE;
+            // Reflection failed at runtime (likely an Iron's API change). Honor the configured
+            // policy instead of always failing open, which would hand out free mana-gated abilities.
+            if (!invokeFailureWarned) {
+                invokeFailureWarned = true;
+                RunicRacesMod.LOGGER.warn("[RunicRaces] Iron's Spellbooks mana API call failed (version mismatch?); "
+                        + "mana checks will use the fail-{} default", failClosed() ? "closed" : "open", e);
+            }
+            return failClosed() ? 0.0f : Float.MAX_VALUE;
         }
     }
 

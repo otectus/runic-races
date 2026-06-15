@@ -1,17 +1,21 @@
 package com.otectus.runic_races.event;
 
+import com.mojang.datafixers.util.Pair;
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.common.state.RaceStateFlags;
 import com.otectus.runic_races.common.state.RaceStateTracker;
 import com.otectus.runic_races.network.NetworkHandler;
+import com.otectus.runic_races.network.S2CAdaptationStacksPacket;
 import com.otectus.runic_races.network.S2CScreenCuePacket;
 import com.otectus.runic_races.presentation.CueType;
 import com.otectus.runic_races.presentation.RunicPresentation;
 import com.otectus.runic_races.presentation.SignatureKey;
 import com.otectus.runic_races.util.RaceHelper;
 import com.otectus.runic_races.util.OriginsPowerHelper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -22,8 +26,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
@@ -33,9 +40,11 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -55,12 +64,16 @@ import java.util.UUID;
  */
 public class RacialEventHandler {
 
+    // Mod presence never changes at runtime — resolve once instead of per-jump.
+    private static final boolean PEHKUI_LOADED = ModList.get().isLoaded("pehkui");
+
     // NBT tag keys for cooldown tracking
     private static final String TROLL_FIRE_SUPPRESS_UNTIL = "runic_races:troll_fire_suppress_until";
     private static final String VAMPIRE_SUN_TICKS = "runic_races:vampire_sun_ticks";
     private static final String HUMAN_ADAPT_STACKS = "runic_races:human_adapt_stacks";
     private static final String HUMAN_ADAPT_LAST_TICK = "runic_races:human_adapt_last_tick";
     private static final String HUMAN_ADAPT_BIOME = "runic_races:human_adapt_last_biome";
+    private static final String HUMAN_ADAPT_SYNCED_STACKS = "runic_races:human_adapt_synced_stacks";
     private static final UUID HUMAN_ADAPT_UUID = UUID.fromString("a7b3c8d5-3456-6789-abcd-ef0123456789");
     private static final int ADAPT_STACK_DECAY_TICKS = 1200; // 60s
     private static final int ADAPT_STACK_CAP = 5;
@@ -76,12 +89,12 @@ public class RacialEventHandler {
     // Cooldowns in ticks
     private static final int NINE_LIVES_CD_TICKS = 12000; // 10 minutes
     private static final int REVENANT_REVIVAL_CD_TICKS = 36000; // 30 minutes
-    private static final ResourceLocation NINE_LIVES_RESOURCE = new ResourceLocation(RunicRacesMod.MOD_ID, "catfolk/nine_lives_cooldown_timer");
+    private static final ResourceLocation NINE_LIVES_RESOURCE = new ResourceLocation(RunicRacesMod.MOD_ID, "feline/nine_lives_cooldown_timer");
 
-    // ==================== CATFOLK: NINE LIVES ====================
+    // ==================== FELINE: NINE LIVES ====================
 
     /**
-     * Intercepts lethal damage for Catfolk. If the player would die and Nine Lives
+     * Intercepts lethal damage for Feline. If the player would die and Nine Lives
      * is off cooldown, cancel the death: set health to 1, grant brief invulnerability,
      * and start the cooldown.
      */
@@ -99,16 +112,8 @@ public class RacialEventHandler {
         String race = RaceHelper.getRaceName(player).orElse(null);
         if (race == null) return;
 
-        // Troll: fire damage temporarily suppresses Regrowth. Set a 3-second grace
-        // timer; the state-rune overlay reads REGROWTH_SUPPRESSED while the timer is active.
-        if ("troll".equals(race) && isFireDamage(event.getSource())) {
-            long now = player.level().getGameTime();
-            player.getPersistentData().putLong(TROLL_FIRE_SUPPRESS_UNTIL, now + 60);
-            RaceStateTracker.setFlag(player, RaceStateFlags.REGROWTH_SUPPRESSED, true);
-        }
-
-        // === CATFOLK: NINE LIVES ===
-        if ("catfolk".equals(race)) {
+        // === FELINE: NINE LIVES ===
+        if ("feline".equals(race)) {
             float currentHealth = player.getHealth();
             float incomingDamage = event.getAmount();
 
@@ -122,7 +127,7 @@ public class RacialEventHandler {
                     player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 1)); // Regen II, 3s
                     OriginsPowerHelper.setResourceValue(player, NINE_LIVES_RESOURCE, NINE_LIVES_CD_TICKS);
 
-                    RunicPresentation.fire(player, SignatureKey.CATFOLK_NINE_LIVES);
+                    RunicPresentation.fire(player, SignatureKey.FELINE_NINE_LIVES);
                     RunicRacesMod.debug("[RunicRaces] Nine Lives triggered for {}", player.getName().getString());
                 }
             }
@@ -140,7 +145,7 @@ public class RacialEventHandler {
         // Human Adaptation: bump a stack when a human kills any distinct mob type.
         // Separate @SubscribeEvent so it doesn't compete with the Revenant priority hook below.
         if (!(event.getSource().getEntity() instanceof ServerPlayer killer)) return;
-        if (!RaceHelper.isRace(killer, "human")) return;
+        if (!RaceHelper.isRace(killer, "primian")) return;
 
         CompoundTag data = killer.getPersistentData();
         int stacks = data.getInt(HUMAN_ADAPT_STACKS);
@@ -153,7 +158,7 @@ public class RacialEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onLivingDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (!RaceHelper.isRace(player, "revenant")) return;
+        if (!RaceHelper.isRace(player, "reaper")) return;
 
         CompoundTag data = player.getPersistentData();
         long now = player.level().getGameTime();
@@ -187,7 +192,7 @@ public class RacialEventHandler {
     @SubscribeEvent
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (!RaceHelper.isRace(player, "revenant")) return;
+        if (!RaceHelper.isRace(player, "reaper")) return;
 
         CompoundTag data = player.getPersistentData();
         if (!data.contains(REVENANT_DEATH_X)) return;
@@ -207,7 +212,7 @@ public class RacialEventHandler {
                 player.setHealth(6.0f); // 3 hearts
                 player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 600, 4)); // Resistance V, 30s
                 player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 600)); // Visible to others
-                RunicPresentation.fire(player, SignatureKey.REVENANT_REVIVAL);
+                RunicPresentation.fire(player, SignatureKey.REAPER_REVIVAL);
                 data.putInt(REVENANT_REVIVAL_ATTEMPTS, 0);
 
                 RunicRacesMod.debug("[RunicRaces] Revenant {} revived at safe position ({}, {}, {})",
@@ -215,7 +220,7 @@ public class RacialEventHandler {
             } else {
                 RunicRacesMod.LOGGER.warn("[RunicRaces] No safe revival position for Revenant {} near ({}, {}, {}), using normal respawn",
                         player.getName().getString(), x, y, z);
-                RunicPresentation.fire(player, SignatureKey.REVENANT_REVIVAL_REJECTED);
+                RunicPresentation.fire(player, SignatureKey.REAPER_REVIVAL_REJECTED);
             }
         } else {
             RunicRacesMod.LOGGER.warn("[RunicRaces] Could not restore Revenant {} to death dimension '{}'",
@@ -248,9 +253,9 @@ public class RacialEventHandler {
         String race = RaceHelper.getRaceName(player).orElse(null);
         if (race == null) return;
 
-        boolean isMountainDwarf = "mountain_dwarf".equals(race);
-        boolean isDeepDwarf = "deep_dwarf".equals(race);
-        if (!isMountainDwarf && !isDeepDwarf) return;
+        boolean isForgeOne = "forge_one".equals(race);
+        boolean isRunicOne = "runic_one".equals(race);
+        if (!isForgeOne && !isRunicOne) return;
 
         ItemStack crafted = event.getCrafting();
         if (crafted.isEmpty() || !crafted.isEnchantable()) return;
@@ -260,16 +265,16 @@ public class RacialEventHandler {
 
         if (!isCooldownReady(data, FORGE_BLESSING_COOLDOWN, now, FORGE_BLESSING_CD_TICKS)) return;
 
-        float chance = isMountainDwarf ? FORGE_BLESSING_CHANCE : 0.15f;
+        float chance = isForgeOne ? FORGE_BLESSING_CHANCE : 0.15f;
         if (player.getRandom().nextFloat() >= chance) return;
 
         // Apply Forge Blessing: add Unbreaking enchantment
-        int level = isMountainDwarf ? (player.getRandom().nextFloat() < 0.3f ? 2 : 1) : 1;
+        int level = isForgeOne ? (player.getRandom().nextFloat() < 0.3f ? 2 : 1) : 1;
         int existing = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, crafted);
         if (existing < level) {
             crafted.enchant(Enchantments.UNBREAKING, level);
             data.putLong(FORGE_BLESSING_COOLDOWN, now);
-            RunicPresentation.fire(player, SignatureKey.DWARF_FORGE_BLESSING, "Unbreaking " + toRoman(level));
+            RunicPresentation.fire(player, SignatureKey.FORGE_BLESSING, "Unbreaking " + toRoman(level));
             RunicRacesMod.debug("[RunicRaces] Forge Blessing triggered for {} — Unbreaking {} on {}",
                     player.getName().getString(), level, crafted.getDisplayName().getString());
         }
@@ -356,8 +361,8 @@ public class RacialEventHandler {
 
         long now = player.level().getGameTime();
 
-        // --- Vampire sunlight burn escalation ---
-        if ("vampire".equals(race)) {
+        // --- Zombie sunlight decay escalation ---
+        if ("zombie".equals(race)) {
             boolean exposedToSun = player.level().isDay()
                     && player.level().canSeeSky(player.blockPosition())
                     && !player.isInWaterOrRain();
@@ -388,54 +393,52 @@ public class RacialEventHandler {
             }
         }
 
-        // --- Wyvern / Elder Drake claustrophobia (tight-space) ---
-        if ("wyvern_blooded".equals(race) || "elder_drake".equals(race)) {
+        // --- Sun-sensitive races sunlight flag (mirrors their data-driven sun penalties for HUD) ---
+        // Their damage/penalties stay in the power JSON (exposed_to_sun + daytime); this only drives
+        // the shared SUNLIGHT_BURNING flag so the rune lights and the notification fires.
+        if ("deep_one".equals(race) || "dark_elf".equals(race) || "skeleton".equals(race)
+                || "wraith".equals(race) || "reaper".equals(race)) {
+            boolean burning = player.level().isDay()
+                    && player.level().canSeeSky(player.blockPosition())
+                    && !player.isInWaterOrRain();
+            RaceStateTracker.setFlag(player, RaceStateFlags.SUNLIGHT_BURNING, burning);
+        }
+
+        // --- Sky One / Wind Wyrm claustrophobia (tight-space) ---
+        if ("sky_one".equals(race) || "wind_wyrm".equals(race)) {
             boolean tight = !player.level().canSeeSky(player.blockPosition())
                     && player.blockPosition().getY() < player.level().getSeaLevel();
             RaceStateTracker.setFlag(player, RaceStateFlags.TIGHT_SPACE, tight);
         }
 
-        // --- Troll regrowth suppression timer ---
-        if ("troll".equals(race)) {
-            CompoundTag data = player.getPersistentData();
-            long suppressUntil = data.getLong(TROLL_FIRE_SUPPRESS_UNTIL);
-            boolean suppressed = suppressUntil > now;
-            RaceStateTracker.setFlag(player, RaceStateFlags.REGROWTH_SUPPRESSED, suppressed);
-            if (!suppressed && suppressUntil > 0) {
-                data.remove(TROLL_FIRE_SUPPRESS_UNTIL);
-            }
+        // --- Volt Drake open-sky exposure (mirrors its grounded penalty) ---
+        if ("volt_drake".equals(race)) {
+            boolean openSky = player.level().canSeeSky(player.blockPosition());
+            RaceStateTracker.setFlag(player, RaceStateFlags.OPEN_SKY, openSky);
         }
 
-        // --- Fire-vulnerable readout (Dryad, Troll) ---
-        if (("dryad".equals(race) || "troll".equals(race)) && player.isOnFire()) {
-            RaceStateTracker.setFlag(player, RaceStateFlags.FIRE_VULNERABLE, true);
-        } else if ("dryad".equals(race) || "troll".equals(race)) {
-            RaceStateTracker.setFlag(player, RaceStateFlags.FIRE_VULNERABLE, false);
+        // --- Fire-vulnerable readout (fire-weak races) ---
+        boolean fireWeak = "dryad".equals(race) || "arachnid".equals(race) || "nymph".equals(race)
+                || "ice_drake".equals(race) || "frost_one".equals(race) || "sea_serpen".equals(race);
+        if (fireWeak) {
+            RaceStateTracker.setFlag(player, RaceStateFlags.FIRE_VULNERABLE, player.isOnFire());
         }
 
-        // --- Lycanthrope Beast Surge flag (mirrors MobEffectInstance presence) ---
-        if ("lycanthrope".equals(race)) {
-            boolean surging = player.hasEffect(MobEffects.DAMAGE_BOOST)
-                    && player.getEffect(MobEffects.DAMAGE_BOOST) != null
-                    && player.getEffect(MobEffects.DAMAGE_BOOST).getAmplifier() >= 2;
-            RaceStateTracker.setFlag(player, RaceStateFlags.BEAST_SURGE, surging);
-        }
-
-        // --- Human Adaptation stacks: biome change bump + timed decay ---
-        if ("human".equals(race)) {
+        // --- Primian Adaptation stacks: biome change bump + timed decay ---
+        if ("primian".equals(race)) {
             tickHumanAdaptation(player, now);
         }
 
-        // --- Elder Drake ambient presence at low HP (server-side sound emission) ---
-        if ("elder_drake".equals(race) && player.getHealth() / player.getMaxHealth() < 0.5f
+        // --- Wind Wyrm ancient presence at low HP (server-side sound emission) ---
+        if ("wind_wyrm".equals(race) && player.getHealth() / player.getMaxHealth() < 0.5f
                 && player.level() instanceof ServerLevel serverLevel
                 && player.tickCount % 40 == 0) {
             serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
                     net.minecraft.sounds.SoundEvents.ENDER_DRAGON_AMBIENT,
-                    net.minecraft.sounds.SoundSource.PLAYERS, 0.25f, 0.5f);
-            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.LAVA,
+                    net.minecraft.sounds.SoundSource.PLAYERS, 0.25f, 0.7f);
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD,
                     player.getX(), player.getY() + 1.0, player.getZ(),
-                    2, 0.5, 0.8, 0.5, 0.02);
+                    3, 0.5, 0.8, 0.5, 0.02);
         }
     }
 
@@ -482,6 +485,12 @@ public class RacialEventHandler {
 
         applyAdaptationModifier(player, stacks);
         RaceStateTracker.setFlag(player, RaceStateFlags.ADAPTATION_ACTIVE, stacks > 0);
+
+        // Surface the exact stack count on the client (rendered on the "A" rune). Diff to avoid spam.
+        if (data.getInt(HUMAN_ADAPT_SYNCED_STACKS) != stacks) {
+            data.putInt(HUMAN_ADAPT_SYNCED_STACKS, stacks);
+            NetworkHandler.sendToPlayer(player, new S2CAdaptationStacksPacket(stacks));
+        }
     }
 
     /** Apply (or update / remove) the Human Adaptation speed attribute modifier. */
@@ -508,17 +517,45 @@ public class RacialEventHandler {
                 || source.is(DamageTypes.HOT_FLOOR);
     }
 
-    // ==================== GIANT-BLOODED PHYSICAL ====================
+    // ==================== HUMAN: UNIVERSAL PALATE ====================
 
     /**
-     * Giant-Blooded: sprinting into a hostile mob delivers a "shoulder check" —
+     * Universal Palate: a human's iron stomach. When a human finishes eating, strip any
+     * harmful effects that food just applied (rotten flesh Hunger, pufferfish Poison/Nausea)
+     * and top up a little extra saturation. Precise by construction — only the effects the
+     * eaten food itself declares are removed, right after it is consumed.
+     */
+    @SubscribeEvent
+    public void onUniversalPalate(LivingEntityUseItemEvent.Finish event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!RaceHelper.isRace(player, "primian")) return;
+
+        FoodProperties food = event.getItem().getFoodProperties(player);
+        if (food == null) return;
+
+        for (Pair<MobEffectInstance, Float> pair : food.getEffects()) {
+            MobEffectInstance effect = pair.getFirst();
+            if (effect != null && effect.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
+                player.removeEffect(effect.getEffect());
+            }
+        }
+
+        // Bonus nourishment: small saturation top-up, never above the current food level.
+        var foodData = player.getFoodData();
+        foodData.setSaturation(Math.min(foodData.getSaturationLevel() + 2.0f, foodData.getFoodLevel()));
+    }
+
+    // ==================== VALEN PHYSICAL ====================
+
+    /**
+     * Valen: sprinting into a hostile mob delivers a "shoulder check" —
      * extra knockback on the first hit of a sprint. Non-damaging, fantasy-forward.
      */
     @SubscribeEvent
     public void onLivingAttack(LivingAttackEvent event) {
         if (!(event.getSource().getEntity() instanceof ServerPlayer attacker)) return;
         if (!attacker.isSprinting()) return;
-        if (!RaceHelper.isRace(attacker, "giant_blooded")) return;
+        if (!RaceHelper.isRace(attacker, "valen")) return;
         net.minecraft.world.entity.LivingEntity target = event.getEntity();
         if (target == attacker) return;
 
@@ -535,13 +572,13 @@ public class RacialEventHandler {
     }
 
     /**
-     * Giant-Blooded: landing from a fall of ≥3 blocks triggers a screen-shake cue
+     * Valen: landing from a fall of ≥3 blocks triggers a screen-shake cue
      * for the landing player. Fall damage itself is unaffected.
      */
     @SubscribeEvent
     public void onLivingFall(LivingFallEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (!RaceHelper.isRace(player, "giant_blooded")) return;
+        if (!RaceHelper.isRace(player, "valen")) return;
         if (event.getDistance() < 3.0f) return;
 
         NetworkHandler.sendToPlayer(player, new S2CScreenCuePacket(CueType.SHAKE, 5));
@@ -565,7 +602,7 @@ public class RacialEventHandler {
     @SubscribeEvent
     public void onLivingJump(LivingEvent.LivingJumpEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (!ModList.get().isLoaded("pehkui")) return;
+        if (!PEHKUI_LOADED) return;
 
         String race = RaceHelper.getRaceName(player).orElse(null);
         if (race == null) return;

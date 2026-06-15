@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:zombie_icon"
+  },
+  "order": 600,
+  "impact": 1,
+  "name": "origin.runic_races.zombie.name",
+  "description": "origin.runic_races.zombie.description",
+  "powers": [
+    "runic_races:zombie/undying_hunger",
+    "runic_races:zombie/deathless_flesh",
+    "runic_races:zombie/sunlight_decay"
+  ]
+}

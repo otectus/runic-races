@@ -8,12 +8,15 @@ import java.util.List;
 
 /**
  * Declarative bundle describing how a signature ability should *feel*:
- * banner text + color, sounds, particles, optional client screen cue.
+ * banner translation key + color, sounds, particles, optional client screen cue.
+ *
+ * {@code bannerKey} is a translation key (resolved client-side via {@code Component.translatable});
+ * lang values may contain {@code %s} placeholders for runtime substitution args.
  *
  * Stored in {@link SignatureRegistry} and fired through {@link RunicPresentation#fire}.
  */
 public record SignatureEntry(
-        String bannerText,
+        String bannerKey,
         ChatFormatting bannerColor,
         boolean bannerBold,
         List<SfxSpec> sounds,

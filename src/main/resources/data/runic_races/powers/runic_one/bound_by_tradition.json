@@ -1,0 +1,27 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.runic_one.bound_by_tradition.name",
+  "description": "power.runic_races.runic_one.bound_by_tradition.description",
+  "subpowers": [
+    "health",
+    "speed"
+  ],
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": -4.0,
+      "name": "Scholar's Frailty"
+    }
+  },
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Ponderous Study"
+    }
+  }
+}

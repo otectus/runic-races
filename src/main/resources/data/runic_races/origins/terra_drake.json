@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:terra_drake_icon"
+  },
+  "order": 703,
+  "impact": 2,
+  "name": "origin.runic_races.terra_drake.name",
+  "description": "origin.runic_races.terra_drake.description",
+  "powers": [
+    "runic_races:terra_drake/seismic_breath",
+    "runic_races:terra_drake/stonescale_hide",
+    "runic_races:terra_drake/ponderous"
+  ]
+}

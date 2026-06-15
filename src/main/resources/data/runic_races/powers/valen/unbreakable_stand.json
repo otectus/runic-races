@@ -1,0 +1,138 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.valen.unbreakable_stand.name",
+  "description": "power.runic_races.valen.unbreakable_stand.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "active_ability"
+  ],
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 1200,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:valen/unbreakable_stand_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:valen/unbreakable_stand_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+  "active_ability": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": false
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "runic_races:valen/unbreakable_stand_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:resistance",
+            "duration": 120,
+            "amplifier": 2,
+            "is_ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:absorption",
+            "duration": 120,
+            "amplifier": 1,
+            "is_ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:slowness",
+            "duration": 120,
+            "amplifier": 0,
+            "is_ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "runic_races:show_banner",
+          "translation_key": "message.runic_races.valen.unbreakable_stand",
+          "args": [],
+          "color": "gold",
+          "bold": true
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.iron_golem.attack",
+          "volume": 0.6,
+          "pitch": 0.9
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:block.anvil.land",
+          "volume": 0.4,
+          "pitch": 1.2
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:crit",
+          "count": 30,
+          "speed": 0.2,
+          "spread": {
+            "x": 0.6,
+            "y": 0.8,
+            "z": 0.6
+          }
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:enchanted_hit",
+          "count": 12,
+          "speed": 0.2,
+          "spread": {
+            "x": 0.6,
+            "y": 0.8,
+            "z": 0.6
+          }
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:valen/unbreakable_stand_cooldown_timer",
+          "change": 1200
+        }
+      ]
+    }
+  }
+}

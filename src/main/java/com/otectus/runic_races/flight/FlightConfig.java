@@ -13,19 +13,24 @@ import java.util.Optional;
 public enum FlightConfig {
     SPRITE("sprite",
             0.3, 30,
-            "sprite/fae_wings_flap_cooldown_timer",
+            "sprite/gossamer_wings_flap_cooldown_timer",
             SoundEvents.BEE_LOOP, 0.2f, 2.0f,
-            "\u00A7d\u00A7lYour wings flutter!"),
-    WYVERN("wyvern_blooded",
-            0.7, 60,
-            "wyvern_blooded/wyvern_wings_flap_cooldown_timer",
-            SoundEvents.ENDER_DRAGON_FLAP, 0.4f, 2.0f,
-            "\u00A76\u00A7lYour wings beat powerfully!"),
-    ELDER_DRAKE("elder_drake",
-            1.0, 100,
-            "elder_drake/ancient_wings_flap_cooldown_timer",
-            SoundEvents.ENDER_DRAGON_FLAP, 0.5f, 1.0f,
-            "\u00A74\u00A7lYour ancient wings thunder!");
+            "\u00A7d\u00A7lYour gossamer wings flutter!"),
+    FAERIE("faerie",
+            0.32, 30,
+            "faerie/pixie_flight_flap_cooldown_timer",
+            SoundEvents.BEE_LOOP, 0.2f, 1.8f,
+            "\u00A7d\u00A7lYour pixie wings shimmer and lift!"),
+    AVIAN("avian",
+            0.45, 35,
+            "avian/skyborne_flap_cooldown_timer",
+            SoundEvents.PHANTOM_FLAP, 0.3f, 1.4f,
+            "\u00A7b\u00A7lYou beat your wings and rise!"),
+    WIND_WYRM("wind_wyrm",
+            0.7, 50,
+            "wind_wyrm/skylord_flap_cooldown_timer",
+            SoundEvents.ENDER_DRAGON_FLAP, 0.5f, 1.2f,
+            "\u00A7f\u00A7lYour wings ride the gale!");
 
     private final String raceName;
     private final double flapVelocityY;

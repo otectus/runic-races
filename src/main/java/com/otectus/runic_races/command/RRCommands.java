@@ -60,12 +60,13 @@ public class RRCommands {
     }
 
     private static final Map<String, String> FAMILY_COLORS = Map.of(
-            "mortal", "\u00A7e",
-            "fae", "\u00A7d",
-            "beast", "\u00A7a",
-            "underfolk", "\u00A78",
-            "dragon", "\u00A7c",
-            "cursed", "\u00A75"
+            "human", "\u00A7e",
+            "elven", "\u00A7d",
+            "dwarven", "\u00A78",
+            "bestial", "\u00A7a",
+            "faeborne", "\u00A7b",
+            "undead", "\u00A75",
+            "draconic", "\u00A7c"
     );
 
     private static int listRaces(CommandContext<CommandSourceStack> context) {

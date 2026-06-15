@@ -29,6 +29,7 @@ public class RRClientConfig {
     public static final ForgeConfigSpec.BooleanValue HUD_READY_GLOW;
     public static final ForgeConfigSpec.BooleanValue AMBIENT_STATE_PARTICLES;
     public static final ForgeConfigSpec.BooleanValue SCREEN_CUES_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue STATE_RUNE_PULSE;
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -81,6 +82,9 @@ public class RRClientConfig {
         SCREEN_CUES_ENABLED = builder
                 .comment("Render screen-overlay cues (vignettes, freeze-flash) for signature moments.")
                 .define("screenCues", true);
+        STATE_RUNE_PULSE = builder
+                .comment("Briefly pulse a state rune when its flag turns on, drawing the eye to new conditions.")
+                .define("stateRunePulse", true);
         builder.pop();
 
         SPEC = builder.build();

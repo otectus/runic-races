@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:forge_one_icon"
+  },
+  "order": 301,
+  "impact": 2,
+  "name": "origin.runic_races.forge_one.name",
+  "description": "origin.runic_races.forge_one.description",
+  "powers": [
+    "runic_races:forge_one/forge_blessing",
+    "runic_races:forge_one/ironhand_smith",
+    "runic_races:forge_one/stone_heavy"
+  ]
+}

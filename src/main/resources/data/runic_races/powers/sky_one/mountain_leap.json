@@ -1,0 +1,117 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.sky_one.mountain_leap.name",
+  "description": "power.runic_races.sky_one.mountain_leap.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "active_ability"
+  ],
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 400,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:sky_one/mountain_leap_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:sky_one/mountain_leap_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+  "active_ability": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": false
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "runic_races:sky_one/mountain_leap_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:add_velocity",
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.4,
+          "space": "local"
+        },
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:slow_falling",
+            "duration": 120,
+            "amplifier": 0,
+            "is_ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:speed",
+            "duration": 80,
+            "amplifier": 0,
+            "is_ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "runic_races:show_banner",
+          "translation_key": "message.runic_races.sky_one.mountain_leap",
+          "args": [],
+          "color": "white",
+          "bold": true
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.player.attack.sweep",
+          "volume": 0.4,
+          "pitch": 1.5
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:cloud",
+          "count": 25,
+          "speed": 0.2,
+          "spread": {
+            "x": 0.6,
+            "y": 0.8,
+            "z": 0.6
+          }
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:sky_one/mountain_leap_cooldown_timer",
+          "change": 400
+        }
+      ]
+    }
+  }
+}

@@ -10,6 +10,7 @@ import com.otectus.runic_races.common.state.RaceStateFlags;
 public final class ClientRaceState {
 
     private static volatile int flags = 0;
+    private static volatile int adaptationStacks = 0;
 
     private ClientRaceState() {}
 
@@ -23,5 +24,14 @@ public final class ClientRaceState {
 
     public static boolean has(RaceStateFlags flag) {
         return flag.isSet(flags);
+    }
+
+    /** Human Adaptation stack count (0 when not adapting). Surfaced on the "A" state rune. */
+    public static int getAdaptationStacks() {
+        return adaptationStacks;
+    }
+
+    public static void setAdaptationStacks(int stacks) {
+        adaptationStacks = stacks;
     }
 }

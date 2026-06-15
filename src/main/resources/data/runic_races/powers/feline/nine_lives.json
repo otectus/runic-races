@@ -1,0 +1,67 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.feline.nine_lives.name",
+  "description": "power.runic_races.feline.nine_lives.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "night_vision",
+    "attack_speed",
+    "no_fall"
+  ],
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 12000,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:feline/nine_lives_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:feline/nine_lives_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1.0
+  },
+  "attack_speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_speed",
+      "operation": "multiply_total",
+      "value": 0.15,
+      "name": "Feline Quickness"
+    }
+  },
+  "no_fall": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "fall"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -1.0
+    }
+  }
+}

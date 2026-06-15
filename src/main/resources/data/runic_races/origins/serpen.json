@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:serpen_icon"
+  },
+  "order": 405,
+  "impact": 2,
+  "name": "origin.runic_races.serpen.name",
+  "description": "origin.runic_races.serpen.description",
+  "powers": [
+    "runic_races:serpen/shed_skin",
+    "runic_races:serpen/venomous_coil",
+    "runic_races:serpen/cold_blooded"
+  ]
+}

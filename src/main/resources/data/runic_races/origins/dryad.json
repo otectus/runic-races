@@ -2,14 +2,13 @@
   "icon": {
     "item": "runic_races:dryad_icon"
   },
-  "order": 204,
-  "impact": 1,
+  "order": 501,
+  "impact": 2,
   "name": "origin.runic_races.dryad.name",
   "description": "origin.runic_races.dryad.description",
   "powers": [
-    "runic_races:dryad/bark_skin",
-    "runic_races:dryad/overgrowth",
-    "runic_races:dryad/photosynthesis",
-    "runic_races:dryad/wooden_bane"
+    "runic_races:dryad/verdant_bloom",
+    "runic_races:dryad/one_with_the_grove",
+    "runic_races:dryad/kindling"
   ]
 }

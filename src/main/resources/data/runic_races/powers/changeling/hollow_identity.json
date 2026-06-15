@@ -1,0 +1,27 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.changeling.hollow_identity.name",
+  "description": "power.runic_races.changeling.hollow_identity.description",
+  "subpowers": [
+    "health",
+    "luck"
+  ],
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": -2.0,
+      "name": "Hollow Health"
+    }
+  },
+  "luck": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.luck",
+      "operation": "addition",
+      "value": -0.5,
+      "name": "No True Self"
+    }
+  }
+}

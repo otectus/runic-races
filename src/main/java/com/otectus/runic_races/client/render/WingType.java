@@ -17,6 +17,20 @@ public enum WingType {
             8, true, false,
             1.5f, 25f, 0.3f
     ),
+    FAERIE_WINGS(
+            "textures/entity/pixie_wings.png",
+            0.6f,
+            -15f, -72f, -112f,
+            8, true, false,
+            1.4f, 22f, 0.3f
+    ),
+    AVIAN_WINGS(
+            "textures/entity/wyvern_wings.png",
+            0.95f,
+            -15f, -78f, -125f,
+            9, false, false,
+            1.1f, 14f, 0.45f
+    ),
     WYVERN_WINGS(
             "textures/entity/wyvern_wings.png",
             1.0f,
@@ -30,13 +44,6 @@ public enum WingType {
             -15f, -80f, -130f,
             14, false, false,
             0.7f, 8f, 0.7f
-    ),
-    DRAGONBORN_WINGS(
-            "textures/entity/dragonborn_wings.png",
-            0.65f,
-            -10f, -40f, -60f,
-            8, false, true,
-            0.5f, 5f, 0.2f
     );
 
     private final String texturePath;
@@ -86,9 +93,10 @@ public enum WingType {
     public static Optional<WingType> forRaceName(String raceName) {
         return Optional.ofNullable(switch (raceName) {
             case "sprite" -> SPRITE_WINGS;
-            case "wyvern_blooded" -> WYVERN_WINGS;
-            case "elder_drake" -> DRAKE_WINGS;
-            case "dragonborn" -> DRAGONBORN_WINGS;
+            case "faerie" -> FAERIE_WINGS;
+            case "avian" -> AVIAN_WINGS;
+            case "wind_wyrm" -> WYVERN_WINGS;
+            case "fire_drake", "ice_drake", "terra_drake", "volt_drake" -> DRAKE_WINGS;
             default -> null;
         });
     }

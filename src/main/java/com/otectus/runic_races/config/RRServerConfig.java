@@ -10,13 +10,16 @@ public class RRServerConfig {
     public static final ForgeConfigSpec.BooleanValue IRONS_SPELLS_INTEGRATION;
     public static final ForgeConfigSpec.BooleanValue CURIOS_INTEGRATION;
     public static final ForgeConfigSpec.BooleanValue APOTHEOSIS_INTEGRATION;
-    public static final ForgeConfigSpec.BooleanValue RUNIC_SKILLS_INTEGRATION;
-    public static final ForgeConfigSpec.BooleanValue RUNIC_GODS_INTEGRATION;
     public static final ForgeConfigSpec.BooleanValue PEHKUI_INTEGRATION;
     public static final ForgeConfigSpec.BooleanValue FEATHERS_INTEGRATION;
 
     // Resource gating
     public static final ForgeConfigSpec.BooleanValue FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING;
+
+    // Race-state notifications
+    public static final ForgeConfigSpec.BooleanValue NOTIFICATIONS_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue NOTIFICATIONS_CHAT_MIRROR;
+    public static final ForgeConfigSpec.BooleanValue NOTIFICATIONS_LEARNING_MODE;
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -34,12 +37,6 @@ public class RRServerConfig {
         APOTHEOSIS_INTEGRATION = builder
                 .comment("Enable Apotheosis integration (Forge Blessing, Appraise, loot modifiers)")
                 .define("apotheosis", true);
-        RUNIC_SKILLS_INTEGRATION = builder
-                .comment("Enable Runic Skills integration (starting skill bonuses, perk affinity)")
-                .define("runicSkills", true);
-        RUNIC_GODS_INTEGRATION = builder
-                .comment("Enable Runic Gods integration (divine affinity/antipathy, worship restrictions)")
-                .define("runicGods", true);
         PEHKUI_INTEGRATION = builder
                 .comment("Enable Pehkui integration (racial height scaling)")
                 .define("pehkui", true);
@@ -54,6 +51,20 @@ public class RRServerConfig {
                         "When false, those powers become free to use (in-pack mode: assumes the gating mod will be re-added later).",
                         "A startup warning is logged either way when a known gating mod is missing.")
                 .define("failClosedWhenResourceModMissing", true);
+        builder.pop();
+
+        builder.comment("Race-state notifications — start/stop action-bar banners for harmful race conditions").push("notifications");
+        NOTIFICATIONS_ENABLED = builder
+                .comment("Master switch for race-state start/stop banners (vampire sun, tight space, fire, etc.).",
+                        "When false, the HUD state runes still render but no action-bar banners are sent.")
+                .define("enabled", true);
+        NOTIFICATIONS_CHAT_MIRROR = builder
+                .comment("Also mirror each notification into the chat log (accessibility — easier to read mid-combat).")
+                .define("chatMirror", false);
+        NOTIFICATIONS_LEARNING_MODE = builder
+                .comment("Also banner the informational states (home/hostile biome, night empowered, adaptation) that are normally rune-only.",
+                        "Useful while learning a race; noisy for veterans.")
+                .define("learningMode", false);
         builder.pop();
 
         SPEC = builder.build();

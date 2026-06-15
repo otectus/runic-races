@@ -1,0 +1,40 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.serpen.venomous_coil.name",
+  "description": "power.runic_races.serpen.venomous_coil.description",
+  "subpowers": [
+    "poison_imm",
+    "speed",
+    "night_vision",
+    "hot_home"
+  ],
+  "poison_imm": {
+    "type": "origins:effect_immunity",
+    "effect": "minecraft:poison"
+  },
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": 0.1,
+      "name": "Coiled Speed"
+    }
+  },
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1.0
+  },
+  "hot_home": {
+    "type": "runic_races:biome_affinity",
+    "name": "power.runic_races.serpen.venomous_coil.name",
+    "description": "power.runic_races.serpen.venomous_coil.description",
+    "home_biome_tag": "forge:is_hot",
+    "speed_bonus": 0.06,
+    "damage_bonus": 0.05,
+    "hostile_biome_tag": "forge:is_cold",
+    "speed_penalty": -0.06,
+    "damage_penalty": 0.0,
+    "check_interval": 40
+  }
+}

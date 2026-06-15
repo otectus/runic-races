@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:ice_elf_icon"
+  },
+  "order": 204,
+  "impact": 2,
+  "name": "origin.runic_races.ice_elf.name",
+  "description": "origin.runic_races.ice_elf.description",
+  "powers": [
+    "runic_races:ice_elf/frostbind",
+    "runic_races:ice_elf/winters_child",
+    "runic_races:ice_elf/cold_blooded"
+  ]
+}

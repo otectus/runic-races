@@ -1,0 +1,123 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.feline.pounce.name",
+  "description": "power.runic_races.feline.pounce.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "active_ability"
+  ],
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 300,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:feline/pounce_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:feline/pounce_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+  "active_ability": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": false
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "runic_races:feline/pounce_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:add_velocity",
+          "x": 0.0,
+          "y": 0.5,
+          "z": 1.5,
+          "space": "local"
+        },
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:strength",
+            "duration": 60,
+            "amplifier": 0,
+            "is_ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "runic_races:show_banner",
+          "translation_key": "message.runic_races.feline.pounce",
+          "args": [],
+          "color": "gold",
+          "bold": true
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.cat.hiss",
+          "volume": 0.6,
+          "pitch": 1.5
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.player.attack.sweep",
+          "volume": 0.4,
+          "pitch": 1.2
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:crit",
+          "count": 15,
+          "speed": 0.3,
+          "spread": {
+            "x": 0.6,
+            "y": 0.8,
+            "z": 0.6
+          }
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:sweep_attack",
+          "count": 4,
+          "speed": 0.2,
+          "spread": {
+            "x": 0.6,
+            "y": 0.8,
+            "z": 0.6
+          }
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:feline/pounce_cooldown_timer",
+          "change": 300
+        }
+      ]
+    }
+  }
+}

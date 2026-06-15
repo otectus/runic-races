@@ -49,14 +49,6 @@ public class IntegrationManager {
                 "com.otectus.runic_races.integration.apotheosis.ApotheosisIntegration",
                 () -> RRServerConfig.APOTHEOSIS_INTEGRATION.get());
 
-        tryLoad("runicskills", "Runic Skills",
-                "com.otectus.runic_races.integration.runicskills.RunicSkillsIntegration",
-                () -> RRServerConfig.RUNIC_SKILLS_INTEGRATION.get());
-
-        tryLoad("runic_gods", "Runic Gods",
-                "com.otectus.runic_races.integration.spellsngods.SpellsNGodsIntegration",
-                () -> RRServerConfig.RUNIC_GODS_INTEGRATION.get());
-
         tryLoad("pehkui", "Pehkui",
                 "com.otectus.runic_races.integration.pehkui.PehkuiIntegration",
                 () -> RRServerConfig.PEHKUI_INTEGRATION.get());
@@ -171,7 +163,10 @@ public class IntegrationManager {
                 return;
             }
 
-            String currentRace = RaceHelper.getRaceId(player).map(Object::toString).orElse("");
+            // Compare against the last synced id without the intermediate Optional.map allocation;
+            // the race lookup itself is memoized per-tick in RaceHelper.
+            net.minecraft.resources.ResourceLocation raceId = RaceHelper.getRaceId(player).orElse(null);
+            String currentRace = raceId == null ? "" : raceId.toString();
             String lastSyncedRace = player.getPersistentData().getString(LAST_SYNCED_RACE);
             if (!currentRace.equals(lastSyncedRace)) {
                 syncPlayer(player);

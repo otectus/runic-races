@@ -5,7 +5,7 @@
   "subpowers": [
     "cooldown_timer",
     "cooldown_decay",
-    "phase_trigger"
+    "active_ability"
   ],
   "cooldown_timer": {
     "type": "origins:resource",
@@ -15,7 +15,7 @@
     "hud_render": {
       "should_render": false,
       "sprite_location": "origins:textures/gui/community/spade.png",
-      "bar_index": 1
+      "bar_index": 2
     },
     "min_action": null,
     "max_action": null
@@ -38,12 +38,11 @@
       }
     }
   },
-  "phase_trigger": {
-    "type": "origins:self_action_when_hit",
-    "damage_condition": {
-      "type": "origins:amount",
-      "comparison": ">=",
-      "compare_to": 8.0
+  "active_ability": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": false
     },
     "condition": {
       "type": "origins:resource",
@@ -55,51 +54,79 @@
       "type": "origins:and",
       "actions": [
         {
+          "type": "origins:add_velocity",
+          "x": 0.0,
+          "y": 0.4,
+          "z": 1.2,
+          "space": "local"
+        },
+        {
           "type": "origins:apply_effect",
           "effect": {
-            "effect": "minecraft:resistance",
-            "duration": 20,
-            "amplifier": 4,
+            "effect": "minecraft:invisibility",
+            "duration": 60,
+            "amplifier": 0,
+            "is_ambient": false,
+            "show_particles": false,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:speed",
+            "duration": 100,
+            "amplifier": 1,
             "is_ambient": false,
             "show_particles": true,
             "show_icon": true
           }
         },
         {
-          "type": "origins:change_resource",
-          "resource": "runic_races:sprite/phase_shift_cooldown_timer",
-          "change": 1800
+          "type": "runic_races:show_banner",
+          "translation_key": "message.runic_races.sprite.phase_shift",
+          "args": [],
+          "color": "light_purple",
+          "bold": true
         },
         {
-          "type": "origins:execute_command",
-          "command": "title @s actionbar {\"text\":\"You phase out of existence!\",\"color\":\"aqua\",\"bold\":true}"
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.allay.ambient_with_item",
+          "volume": 0.6,
+          "pitch": 1.8
         },
         {
           "type": "origins:play_sound",
           "sound": "minecraft:block.amethyst_block.chime",
-          "volume": 0.9,
-          "pitch": 1.5
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.allay.ambient_without_item",
-          "volume": 0.5,
-          "pitch": 2.0
+          "volume": 0.4,
+          "pitch": 1.8
         },
         {
           "type": "origins:spawn_particles",
           "particle": "minecraft:end_rod",
-          "count": 25,
-          "speed": 0.8,
+          "count": 35,
+          "speed": 0.3,
           "spread": {
-            "x": 0.3,
-            "y": 0.5,
-            "z": 0.3
+            "x": 0.6,
+            "y": 0.8,
+            "z": 0.6
           }
         },
         {
-          "type": "origins:execute_command",
-          "command": "particle minecraft:dust 0.3 0.9 0.9 0.4 ~ ~1 ~ 0.5 0.5 0.5 0.5 20 force"
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:firework",
+          "count": 12,
+          "speed": 0.2,
+          "spread": {
+            "x": 0.6,
+            "y": 0.8,
+            "z": 0.6
+          }
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:sprite/phase_shift_cooldown_timer",
+          "change": 1800
         }
       ]
     }

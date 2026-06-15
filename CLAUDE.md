@@ -3,7 +3,7 @@
 ## Quick Reference
 - **Mod ID**: `runic_races`
 - **Package**: `com.otectus.runic_races`
-- **Version**: 0.9.0
+- **Version**: 1.1.0
 - **MC**: 1.20.1 | **Forge**: 47.2.0 | **Java**: 17
 - **Mappings**: Official
 
@@ -21,8 +21,7 @@
 - `config/` — mod configuration
 - `event/` — Forge event handlers
 - `integration/` — optional mod integrations (reflection + ModList guards)
-  - `ars/`, `irons/`, `apotheosis/`, `curios/`, `passiveskill/`
-  - `runicskills/`, `spellsngods/`, `pehkui/`, `feathers/`
+  - `ars/`, `irons/`, `apotheosis/`, `curios/`, `pehkui/`, `feathers/`
 - `network/` — packet handling
 - `power/` — Origins power definitions
 - `registry/` — DeferredRegister registrations
@@ -35,14 +34,28 @@
 - **Apoli/Calio** (required, bundled via Origins)
 - **Ars Nouveau** (optional), **Iron's Spellbooks** (optional)
 - **Curios** (optional), **Apotheosis** (optional), **Pehkui** (optional)
-- **Feathers** (optional), **Runic Skills** (optional), **Spells 'n Gods** (optional)
+- **Feathers** (optional)
 
 ## Conventions
 - Registration: DeferredRegister on MOD bus
-- Origins add-on: 24 races across 6 families
+- Origins add-on: **37 races across 7 families** (`human, elven, dwarven, bestial, faeborne, undead, draconic`)
+- Each race has exactly **3 powers**: one active (cooldown-gated), one passive positive, one weakness
+- Per-race metadata (`scale`/Pehkui height, `maxFeathers`, `luckBonus`, Curios slots) lives in `race/RaceRegistry.java`; integrations read it via `RaceHelper`/`RaceRegistry` (no per-race code)
+- Two-layer selection: pick a `family_*` origin (layer `family`), then a race (layer `race`, gated by family)
 - All optional mod compat uses `ModList.isLoaded()` guards with reflection-based loading
-- Dependencies via local JARs in `Dependencies/` (compileOnly)
+- Dependencies via local JARs in `Dependencies/` (compileOnly, gitignored — download yourself)
 - License: All Rights Reserved
+
+## Race data authoring (`tools/`)
+The 44 origins, 111 power JSONs, 2 origin layers, the 37 icon textures, and `en_us.json`
+are emitted by static generator scripts (NOT wired into Gradle — the committed JSON is
+hand-written-equivalent and authoritative):
+- `tools/generate_races.py` — origins/powers/layers + `tools/race_lang.json`
+- `tools/generate_icons.py` — downscales per-race art from `~/Notes/Runic Races/` to `textures/item/`
+- `tools/build_lang.py` — merges race_lang + notification copy into `en_us.json`
+Resource-id rule: cooldown resources are `runic_races:<race>/<powerFile>_cooldown_timer` and
+must match exactly in JSON and any Java that reads them (`FlightConfig`, `AbilityIconRegistry`,
+`RacialEventHandler`).
 
 ## VFX Density Guideline
 Tier every ability's particle count so VFX grammar stays consistent:

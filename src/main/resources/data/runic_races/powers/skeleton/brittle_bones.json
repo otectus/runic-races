@@ -1,0 +1,48 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.skeleton.brittle_bones.name",
+  "description": "power.runic_races.skeleton.brittle_bones.description",
+  "subpowers": [
+    "health",
+    "fall",
+    "sun"
+  ],
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": -4.0,
+      "name": "Brittle Frame"
+    }
+  },
+  "fall": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "fall"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.25
+    }
+  },
+  "sun": {
+    "type": "origins:modify_damage_taken",
+    "condition": {
+      "type": "origins:and",
+      "conditions": [
+        {
+          "type": "origins:exposed_to_sun"
+        },
+        {
+          "type": "origins:daytime"
+        }
+      ]
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.2
+    }
+  }
+}

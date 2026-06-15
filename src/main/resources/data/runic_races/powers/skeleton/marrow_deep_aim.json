@@ -1,0 +1,31 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.skeleton.marrow_deep_aim.name",
+  "description": "power.runic_races.skeleton.marrow_deep_aim.description",
+  "subpowers": [
+    "attack_speed",
+    "poison_imm",
+    "hunger_imm",
+    "water_breathing"
+  ],
+  "attack_speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_speed",
+      "operation": "multiply_total",
+      "value": 0.1,
+      "name": "Bony Precision"
+    }
+  },
+  "poison_imm": {
+    "type": "origins:effect_immunity",
+    "effect": "minecraft:poison"
+  },
+  "hunger_imm": {
+    "type": "origins:effect_immunity",
+    "effect": "minecraft:hunger"
+  },
+  "water_breathing": {
+    "type": "origins:water_breathing"
+  }
+}

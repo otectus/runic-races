@@ -1,0 +1,35 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.deep_one.deep_dweller.name",
+  "description": "power.runic_races.deep_one.deep_dweller.description",
+  "subpowers": [
+    "night_vision",
+    "armor",
+    "mining_fatigue_imm",
+    "mining"
+  ],
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1.0
+  },
+  "armor": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.armor",
+      "operation": "addition",
+      "value": 2.0,
+      "name": "Deep Plating"
+    }
+  },
+  "mining_fatigue_imm": {
+    "type": "origins:effect_immunity",
+    "effect": "minecraft:mining_fatigue"
+  },
+  "mining": {
+    "type": "origins:modify_break_speed",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.2
+    }
+  }
+}

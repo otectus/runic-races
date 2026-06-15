@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:wraith_icon"
+  },
+  "order": 602,
+  "impact": 2,
+  "name": "origin.runic_races.wraith.name",
+  "description": "origin.runic_races.wraith.description",
+  "powers": [
+    "runic_races:wraith/spectral_phase",
+    "runic_races:wraith/soul_touched",
+    "runic_races:wraith/half_bound"
+  ]
+}

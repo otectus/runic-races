@@ -1,0 +1,6 @@
+{
+  "pack": {
+    "description": "Runic Races: clean two-layer mode (disables the default origins:origin layer so only Family/Race appear).",
+    "pack_format": 15
+  }
+}

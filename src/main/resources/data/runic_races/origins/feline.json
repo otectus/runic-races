@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:feline_icon"
+  },
+  "order": 403,
+  "impact": 2,
+  "name": "origin.runic_races.feline.name",
+  "description": "origin.runic_races.feline.description",
+  "powers": [
+    "runic_races:feline/pounce",
+    "runic_races:feline/nine_lives",
+    "runic_races:feline/hydrophobia"
+  ]
+}

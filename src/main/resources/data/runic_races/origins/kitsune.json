@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:kitsune_icon"
+  },
+  "order": 404,
+  "impact": 3,
+  "name": "origin.runic_races.kitsune.name",
+  "description": "origin.runic_races.kitsune.description",
+  "powers": [
+    "runic_races:kitsune/foxfire_illusion",
+    "runic_races:kitsune/spirit_of_the_fox",
+    "runic_races:kitsune/untamed_spirit"
+  ]
+}

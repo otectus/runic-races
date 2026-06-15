@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:avian_icon"
+  },
+  "order": 401,
+  "impact": 2,
+  "name": "origin.runic_races.avian.name",
+  "description": "origin.runic_races.avian.description",
+  "powers": [
+    "runic_races:avian/wind_burst",
+    "runic_races:avian/skyborne",
+    "runic_races:avian/hollow_bones"
+  ]
+}

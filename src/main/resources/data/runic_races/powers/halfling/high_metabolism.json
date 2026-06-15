@@ -1,9 +1,0 @@
-{
-  "type": "origins:modify_exhaustion",
-  "name": "power.runic_races.halfling.high_metabolism.name",
-  "description": "power.runic_races.halfling.high_metabolism.description",
-  "modifier": {
-    "operation": "multiply_total_multiplicative",
-    "value": 0.25
-  }
-}

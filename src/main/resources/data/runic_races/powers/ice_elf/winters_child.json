@@ -1,0 +1,53 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.ice_elf.winters_child.name",
+  "description": "power.runic_races.ice_elf.winters_child.description",
+  "subpowers": [
+    "freeze_imm",
+    "magic",
+    "cold_home"
+  ],
+  "freeze_imm": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "freeze"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -1.0
+    }
+  },
+  "magic": {
+    "type": "origins:modify_damage_dealt",
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "magic"
+        },
+        {
+          "type": "origins:name",
+          "name": "indirectMagic"
+        }
+      ]
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.1
+    }
+  },
+  "cold_home": {
+    "type": "runic_races:biome_affinity",
+    "name": "power.runic_races.ice_elf.winters_child.name",
+    "description": "power.runic_races.ice_elf.winters_child.description",
+    "home_biome_tag": "forge:is_cold",
+    "speed_bonus": 0.06,
+    "damage_bonus": 0.05,
+    "hostile_biome_tag": "forge:is_hot",
+    "speed_penalty": -0.06,
+    "damage_penalty": 0.0,
+    "check_interval": 40
+  }
+}

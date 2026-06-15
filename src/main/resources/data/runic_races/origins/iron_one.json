@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:iron_one_icon"
+  },
+  "order": 303,
+  "impact": 2,
+  "name": "origin.runic_races.iron_one.name",
+  "description": "origin.runic_races.iron_one.description",
+  "powers": [
+    "runic_races:iron_one/shield_wall",
+    "runic_races:iron_one/forged_to_endure",
+    "runic_races:iron_one/heavy_as_the_mountain"
+  ]
+}

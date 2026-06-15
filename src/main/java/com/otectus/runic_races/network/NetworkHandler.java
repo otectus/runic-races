@@ -44,6 +44,11 @@ public final class NetworkHandler {
                 .decoder(S2CRaceStatePacket::decode)
                 .consumerMainThread(S2CRaceStatePacket::handle)
                 .add();
+        channel.messageBuilder(S2CAdaptationStacksPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(S2CAdaptationStacksPacket::encode)
+                .decoder(S2CAdaptationStacksPacket::decode)
+                .consumerMainThread(S2CAdaptationStacksPacket::handle)
+                .add();
 
         RunicRacesMod.LOGGER.info("[RunicRaces] Network channel registered ({} packets)", id);
     }

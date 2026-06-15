@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:valen_icon"
+  },
+  "order": 103,
+  "impact": 2,
+  "name": "origin.runic_races.valen.name",
+  "description": "origin.runic_races.valen.description",
+  "powers": [
+    "runic_races:valen/unbreakable_stand",
+    "runic_races:valen/fortitude",
+    "runic_races:valen/stalwart_not_swift"
+  ]
+}

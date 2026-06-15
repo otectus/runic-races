@@ -2,15 +2,13 @@
   "icon": {
     "item": "runic_races:sprite_icon"
   },
-  "order": 202,
-  "impact": 2,
+  "order": 502,
+  "impact": 1,
   "name": "origin.runic_races.sprite.name",
   "description": "origin.runic_races.sprite.description",
   "powers": [
     "runic_races:sprite/phase_shift",
-    "runic_races:sprite/fae_drift",
-    "runic_races:sprite/diminutive_frame",
-    "runic_races:sprite/fragile_essence",
-    "runic_races:sprite/fae_wings"
+    "runic_races:sprite/gossamer_wings",
+    "runic_races:sprite/fragile_essence"
   ]
 }

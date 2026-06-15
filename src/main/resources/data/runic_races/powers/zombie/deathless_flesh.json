@@ -1,0 +1,47 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.zombie.deathless_flesh.name",
+  "description": "power.runic_races.zombie.deathless_flesh.description",
+  "subpowers": [
+    "health",
+    "armor",
+    "poison_imm",
+    "hunger_imm",
+    "kb"
+  ],
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": 6.0,
+      "name": "Deathless Vitality"
+    }
+  },
+  "armor": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.armor",
+      "operation": "addition",
+      "value": 1.0,
+      "name": "Rotted Hide"
+    }
+  },
+  "poison_imm": {
+    "type": "origins:effect_immunity",
+    "effect": "minecraft:poison"
+  },
+  "hunger_imm": {
+    "type": "origins:effect_immunity",
+    "effect": "minecraft:hunger"
+  },
+  "kb": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.knockback_resistance",
+      "operation": "addition",
+      "value": 0.3,
+      "name": "Dead Weight"
+    }
+  }
+}

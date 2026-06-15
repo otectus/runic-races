@@ -8,12 +8,29 @@ package com.otectus.runic_races.presentation;
  * sfx/vfx/banner recipe that needs to stay consistent across invocations.
  */
 public enum SignatureKey {
-    CATFOLK_NINE_LIVES,
-    REVENANT_REVIVAL,
-    REVENANT_REVIVAL_REJECTED,
-    DWARF_FORGE_BLESSING,
+    // Undead
+    REAPER_REVIVAL,
+    REAPER_REVIVAL_REJECTED,
+    WRAITH_PHASE,
+    DEMON_WRATH,
+    // Bestial
+    FELINE_NINE_LIVES,
+    // Dwarven
+    FORGE_BLESSING,
+    RUNIC_WARD,
+    // Faeborne
+    FAERIE_GLAMOUR,
+    // Draconic elemental breaths
+    FIRE_DRAKE_BREATH,
+    ICE_DRAKE_BREATH,
+    SEA_SERPEN_BREATH,
+    TERRA_DRAKE_BREATH,
+    VOLT_DRAKE_BREATH,
+    WIND_WYRM_BREATH,
+    // Wing flaps (fired by the flight handler)
     SPRITE_WING_FLAP,
-    WYVERN_WING_FLAP,
-    ELDER_DRAKE_WING_FLAP,
+    FAERIE_WING_FLAP,
+    AVIAN_WING_FLAP,
+    WIND_WYRM_WING_FLAP,
     FLIGHT_CANCEL
 }

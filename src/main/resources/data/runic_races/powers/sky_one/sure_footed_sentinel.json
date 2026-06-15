@@ -1,0 +1,42 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.sky_one.sure_footed_sentinel.name",
+  "description": "power.runic_races.sky_one.sure_footed_sentinel.description",
+  "subpowers": [
+    "no_fall",
+    "armor",
+    "mountain_home"
+  ],
+  "no_fall": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:name",
+      "name": "fall"
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": -1.0
+    }
+  },
+  "armor": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.armor",
+      "operation": "addition",
+      "value": 1.0,
+      "name": "Sentinel Mail"
+    }
+  },
+  "mountain_home": {
+    "type": "runic_races:biome_affinity",
+    "name": "power.runic_races.sky_one.sure_footed_sentinel.name",
+    "description": "power.runic_races.sky_one.sure_footed_sentinel.description",
+    "home_biome_tag": "forge:is_mountain",
+    "speed_bonus": 0.1,
+    "damage_bonus": 0.05,
+    "hostile_biome_tag": "forge:is_mountain",
+    "speed_penalty": 0.0,
+    "damage_penalty": 0.0,
+    "check_interval": 40
+  }
+}

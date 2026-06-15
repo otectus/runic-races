@@ -1,0 +1,33 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.dark_elf.children_of_darkness.name",
+  "description": "power.runic_races.dark_elf.children_of_darkness.description",
+  "subpowers": [
+    "night_vision",
+    "speed",
+    "night_power"
+  ],
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1.0
+  },
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": 0.1,
+      "name": "Shadow Step"
+    }
+  },
+  "night_power": {
+    "type": "runic_races:scaling_attribute",
+    "name": "power.runic_races.dark_elf.children_of_darkness.name",
+    "description": "power.runic_races.dark_elf.children_of_darkness.description",
+    "attribute": "generic.attack_damage",
+    "day_value": -0.05,
+    "night_value": 0.1,
+    "operation": "multiply_total",
+    "check_interval": 40
+  }
+}

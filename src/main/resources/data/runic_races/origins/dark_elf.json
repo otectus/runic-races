@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:dark_elf_icon"
+  },
+  "order": 201,
+  "impact": 2,
+  "name": "origin.runic_races.dark_elf.name",
+  "description": "origin.runic_races.dark_elf.description",
+  "powers": [
+    "runic_races:dark_elf/shadowmeld",
+    "runic_races:dark_elf/children_of_darkness",
+    "runic_races:dark_elf/sunlight_sensitivity"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "origins": [
+    {
+      "condition": {
+        "type": "origins:origin",
+        "origin": "runic_races:family_fae",
+        "layer": "runic_races:family"
+      },
+      "origins": [
+        "examplemod:angel"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "icon": {
+    "item": "runic_races:arachnid_icon"
+  },
+  "order": 40,
+  "impact": 1,
+  "name": "origin.runic_races.family_bestial.name",
+  "description": "origin.runic_races.family_bestial.description",
+  "powers": []
+}

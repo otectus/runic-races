@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:nymph_icon"
+  },
+  "order": 503,
+  "impact": 2,
+  "name": "origin.runic_races.nymph.name",
+  "description": "origin.runic_races.nymph.description",
+  "powers": [
+    "runic_races:nymph/sirens_charm",
+    "runic_races:nymph/spirit_of_spring",
+    "runic_races:nymph/bound_to_water"
+  ]
+}

@@ -1,8 +1,0 @@
-{
-  "icon": { "item": "minecraft:dragon_egg" },
-  "order": 50,
-  "impact": 2,
-  "name": "origin.runic_races.family_dragon.name",
-  "description": "origin.runic_races.family_dragon.description",
-  "powers": []
-}

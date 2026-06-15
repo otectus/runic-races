@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:celeron_icon"
+  },
+  "order": 101,
+  "impact": 1,
+  "name": "origin.runic_races.celeron.name",
+  "description": "origin.runic_races.celeron.description",
+  "powers": [
+    "runic_races:celeron/messengers_dash",
+    "runic_races:celeron/fleet_and_sure",
+    "runic_races:celeron/featherweight_frame"
+  ]
+}

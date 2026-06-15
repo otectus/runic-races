@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:wind_wyrm_icon"
+  },
+  "order": 705,
+  "impact": 3,
+  "name": "origin.runic_races.wind_wyrm.name",
+  "description": "origin.runic_races.wind_wyrm.description",
+  "powers": [
+    "runic_races:wind_wyrm/galeforce_breath",
+    "runic_races:wind_wyrm/skylord",
+    "runic_races:wind_wyrm/untethered"
+  ]
+}

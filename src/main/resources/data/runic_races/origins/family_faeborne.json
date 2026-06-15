@@ -1,0 +1,10 @@
+{
+  "icon": {
+    "item": "runic_races:changeling_icon"
+  },
+  "order": 50,
+  "impact": 1,
+  "name": "origin.runic_races.family_faeborne.name",
+  "description": "origin.runic_races.family_faeborne.description",
+  "powers": []
+}

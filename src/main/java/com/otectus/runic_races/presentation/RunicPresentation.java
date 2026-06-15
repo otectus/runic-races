@@ -54,8 +54,12 @@ public final class RunicPresentation {
     }
 
     public static void showRunicBanner(ServerPlayer player, SignatureEntry entry, Object... args) {
-        String text = args.length == 0 ? entry.bannerText() : String.format(entry.bannerText(), args);
-        MutableComponent component = Component.literal(text).withStyle(entry.bannerColor());
+        // bannerKey is a translation key; runtime substitutions (e.g. an enchantment name) pass
+        // straight through as Component.translatable args, mapping to %s in the localized value.
+        MutableComponent component = (args.length == 0
+                ? Component.translatable(entry.bannerKey())
+                : Component.translatable(entry.bannerKey(), args))
+                .withStyle(entry.bannerColor());
         if (entry.bannerBold()) {
             component = component.withStyle(ChatFormatting.BOLD);
         }

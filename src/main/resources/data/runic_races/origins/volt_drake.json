@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:volt_drake_icon"
+  },
+  "order": 704,
+  "impact": 2,
+  "name": "origin.runic_races.volt_drake.name",
+  "description": "origin.runic_races.volt_drake.description",
+  "powers": [
+    "runic_races:volt_drake/lightning_breath",
+    "runic_races:volt_drake/stormscale_hide",
+    "runic_races:volt_drake/grounded"
+  ]
+}

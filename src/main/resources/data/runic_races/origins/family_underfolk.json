@@ -1,8 +1,0 @@
-{
-  "icon": { "item": "minecraft:iron_pickaxe" },
-  "order": 40,
-  "impact": 1,
-  "name": "origin.runic_races.family_underfolk.name",
-  "description": "origin.runic_races.family_underfolk.description",
-  "powers": []
-}

@@ -1,0 +1,59 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.deep_one.sunlight_blindness.name",
+  "description": "power.runic_races.deep_one.sunlight_blindness.description",
+  "subpowers": [
+    "slow",
+    "sun_slow",
+    "sun_weak"
+  ],
+  "slow": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.05,
+      "name": "Stocky Gait"
+    }
+  },
+  "sun_slow": {
+    "type": "origins:conditioned_attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Surface Glare"
+    },
+    "condition": {
+      "type": "origins:and",
+      "conditions": [
+        {
+          "type": "origins:exposed_to_sun"
+        },
+        {
+          "type": "origins:daytime"
+        }
+      ]
+    }
+  },
+  "sun_weak": {
+    "type": "origins:conditioned_attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Sun-Dazzled"
+    },
+    "condition": {
+      "type": "origins:and",
+      "conditions": [
+        {
+          "type": "origins:exposed_to_sun"
+        },
+        {
+          "type": "origins:daytime"
+        }
+      ]
+    }
+  }
+}

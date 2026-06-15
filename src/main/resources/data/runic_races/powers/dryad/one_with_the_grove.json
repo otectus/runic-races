@@ -1,0 +1,48 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.dryad.one_with_the_grove.name",
+  "description": "power.runic_races.dryad.one_with_the_grove.description",
+  "subpowers": [
+    "poison_imm",
+    "forest_home",
+    "sun_heal"
+  ],
+  "poison_imm": {
+    "type": "origins:effect_immunity",
+    "effect": "minecraft:poison"
+  },
+  "forest_home": {
+    "type": "runic_races:biome_affinity",
+    "name": "power.runic_races.dryad.one_with_the_grove.name",
+    "description": "power.runic_races.dryad.one_with_the_grove.description",
+    "home_biome_tag": "forge:is_forest",
+    "speed_bonus": 0.06,
+    "damage_bonus": 0.05,
+    "hostile_biome_tag": "forge:is_forest",
+    "speed_penalty": 0.0,
+    "damage_penalty": 0.0,
+    "check_interval": 40
+  },
+  "sun_heal": {
+    "type": "origins:action_over_time",
+    "interval": 300,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:and",
+        "conditions": [
+          {
+            "type": "origins:exposed_to_sun"
+          },
+          {
+            "type": "origins:daytime"
+          }
+        ]
+      },
+      "if_action": {
+        "type": "origins:heal",
+        "amount": 1.0
+      }
+    }
+  }
+}

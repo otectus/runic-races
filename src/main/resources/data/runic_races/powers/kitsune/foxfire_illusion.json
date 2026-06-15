@@ -1,0 +1,167 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.kitsune.foxfire_illusion.name",
+  "description": "power.runic_races.kitsune.foxfire_illusion.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "active_ability"
+  ],
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 800,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:kitsune/foxfire_illusion_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:kitsune/foxfire_illusion_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+  "active_ability": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": false
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "runic_races:kitsune/foxfire_illusion_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:invisibility",
+            "duration": 120,
+            "amplifier": 0,
+            "is_ambient": false,
+            "show_particles": false,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:speed",
+            "duration": 120,
+            "amplifier": 1,
+            "is_ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "origins:area_of_effect",
+          "radius": 5,
+          "bientity_action": {
+            "type": "origins:target_action",
+            "action": {
+              "type": "origins:and",
+              "actions": [
+                {
+                  "type": "origins:apply_effect",
+                  "effect": {
+                    "effect": "minecraft:blindness",
+                    "duration": 80,
+                    "amplifier": 0,
+                    "is_ambient": false,
+                    "show_particles": true,
+                    "show_icon": true
+                  }
+                },
+                {
+                  "type": "origins:apply_effect",
+                  "effect": {
+                    "effect": "minecraft:slowness",
+                    "duration": 80,
+                    "amplifier": 1,
+                    "is_ambient": false,
+                    "show_particles": true,
+                    "show_icon": true
+                  }
+                }
+              ]
+            }
+          },
+          "bientity_condition": {
+            "type": "origins:target_condition",
+            "condition": {
+              "type": "origins:living"
+            }
+          }
+        },
+        {
+          "type": "runic_races:show_banner",
+          "translation_key": "message.runic_races.kitsune.foxfire_illusion",
+          "args": [],
+          "color": "light_purple",
+          "bold": true
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.allay.ambient_with_item",
+          "volume": 0.6,
+          "pitch": 1.4
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:block.fire.ambient",
+          "volume": 0.5,
+          "pitch": 1.5
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:soul_fire_flame",
+          "count": 40,
+          "speed": 0.2,
+          "spread": {
+            "x": 1.0,
+            "y": 1.2,
+            "z": 1.0
+          }
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:enchant",
+          "count": 18,
+          "speed": 0.3,
+          "spread": {
+            "x": 0.6,
+            "y": 0.8,
+            "z": 0.6
+          }
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:kitsune/foxfire_illusion_cooldown_timer",
+          "change": 800
+        }
+      ]
+    }
+  }
+}

@@ -65,7 +65,9 @@ public class RunicRacesMod {
     }
 
     private void onCommonSetup(final FMLCommonSetupEvent event) {
-        LOGGER.info("[RunicRaces] Common setup — 24 races loaded via Origins data");
+        LOGGER.info("[RunicRaces] Common setup — {} races across {} families loaded via Origins data",
+                com.otectus.runic_races.race.RaceRegistry.raceCount(),
+                com.otectus.runic_races.race.RaceRegistry.allFamilies().size());
 
         // Initialize network and optional mod integrations
         event.enqueueWork(NetworkHandler::init);

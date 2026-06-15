@@ -1,0 +1,10 @@
+{
+  "icon": {
+    "item": "runic_races:zombie_icon"
+  },
+  "order": 60,
+  "impact": 1,
+  "name": "origin.runic_races.family_undead.name",
+  "description": "origin.runic_races.family_undead.description",
+  "powers": []
+}

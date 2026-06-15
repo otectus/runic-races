@@ -1,0 +1,27 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.reaper.harbinger_of_death.name",
+  "description": "power.runic_races.reaper.harbinger_of_death.description",
+  "subpowers": [
+    "wither_imm",
+    "night_vision",
+    "melee"
+  ],
+  "wither_imm": {
+    "type": "origins:effect_immunity",
+    "effect": "minecraft:wither"
+  },
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1.0
+  },
+  "melee": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "multiply_total",
+      "value": 0.15,
+      "name": "Reaper's Edge"
+    }
+  }
+}

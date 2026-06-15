@@ -1,0 +1,133 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.arachnid.web_snare.name",
+  "description": "power.runic_races.arachnid.web_snare.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "active_ability"
+  ],
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 700,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:arachnid/web_snare_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:arachnid/web_snare_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+  "active_ability": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": false
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "runic_races:arachnid/web_snare_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "runic_races:place_trap",
+          "duration_ticks": 200
+        },
+        {
+          "type": "origins:area_of_effect",
+          "radius": 5,
+          "bientity_action": {
+            "type": "origins:target_action",
+            "action": {
+              "type": "origins:apply_effect",
+              "effect": {
+                "effect": "minecraft:slowness",
+                "duration": 120,
+                "amplifier": 3,
+                "is_ambient": false,
+                "show_particles": true,
+                "show_icon": true
+              }
+            }
+          },
+          "bientity_condition": {
+            "type": "origins:target_condition",
+            "condition": {
+              "type": "origins:living"
+            }
+          }
+        },
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:slow_falling",
+            "duration": 100,
+            "amplifier": 0,
+            "is_ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "runic_races:show_banner",
+          "translation_key": "message.runic_races.arachnid.web_snare",
+          "args": [],
+          "color": "white",
+          "bold": true
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:entity.spider.ambient",
+          "volume": 0.6,
+          "pitch": 1.2
+        },
+        {
+          "type": "origins:play_sound",
+          "sound": "minecraft:block.wool.place",
+          "volume": 0.5,
+          "pitch": 0.8
+        },
+        {
+          "type": "origins:spawn_particles",
+          "particle": "minecraft:crit",
+          "count": 30,
+          "speed": 0.2,
+          "spread": {
+            "x": 1.5,
+            "y": 0.8,
+            "z": 1.5
+          }
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:arachnid/web_snare_cooldown_timer",
+          "change": 700
+        }
+      ]
+    }
+  }
+}

@@ -11,10 +11,14 @@ public enum CueType {
     VIGNETTE_PULSE,
     /** Heat-shimmer distortion frame overlay. Used for Elder Drake roar. */
     HEAT_SHIMMER,
-    /** Camera shake proxy (renderer offsets GUI slightly). Used for Giant-Blooded landings. */
+    /** Real camera shake (perturbs view roll/pitch). Used for Terra/Wind drake breaths and heavy landings. */
     SHAKE,
     /** Pulsing red heart-outline flash. Used for low-HP triggers. */
     HEARTBEAT_FLASH,
     /** Single "life rune" glyph flash at HUD center. Used for Nine Lives save. */
-    LIFE_RUNE_FLASH
+    LIFE_RUNE_FLASH,
+    /** Soft silver radial bloom from the screen edges inward. Used for Moon Elf moonlight. */
+    MOON_GLOW,
+    /** Pale-cyan vignette frosting (ice creeping in from the edges). Used for frost abilities. */
+    FROST_RIME
 }

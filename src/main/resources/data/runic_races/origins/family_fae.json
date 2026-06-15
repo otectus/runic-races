@@ -1,8 +1,0 @@
-{
-  "icon": { "item": "minecraft:amethyst_shard" },
-  "order": 20,
-  "impact": 1,
-  "name": "origin.runic_races.family_fae.name",
-  "description": "origin.runic_races.family_fae.description",
-  "powers": []
-}

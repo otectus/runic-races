@@ -99,11 +99,8 @@ public final class ScreenCueRenderer {
                 graphics.fill(0, 0, w, h, color);
             }
             case SHAKE -> {
-                // No visual overlay — real camera shake would need a mixin;
-                // draw a very subtle dark frame flicker as a placeholder cue.
-                float alpha = clamp((1.0f - progress) * 0.15f);
-                int color = (int) (alpha * 255) << 24;
-                graphics.fill(0, 0, w, h, color);
+                // No screen overlay — real camera shake is applied by CameraShakeHandler,
+                // which reads this cue's remaining-ticks via shakeAmplitude01().
             }
             case LIFE_RUNE_FLASH -> {
                 float pulse = (float) Math.sin(progress * Math.PI);
@@ -114,7 +111,39 @@ public final class ScreenCueRenderer {
                 int cy = h / 2 - size / 2;
                 graphics.fill(cx, cy, cx + size, cy + size, color);
             }
+            case MOON_GLOW -> {
+                // Soft silver bloom creeping in from the edges, peaking mid-cue.
+                float pulse = (float) Math.sin(progress * Math.PI);
+                float alpha = clamp(pulse * 0.40f);
+                int color = (int) (alpha * 255) << 24 | 0xCFE0FF;
+                int edge = Math.min(w, h) / 5;
+                graphics.fill(0, 0, w, edge, color);
+                graphics.fill(0, h - edge, w, h, color);
+                graphics.fill(0, 0, edge, h, color);
+                graphics.fill(w - edge, 0, w, h, color);
+            }
+            case FROST_RIME -> {
+                // Pale-cyan rime frosting in from the edges, peaking mid-cue.
+                float pulse = (float) Math.sin(progress * Math.PI);
+                float alpha = clamp(pulse * 0.45f);
+                int color = (int) (alpha * 255) << 24 | 0xA9E8FF;
+                int edge = Math.min(w, h) / 4;
+                graphics.fill(0, 0, w, edge, color);
+                graphics.fill(0, h - edge, w, h, color);
+                graphics.fill(0, 0, edge, h, color);
+                graphics.fill(w - edge, 0, w, h, color);
+            }
         }
+    }
+
+    /**
+     * Current camera-shake intensity in [0,1] — 1.0 just after a {@link CueType#SHAKE} cue is
+     * enqueued, decaying linearly to 0 at expiry. Read by {@code CameraShakeHandler} each frame.
+     */
+    public static float shakeAmplitude01() {
+        ActiveCue cue = ACTIVE.get(CueType.SHAKE);
+        if (cue == null || cue.totalTicks <= 0) return 0f;
+        return clamp((float) cue.ticksRemaining / (float) cue.totalTicks);
     }
 
     private static float clamp(float v) {

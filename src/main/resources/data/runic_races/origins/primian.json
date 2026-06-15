@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:primian_icon"
+  },
+  "order": 100,
+  "impact": 1,
+  "name": "origin.runic_races.primian.name",
+  "description": "origin.runic_races.primian.description",
+  "powers": [
+    "runic_races:primian/stroke_of_fortune",
+    "runic_races:primian/boundless_adaptability",
+    "runic_races:primian/jack_of_all_trades"
+  ]
+}

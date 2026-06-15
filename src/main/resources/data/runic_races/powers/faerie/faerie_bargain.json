@@ -1,0 +1,141 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.faerie.faerie_bargain.name",
+  "description": "power.runic_races.faerie.faerie_bargain.description",
+  "subpowers": [
+    "cooldown_timer",
+    "cooldown_decay",
+    "active_ability"
+  ],
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 1000,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 1,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:faerie/faerie_bargain_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "origins:change_resource",
+        "resource": "runic_races:faerie/faerie_bargain_cooldown_timer",
+        "change": -1
+      }
+    }
+  },
+  "active_ability": {
+    "type": "origins:active_self",
+    "key": {
+      "key": "key.origins.primary_active",
+      "continuous": false
+    },
+    "condition": {
+      "type": "origins:resource",
+      "resource": "runic_races:faerie/faerie_bargain_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
+    },
+    "entity_action": {
+      "type": "origins:and",
+      "actions": [
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:regeneration",
+            "duration": 120,
+            "amplifier": 0,
+            "is_ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "origins:apply_effect",
+          "effect": {
+            "effect": "minecraft:absorption",
+            "duration": 120,
+            "amplifier": 0,
+            "is_ambient": false,
+            "show_particles": true,
+            "show_icon": true
+          }
+        },
+        {
+          "type": "origins:area_of_effect",
+          "radius": 7,
+          "bientity_action": {
+            "type": "origins:target_action",
+            "action": {
+              "type": "origins:and",
+              "actions": [
+                {
+                  "type": "origins:apply_effect",
+                  "effect": {
+                    "effect": "minecraft:slowness",
+                    "duration": 120,
+                    "amplifier": 1,
+                    "is_ambient": false,
+                    "show_particles": true,
+                    "show_icon": true
+                  }
+                },
+                {
+                  "type": "origins:apply_effect",
+                  "effect": {
+                    "effect": "minecraft:blindness",
+                    "duration": 120,
+                    "amplifier": 0,
+                    "is_ambient": false,
+                    "show_particles": true,
+                    "show_icon": true
+                  }
+                },
+                {
+                  "type": "origins:apply_effect",
+                  "effect": {
+                    "effect": "minecraft:levitation",
+                    "duration": 40,
+                    "amplifier": 0,
+                    "is_ambient": false,
+                    "show_particles": true,
+                    "show_icon": true
+                  }
+                }
+              ]
+            }
+          },
+          "bientity_condition": {
+            "type": "origins:target_condition",
+            "condition": {
+              "type": "origins:living"
+            }
+          }
+        },
+        {
+          "type": "runic_races:signature_presentation",
+          "key": "FAERIE_GLAMOUR"
+        },
+        {
+          "type": "origins:change_resource",
+          "resource": "runic_races:faerie/faerie_bargain_cooldown_timer",
+          "change": 1000
+        }
+      ]
+    }
+  }
+}

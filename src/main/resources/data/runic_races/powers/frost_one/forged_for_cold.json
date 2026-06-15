@@ -1,0 +1,46 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.frost_one.forged_for_cold.name",
+  "description": "power.runic_races.frost_one.forged_for_cold.description",
+  "subpowers": [
+    "fire",
+    "speed"
+  ],
+  "fire": {
+    "type": "origins:modify_damage_taken",
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "inFire"
+        },
+        {
+          "type": "origins:name",
+          "name": "onFire"
+        },
+        {
+          "type": "origins:name",
+          "name": "lava"
+        },
+        {
+          "type": "origins:name",
+          "name": "hotFloor"
+        }
+      ]
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.25
+    }
+  },
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.05,
+      "name": "Cold Limbs"
+    }
+  }
+}

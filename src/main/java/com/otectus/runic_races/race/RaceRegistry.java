@@ -5,67 +5,84 @@ import com.otectus.runic_races.race.RaceDefinition.SlotGrant;
 import java.util.*;
 
 /**
- * Single source of truth for all 24 Runic Races.
+ * Single source of truth for all 37 Runic Races across 7 families.
  * Other systems (integrations, commands, HUD) should query this registry
  * rather than maintaining their own hardcoded maps.
+ *
+ * Families: human, elven, dwarven, bestial, faeborne, undead, draconic.
  */
 public final class RaceRegistry {
 
     private static final Map<String, RaceDefinition> RACES = new LinkedHashMap<>();
     private static final Map<String, List<RaceDefinition>> FAMILIES = new LinkedHashMap<>();
 
-    // Curios slot grant UUIDs — stable across sessions
-    private static final UUID GOBLIN_RING_UUID = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789001");
-    private static final UUID GOBLIN_CHARM_UUID = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789002");
-    private static final UUID DWARF_BELT_UUID = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789003");
-    private static final UUID ELF_NECKLACE_UUID = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789004");
+    // Curios slot grant UUIDs — stable across sessions. One slot type per family.
+    private static final UUID ELVEN_NECKLACE_UUID  = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789001");
+    private static final UUID DWARVEN_BELT_UUID     = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789002");
+    private static final UUID FAEBORNE_RING_UUID    = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789003");
+    private static final UUID UNDEAD_CHARM_UUID     = UUID.fromString("c1d2e3f4-5678-9abc-def0-123456789004");
 
     static {
-        // === Mortal ===
-        register(new RaceDefinition("human",          "mortal",    "Human",          1.00f, 20,  0.5, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("halfling",       "mortal",    "Halfling",       0.60f, 18,  1.5, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("nomad",          "mortal",    "Nomad",          0.95f, 22,  0.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("giant_blooded",  "mortal",    "Giant-Blooded",  1.40f, 28,  0.0, RaceDefinition.NO_SLOTS));
-        // === Fae ===
-        register(new RaceDefinition("high_elf",       "fae",       "High Elf",       1.05f, 16,  0.0, elfSlots()));
-        register(new RaceDefinition("wood_elf",       "fae",       "Wood Elf",       0.95f, 18,  0.0, elfSlots()));
-        register(new RaceDefinition("sprite",         "fae",       "Sprite",         0.425f,14,  0.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("changeling",     "fae",       "Changeling",     0.90f, 18,  0.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("dryad",          "fae",       "Dryad",          0.90f, 16,  0.0, RaceDefinition.NO_SLOTS));
-        // === Beast ===
-        register(new RaceDefinition("wolfkin",        "beast",     "Wolfkin",        1.00f, 22,  0.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("dragonborn",     "beast",     "Dragonborn",     1.15f, 22,  0.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("catfolk",        "beast",     "Catfolk",        0.85f, 20,  0.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("minotaur",       "beast",     "Minotaur",       1.25f, 26,  0.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("serpentfolk",    "beast",     "Serpentfolk",     0.90f, 18,  0.0, RaceDefinition.NO_SLOTS));
-        // === Underfolk ===
-        register(new RaceDefinition("mountain_dwarf", "underfolk", "Mountain Dwarf", 0.70f, 24,  1.0, dwarfSlots()));
-        register(new RaceDefinition("deep_dwarf",     "underfolk", "Deep Dwarf",     0.65f, 22,  0.5, dwarfSlots()));
-        register(new RaceDefinition("goblin",         "underfolk", "Goblin",         0.55f, 16,  2.0, goblinSlots()));
-        register(new RaceDefinition("troll",          "underfolk", "Troll",          1.25f, 28, -1.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("kobold",         "underfolk", "Kobold",         0.50f, 16,  0.0, RaceDefinition.NO_SLOTS));
-        // === Dragon ===
-        register(new RaceDefinition("wyvern_blooded", "dragon",    "Wyvern-Blooded", 1.10f, 22,  0.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("elder_drake",    "dragon",    "Elder Drake",    1.30f, 26, -2.0, RaceDefinition.NO_SLOTS));
-        // === Cursed ===
-        register(new RaceDefinition("vampire",        "cursed",    "Vampire",        1.00f, 18,  0.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("lycanthrope",    "cursed",    "Lycanthrope",    1.00f, 22,  0.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("revenant",       "cursed",    "Revenant",       1.00f, 20,  0.0, RaceDefinition.NO_SLOTS));
+        // === Human === gold · generalists, fortune, versatility
+        register(new RaceDefinition("primian",   "human",   "Primian", 1.00f, 20,  1.0, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("celeron",   "human",   "Celeron", 0.95f, 22,  0.5, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("magi",      "human",   "Magi",    1.00f, 16,  0.0, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("valen",     "human",   "Valen",   1.10f, 26,  0.0, RaceDefinition.NO_SLOTS));
+        // === Elven === magenta · grace + arcane, frail bodies (tall & lithe)
+        register(new RaceDefinition("high_elf",  "elven",   "High Elf",  1.08f, 16, 0.0, elvenSlots()));
+        register(new RaceDefinition("dark_elf",  "elven",   "Dark Elf",  1.04f, 18, 0.0, elvenSlots()));
+        register(new RaceDefinition("moon_elf",  "elven",   "Moon Elf",  1.06f, 16, 0.0, elvenSlots()));
+        register(new RaceDefinition("blood_elf", "elven",   "Blood Elf", 1.05f, 18, 0.0, elvenSlots()));
+        register(new RaceDefinition("ice_elf",   "elven",   "Ice Elf",   1.06f, 16, 0.0, elvenSlots()));
+        // === Dwarven === slate · tough, armored, subterranean
+        register(new RaceDefinition("deep_one",  "dwarven", "Deep One",  0.68f, 24, 0.5, dwarvenSlots()));
+        register(new RaceDefinition("forge_one", "dwarven", "Forge One", 0.72f, 24, 0.0, dwarvenSlots()));
+        register(new RaceDefinition("frost_one", "dwarven", "Frost One", 0.72f, 26, 0.0, dwarvenSlots()));
+        register(new RaceDefinition("iron_one",  "dwarven", "Iron One",  0.70f, 26, 0.0, dwarvenSlots()));
+        register(new RaceDefinition("sky_one",   "dwarven", "Sky One",   0.74f, 22, 0.0, dwarvenSlots()));
+        register(new RaceDefinition("runic_one", "dwarven", "Runic One", 0.70f, 22, 0.5, dwarvenSlots()));
+        // === Bestial === green · senses + agility, predatory
+        register(new RaceDefinition("arachnid",  "bestial", "Arachnid", 0.90f, 18, 0.0, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("avian",     "bestial", "Avian",    0.90f, 18, 0.0, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("canine",    "bestial", "Canine",   1.00f, 24, 0.0, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("feline",    "bestial", "Feline",   0.85f, 20, 0.0, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("kitsune",   "bestial", "Kitsune",  0.92f, 18, 0.5, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("serpen",    "bestial", "Serpen",   0.95f, 18, 0.0, RaceDefinition.NO_SLOTS));
+        // === Faeborne === teal · magic + illusion, small/fragile
+        register(new RaceDefinition("changeling","faeborne","Changeling", 0.90f, 18, -0.5, faeborneSlots()));
+        register(new RaceDefinition("dryad",     "faeborne","Dryad",      0.95f, 16,  0.0, faeborneSlots()));
+        register(new RaceDefinition("sprite",    "faeborne","Sprite",     0.45f, 12,  0.0, faeborneSlots()));
+        register(new RaceDefinition("nymph",     "faeborne","Nymph",      0.95f, 16,  0.0, faeborneSlots()));
+        register(new RaceDefinition("faerie",    "faeborne","Faerie",     0.50f, 12,  1.0, faeborneSlots()));
+        // === Undead === purple · undeath immunities + night power
+        register(new RaceDefinition("zombie",    "undead",  "Zombie",   1.00f, 24,  0.0, undeadSlots()));
+        register(new RaceDefinition("skeleton",  "undead",  "Skeleton", 0.95f, 22,  0.0, undeadSlots()));
+        register(new RaceDefinition("wraith",    "undead",  "Wraith",   0.95f, 20,  0.0, undeadSlots()));
+        register(new RaceDefinition("demon",     "undead",  "Demon",    1.20f, 26, -1.0, undeadSlots()));
+        register(new RaceDefinition("reaper",    "undead",  "Reaper",   1.10f, 22, -1.0, undeadSlots()));
+        // === Draconic === red · elemental breath + scaled armor + flight
+        register(new RaceDefinition("fire_drake", "draconic","Fire Drake", 1.20f, 26, -1.0, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("ice_drake",  "draconic","Ice Drake",  1.15f, 24, -1.0, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("sea_serpen", "draconic","Sea Serpen", 1.20f, 24, -0.5, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("terra_drake","draconic","Terra Drake",1.30f, 28, -1.0, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("volt_drake", "draconic","Volt Drake", 1.10f, 24, -0.5, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("wind_wyrm",  "draconic","Wind Wyrm",  1.15f, 24, -2.0, RaceDefinition.NO_SLOTS));
     }
 
-    private static SlotGrant[] goblinSlots() {
-        return new SlotGrant[]{
-                new SlotGrant("ring", GOBLIN_RING_UUID, 1),
-                new SlotGrant("charm", GOBLIN_CHARM_UUID, 1)
-        };
+    private static SlotGrant[] elvenSlots() {
+        return new SlotGrant[]{new SlotGrant("necklace", ELVEN_NECKLACE_UUID, 1)};
     }
 
-    private static SlotGrant[] dwarfSlots() {
-        return new SlotGrant[]{new SlotGrant("belt", DWARF_BELT_UUID, 1)};
+    private static SlotGrant[] dwarvenSlots() {
+        return new SlotGrant[]{new SlotGrant("belt", DWARVEN_BELT_UUID, 1)};
     }
 
-    private static SlotGrant[] elfSlots() {
-        return new SlotGrant[]{new SlotGrant("necklace", ELF_NECKLACE_UUID, 1)};
+    private static SlotGrant[] faeborneSlots() {
+        return new SlotGrant[]{new SlotGrant("ring", FAEBORNE_RING_UUID, 1)};
+    }
+
+    private static SlotGrant[] undeadSlots() {
+        return new SlotGrant[]{new SlotGrant("charm", UNDEAD_CHARM_UUID, 1)};
     }
 
     private static void register(RaceDefinition def) {

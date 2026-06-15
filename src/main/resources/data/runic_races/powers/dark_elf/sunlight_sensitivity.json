@@ -1,0 +1,59 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.dark_elf.sunlight_sensitivity.name",
+  "description": "power.runic_races.dark_elf.sunlight_sensitivity.description",
+  "subpowers": [
+    "health",
+    "sun_slow",
+    "sun_weak"
+  ],
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": -2.0,
+      "name": "Sun-Averse Health"
+    }
+  },
+  "sun_slow": {
+    "type": "origins:conditioned_attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Sunlight Sluggishness"
+    },
+    "condition": {
+      "type": "origins:and",
+      "conditions": [
+        {
+          "type": "origins:exposed_to_sun"
+        },
+        {
+          "type": "origins:daytime"
+        }
+      ]
+    }
+  },
+  "sun_weak": {
+    "type": "origins:conditioned_attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "multiply_total",
+      "value": -0.1,
+      "name": "Sunlight Weakness"
+    },
+    "condition": {
+      "type": "origins:and",
+      "conditions": [
+        {
+          "type": "origins:exposed_to_sun"
+        },
+        {
+          "type": "origins:daytime"
+        }
+      ]
+    }
+  }
+}

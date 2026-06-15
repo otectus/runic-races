@@ -1,0 +1,45 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.nymph.spirit_of_spring.name",
+  "description": "power.runic_races.nymph.spirit_of_spring.description",
+  "subpowers": [
+    "water_breathing",
+    "magic",
+    "water_home"
+  ],
+  "water_breathing": {
+    "type": "origins:water_breathing"
+  },
+  "magic": {
+    "type": "origins:modify_damage_dealt",
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "magic"
+        },
+        {
+          "type": "origins:name",
+          "name": "indirectMagic"
+        }
+      ]
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.1
+    }
+  },
+  "water_home": {
+    "type": "runic_races:biome_affinity",
+    "name": "power.runic_races.nymph.spirit_of_spring.name",
+    "description": "power.runic_races.nymph.spirit_of_spring.description",
+    "home_biome_tag": "forge:is_water",
+    "speed_bonus": 0.06,
+    "damage_bonus": 0.05,
+    "hostile_biome_tag": "forge:is_hot",
+    "speed_penalty": -0.1,
+    "damage_penalty": 0.0,
+    "check_interval": 40
+  }
+}

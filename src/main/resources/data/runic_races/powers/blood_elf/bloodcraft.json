@@ -1,0 +1,38 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.blood_elf.bloodcraft.name",
+  "description": "power.runic_races.blood_elf.bloodcraft.description",
+  "subpowers": [
+    "melee",
+    "magic"
+  ],
+  "melee": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_damage",
+      "operation": "multiply_total",
+      "value": 0.1,
+      "name": "Bloodcraft Strength"
+    }
+  },
+  "magic": {
+    "type": "origins:modify_damage_dealt",
+    "damage_condition": {
+      "type": "origins:or",
+      "conditions": [
+        {
+          "type": "origins:name",
+          "name": "magic"
+        },
+        {
+          "type": "origins:name",
+          "name": "indirectMagic"
+        }
+      ]
+    },
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.1
+    }
+  }
+}

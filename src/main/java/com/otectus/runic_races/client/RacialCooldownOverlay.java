@@ -48,6 +48,9 @@ public class RacialCooldownOverlay implements IGuiOverlay {
     private final Map<ResourceLocation, ResourceState> resourceCache = new HashMap<>();
     private final Map<ResourceLocation, Boolean> wasReady = new HashMap<>();
     private final Map<ResourceLocation, Integer> flashRemaining = new HashMap<>();
+    // Whether each ability's custom HUD texture is present in the loaded resource packs.
+    // Resolved once per texture (lookups are cheap but we avoid hitting the manager per frame).
+    private final Map<ResourceLocation, Boolean> textureExists = new HashMap<>();
     private long lastResourceCheck = -1;
     private Player cachedPlayer = null;
 
@@ -184,7 +187,11 @@ public class RacialCooldownOverlay implements IGuiOverlay {
         int ix = x + FRAME;
         int iy = y + FRAME;
         RenderSystem.enableBlend();
-        graphics.renderItem(ability.icon(), ix, iy);
+        if (hasTexture(ability.texture())) {
+            graphics.blit(ability.texture(), ix, iy, 0, 0, ICON, ICON, ICON, ICON);
+        } else {
+            graphics.renderItem(ability.icon(), ix, iy); // fallback: vanilla item stand-in
+        }
 
         // --- Vertical clock-wipe cooldown mask ---
         if (state != null && !ready) {
@@ -220,6 +227,16 @@ public class RacialCooldownOverlay implements IGuiOverlay {
         if (showNames) {
             graphics.drawString(font, ability.name(), textX, textY + font.lineHeight + 1, 0xFFDDDDDD, false);
         }
+    }
+
+    /** True if a custom ability texture is present; result is cached per texture. */
+    private boolean hasTexture(ResourceLocation texture) {
+        if (texture == null) return false;
+        Boolean cached = textureExists.get(texture);
+        if (cached != null) return cached;
+        boolean present = Minecraft.getInstance().getResourceManager().getResource(texture).isPresent();
+        textureExists.put(texture, present);
+        return present;
     }
 
     private void drawFrame(GuiGraphics graphics, int x, int y, FamilyAccent accent, int alpha) {
