@@ -3,7 +3,7 @@
     "item": "runic_races:sprite_icon"
   },
   "order": 502,
-  "impact": 1,
+  "impact": 2,
   "name": "origin.runic_races.sprite.name",
   "description": "origin.runic_races.sprite.description",
   "powers": [

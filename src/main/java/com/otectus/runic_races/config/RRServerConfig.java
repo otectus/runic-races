@@ -55,7 +55,7 @@ public class RRServerConfig {
 
         builder.comment("Race-state notifications — start/stop action-bar banners for harmful race conditions").push("notifications");
         NOTIFICATIONS_ENABLED = builder
-                .comment("Master switch for race-state start/stop banners (vampire sun, tight space, fire, etc.).",
+                .comment("Master switch for race-state start/stop banners (zombie sun, tight space, fire, etc.).",
                         "When false, the HUD state runes still render but no action-bar banners are sent.")
                 .define("enabled", true);
         NOTIFICATIONS_CHAT_MIRROR = builder

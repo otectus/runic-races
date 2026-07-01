@@ -36,7 +36,7 @@ side="BOTH"
 [[dependencies.${mod_id}]]
 modId="origins"
 mandatory=true
-versionRange="[0,)"
+versionRange="[1.10,)"
 ordering="AFTER"
 side="BOTH"
 

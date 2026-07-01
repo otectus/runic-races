@@ -2,6 +2,7 @@ package com.otectus.runic_races.power;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.common.state.RaceStateFlags;
 import com.otectus.runic_races.common.state.RaceStateTracker;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
@@ -73,7 +74,9 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
 
     @Override
     public boolean canTick(ConfiguredPower<Configuration, ?> power, Entity entity) {
-        return entity instanceof Player && entity.tickCount % power.getConfiguration().checkInterval() == 0;
+        // Clamp: a datapack "check_interval": 0 must not become a modulo-by-zero server crash.
+        int interval = Math.max(1, power.getConfiguration().checkInterval());
+        return entity instanceof Player && entity.tickCount % interval == 0;
     }
 
     @Override
@@ -84,10 +87,10 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
         Holder<Biome> biomeHolder = player.level().getBiome(player.blockPosition());
 
         boolean inHome = config.homeBiomeTag().isPresent() &&
-                biomeHolder.is(resolveTag(config.homeBiomeTag().get()));
+                biomeHolder.is(resolveTag(config.homeBiomeTag().get(), player));
 
         boolean inHostile = config.hostileBiomeTag().isPresent() &&
-                biomeHolder.is(resolveTag(config.hostileBiomeTag().get()));
+                biomeHolder.is(resolveTag(config.hostileBiomeTag().get(), player));
 
         applyModifier(player, Attributes.MOVEMENT_SPEED, HOME_SPEED_UUID,
                 "Runic Races Home Speed", inHome ? config.speedBonus() : 0.0, inHome);
@@ -139,9 +142,23 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
         }
     }
 
-    private static TagKey<Biome> resolveTag(String tagString) {
-        return TAG_CACHE.computeIfAbsent(tagString,
+    private static final java.util.Set<String> WARNED_TAGS = ConcurrentHashMap.newKeySet();
+
+    private static TagKey<Biome> resolveTag(String tagString, Player player) {
+        TagKey<Biome> tag = TAG_CACHE.computeIfAbsent(tagString,
                 s -> TagKey.create(net.minecraft.core.registries.Registries.BIOME, new ResourceLocation(s)));
+        // Warn once per tag: Holder.is() on a tag nothing defines is silently false forever,
+        // which reads as "the affinity just never procs" to pack authors.
+        if (WARNED_TAGS.add(tagString)
+                && player.level().registryAccess()
+                        .registryOrThrow(net.minecraft.core.registries.Registries.BIOME)
+                        .getTag(tag).isEmpty()) {
+            RunicRacesMod.LOGGER.warn(
+                    "[RunicRaces] biome_affinity references biome tag '{}' which no datapack defines — "
+                            + "this bonus/penalty will never activate. Did you mean a vanilla tag like 'minecraft:is_forest'?",
+                    tagString);
+        }
+        return tag;
     }
 
     private void removeModifier(Player player, net.minecraft.world.entity.ai.attributes.Attribute attribute, UUID uuid) {

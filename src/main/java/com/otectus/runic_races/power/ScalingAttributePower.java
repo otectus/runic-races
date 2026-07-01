@@ -21,7 +21,7 @@ import java.util.UUID;
 
 /**
  * Custom Apoli power: applies different attribute modifiers based on time of day.
- * Useful for races with day/night power variations (vampires, moon elves, etc).
+ * Useful for races with day/night power variations (dark elves, wraiths, demons, etc).
  *
  * JSON usage:
  * {
@@ -41,7 +41,8 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
             double dayValue,
             double nightValue,
             String operation,
-            int checkInterval
+            int checkInterval,
+            boolean requireSkyExposure
     ) implements IDynamicFeatureConfiguration {
 
         public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance ->
@@ -50,7 +51,8 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
                         Codec.DOUBLE.optionalFieldOf("day_value", 0.0).forGetter(Configuration::dayValue),
                         Codec.DOUBLE.optionalFieldOf("night_value", 0.0).forGetter(Configuration::nightValue),
                         Codec.STRING.optionalFieldOf("operation", "multiply_total").forGetter(Configuration::operation),
-                        Codec.INT.optionalFieldOf("check_interval", 20).forGetter(Configuration::checkInterval)
+                        Codec.INT.optionalFieldOf("check_interval", 20).forGetter(Configuration::checkInterval),
+                        Codec.BOOL.optionalFieldOf("require_sky_exposure", false).forGetter(Configuration::requireSkyExposure)
                 ).apply(instance, Configuration::new)
         );
     }
@@ -61,7 +63,9 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
 
     @Override
     public boolean canTick(ConfiguredPower<Configuration, ?> power, Entity entity) {
-        return entity instanceof Player && entity.tickCount % power.getConfiguration().checkInterval() == 0;
+        // Clamp: a datapack "check_interval": 0 must not become a modulo-by-zero server crash.
+        int interval = Math.max(1, power.getConfiguration().checkInterval());
+        return entity instanceof Player && entity.tickCount % interval == 0;
     }
 
     @Override
@@ -70,7 +74,16 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
 
         Configuration config = power.getConfiguration();
         boolean isDaytime = player.level().isDay();
-        double value = isDaytime ? config.dayValue() : config.nightValue();
+        double value;
+        if (isDaytime) {
+            // With require_sky_exposure, the day penalty only bites under open sky —
+            // a sun-averse race sheltering underground or indoors is spared.
+            boolean exposed = !config.requireSkyExposure()
+                    || player.level().canSeeSky(player.blockPosition());
+            value = exposed ? config.dayValue() : 0.0;
+        } else {
+            value = config.nightValue();
+        }
 
         Attribute attr = resolveAttribute(config.attribute());
         if (attr == null) return;
@@ -91,7 +104,7 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
         }
 
         // "Night empowered" = not daytime AND the night value is the stronger (non-zero) side.
-        // Used by the HUD state-rune overlay to signal to vampire-style races that their buff is live.
+        // Used by the HUD state-rune overlay to signal to night-empowered races that their buff is live.
         if (player instanceof ServerPlayer serverPlayer) {
             boolean nightEmpowered = !isDaytime && config.nightValue() > 0.0;
             RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.NIGHT_EMPOWERED, nightEmpowered);

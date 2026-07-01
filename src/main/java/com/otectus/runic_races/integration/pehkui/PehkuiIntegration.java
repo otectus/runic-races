@@ -24,7 +24,7 @@ import java.util.Optional;
 /**
  * Pehkui integration: assigns racial height scaling to each of the 37 races, read
  * from the central {@link RaceRegistry}. Human is baseline (~1.0).
- * Range: 0.45 (Sprite / Faerie) to 1.30 (Terra Drake).
+ * Range: 0.45 (Sprite) / 0.50 (Faerie) to 1.30 (Terra Drake).
  */
 public class PehkuiIntegration implements ModIntegration {
     private static final float SCALE_EPSILON = 0.001f;

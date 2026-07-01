@@ -28,6 +28,7 @@
     "day_value": -0.05,
     "night_value": 0.1,
     "operation": "multiply_total",
-    "check_interval": 40
+    "check_interval": 40,
+    "require_sky_exposure": true
   }
 }

@@ -71,7 +71,7 @@
             "duration": 100,
             "amplifier": 1,
             "is_ambient": false,
-            "show_particles": true,
+            "show_particles": false,
             "show_icon": true
           }
         },
@@ -82,7 +82,7 @@
             "duration": 100,
             "amplifier": 0,
             "is_ambient": false,
-            "show_particles": true,
+            "show_particles": false,
             "show_icon": true
           }
         },
@@ -93,33 +93,24 @@
             "duration": 100,
             "amplifier": 0,
             "is_ambient": false,
-            "show_particles": true,
+            "show_particles": false,
             "show_icon": true
           }
         },
         {
-          "type": "origins:area_of_effect",
+          "type": "runic_races:afflict_hostiles",
           "radius": 5,
-          "bientity_action": {
-            "type": "origins:target_action",
-            "action": {
-              "type": "origins:apply_effect",
-              "effect": {
-                "effect": "minecraft:wither",
-                "duration": 60,
-                "amplifier": 0,
-                "is_ambient": false,
-                "show_particles": true,
-                "show_icon": true
-              }
+          "effects": [
+            {
+              "effect": "minecraft:wither",
+              "duration_ticks": 60,
+              "amplifier": 0
             }
-          },
-          "bientity_condition": {
-            "type": "origins:target_condition",
-            "condition": {
-              "type": "origins:living"
-            }
-          }
+          ]
+        },
+        {
+          "type": "origins:heal",
+          "amount": 2.0
         },
         {
           "type": "runic_races:signature_presentation",

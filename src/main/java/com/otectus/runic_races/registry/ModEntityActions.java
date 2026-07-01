@@ -1,6 +1,7 @@
 package com.otectus.runic_races.registry;
 
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.action.AfflictHostilesAction;
 import com.otectus.runic_races.action.ClearEffectsByCategoryAction;
 import com.otectus.runic_races.action.ConeBreathAction;
 import com.otectus.runic_races.action.ConsumeManaAction;
@@ -53,6 +54,9 @@ public class ModEntityActions {
 
     public static final RegistryObject<GlowHostilesAction> GLOW_HOSTILES =
             ENTITY_ACTIONS.register("glow_hostiles", GlowHostilesAction::new);
+
+    public static final RegistryObject<AfflictHostilesAction> AFFLICT_HOSTILES =
+            ENTITY_ACTIONS.register("afflict_hostiles", AfflictHostilesAction::new);
 
     public static final RegistryObject<PlaceTrapAction> PLACE_TRAP =
             ENTITY_ACTIONS.register("place_trap", PlaceTrapAction::new);

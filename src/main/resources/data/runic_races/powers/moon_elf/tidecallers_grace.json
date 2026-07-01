@@ -15,13 +15,17 @@
     "strength": 1.0
   },
   "night_regen": {
-    "type": "runic_races:scaling_attribute",
+    "type": "origins:action_over_time",
     "name": "power.runic_races.moon_elf.tidecallers_grace.name",
     "description": "power.runic_races.moon_elf.tidecallers_grace.description",
-    "attribute": "generic.max_health",
-    "day_value": 0.0,
-    "night_value": 0.0,
-    "operation": "multiply_total",
-    "check_interval": 40
+    "interval": 100,
+    "condition": {
+      "type": "origins:daytime",
+      "inverted": true
+    },
+    "entity_action": {
+      "type": "origins:heal",
+      "amount": 1.0
+    }
   }
 }

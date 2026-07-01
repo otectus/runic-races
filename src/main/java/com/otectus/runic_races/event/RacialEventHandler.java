@@ -10,6 +10,7 @@ import com.otectus.runic_races.network.S2CScreenCuePacket;
 import com.otectus.runic_races.presentation.CueType;
 import com.otectus.runic_races.presentation.RunicPresentation;
 import com.otectus.runic_races.presentation.SignatureKey;
+import com.otectus.runic_races.race.RaceRegistry;
 import com.otectus.runic_races.util.RaceHelper;
 import com.otectus.runic_races.util.OriginsPowerHelper;
 import net.minecraft.ChatFormatting;
@@ -20,8 +21,12 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -39,6 +44,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -56,9 +62,12 @@ import java.util.UUID;
  * outside of what Origins data-driven powers can express.
  *
  * Handles:
- * - Catfolk Nine Lives (lethal damage prevention)
- * - Revenant death-site revival
- * - Mountain/Deep Dwarf forge blessings
+ * - Feline Nine Lives (lethal damage prevention)
+ * - Reaper death-site revival
+ * - Forge One / Runic One forge blessings
+ * - Valen shoulder-check and landing cues
+ * - Lightweight-race knockback amplification (LivingKnockBackEvent)
+ * - Venomous melee (Arachnid/Serpen) and Blood Elf lifesteal
  * - Brief contact-damage suppression during Pehkui resizes (both growing and shrinking)
  * - Jump height compensation for scaled-down races (Pehkui)
  */
@@ -67,28 +76,30 @@ public class RacialEventHandler {
     // Mod presence never changes at runtime — resolve once instead of per-jump.
     private static final boolean PEHKUI_LOADED = ModList.get().isLoaded("pehkui");
 
-    // NBT tag keys for cooldown tracking
-    private static final String TROLL_FIRE_SUPPRESS_UNTIL = "runic_races:troll_fire_suppress_until";
-    private static final String VAMPIRE_SUN_TICKS = "runic_races:vampire_sun_ticks";
-    private static final String HUMAN_ADAPT_STACKS = "runic_races:human_adapt_stacks";
-    private static final String HUMAN_ADAPT_LAST_TICK = "runic_races:human_adapt_last_tick";
-    private static final String HUMAN_ADAPT_BIOME = "runic_races:human_adapt_last_biome";
-    private static final String HUMAN_ADAPT_SYNCED_STACKS = "runic_races:human_adapt_synced_stacks";
-    private static final UUID HUMAN_ADAPT_UUID = UUID.fromString("a7b3c8d5-3456-6789-abcd-ef0123456789");
+    // NBT tag keys for cooldown tracking.
+    // NOTE: several key *strings* predate the current race names (vampire/revenant) — they are
+    // persisted in player NBT, so the strings stay stable while the Java identifiers use the
+    // real race names.
+    private static final String ZOMBIE_SUN_TICKS = "runic_races:vampire_sun_ticks";
+    private static final String ADAPT_STACKS = "runic_races:human_adapt_stacks";
+    private static final String ADAPT_LAST_TICK = "runic_races:human_adapt_last_tick";
+    private static final String ADAPT_BIOME = "runic_races:human_adapt_last_biome";
+    private static final String ADAPT_SYNCED_STACKS = "runic_races:human_adapt_synced_stacks";
+    private static final String ADAPT_LAST_KILL_TYPE = "runic_races:human_adapt_last_kill_type";
+    private static final UUID ADAPT_UUID = UUID.fromString("a7b3c8d5-3456-6789-abcd-ef0123456789");
     private static final int ADAPT_STACK_DECAY_TICKS = 1200; // 60s
     private static final int ADAPT_STACK_CAP = 5;
-    private static final String REVENANT_REVIVAL_COOLDOWN = "runic_races:revenant_revival_cd";
-    private static final String REVENANT_DEATH_X = "runic_races:death_x";
-    private static final String REVENANT_DEATH_Y = "runic_races:death_y";
-    private static final String REVENANT_DEATH_Z = "runic_races:death_z";
-    private static final String REVENANT_DEATH_DIM = "runic_races:death_dim";
+    private static final String REAPER_REVIVAL_COOLDOWN = "runic_races:revenant_revival_cd";
+    private static final String REAPER_DEATH_X = "runic_races:death_x";
+    private static final String REAPER_DEATH_Y = "runic_races:death_y";
+    private static final String REAPER_DEATH_Z = "runic_races:death_z";
+    private static final String REAPER_DEATH_DIM = "runic_races:death_dim";
     private static final String RESIZE_PROTECTION_UNTIL = "runic_races:resize_protection_until";
-    private static final String REVENANT_REVIVAL_ATTEMPTS = "runic_races:revenant_revival_attempts";
-    private static final int MAX_REVIVAL_ATTEMPTS = 3;
+    private static final String VALEN_SHOVE_LATCH = "runic_races:valen_shove_latch";
 
     // Cooldowns in ticks
     private static final int NINE_LIVES_CD_TICKS = 12000; // 10 minutes
-    private static final int REVENANT_REVIVAL_CD_TICKS = 36000; // 30 minutes
+    private static final int REAPER_REVIVAL_CD_TICKS = 36000; // 30 minutes
     private static final ResourceLocation NINE_LIVES_RESOURCE = new ResourceLocation(RunicRacesMod.MOD_ID, "feline/nine_lives_cooldown_timer");
 
     // ==================== FELINE: NINE LIVES ====================
@@ -114,6 +125,11 @@ public class RacialEventHandler {
 
         // === FELINE: NINE LIVES ===
         if ("feline".equals(race)) {
+            // Don't burn the 10-minute charge on deaths it can't prevent (void, /kill):
+            // Resistance V doesn't stop invulnerability-bypassing damage, so the player
+            // would spend the charge and die a second later anyway.
+            if (event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return;
+
             float currentHealth = player.getHealth();
             float incomingDamage = event.getAmount();
 
@@ -134,24 +150,31 @@ public class RacialEventHandler {
         }
     }
 
-    // ==================== REVENANT: DEATH-SITE REVIVAL ====================
+    // ==================== REAPER: DEATH-SITE REVIVAL ====================
 
     /**
-     * On death, if the player is a Revenant and revival is off cooldown,
+     * On death, if the player is a Reaper and revival is off cooldown,
      * record the death location for revival on respawn.
      */
     @SubscribeEvent
     public void onAnyLivingDeath(LivingDeathEvent event) {
-        // Human Adaptation: bump a stack when a human kills any distinct mob type.
-        // Separate @SubscribeEvent so it doesn't compete with the Revenant priority hook below.
+        // Primian Adaptation: bump a stack when a kill is a *different* mob type than the
+        // last one — farming a single spawner doesn't stack. Separate @SubscribeEvent so it
+        // doesn't compete with the Reaper priority hook below.
         if (!(event.getSource().getEntity() instanceof ServerPlayer killer)) return;
         if (!RaceHelper.isRace(killer, "primian")) return;
 
         CompoundTag data = killer.getPersistentData();
-        int stacks = data.getInt(HUMAN_ADAPT_STACKS);
+        ResourceLocation killedId = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES
+                .getKey(event.getEntity().getType());
+        String killedType = killedId == null ? "" : killedId.toString();
+        if (killedType.equals(data.getString(ADAPT_LAST_KILL_TYPE))) return;
+        data.putString(ADAPT_LAST_KILL_TYPE, killedType);
+
+        int stacks = data.getInt(ADAPT_STACKS);
         if (stacks < ADAPT_STACK_CAP) {
-            data.putInt(HUMAN_ADAPT_STACKS, stacks + 1);
-            data.putLong(HUMAN_ADAPT_LAST_TICK, killer.level().getGameTime());
+            data.putInt(ADAPT_STACKS, stacks + 1);
+            data.putLong(ADAPT_LAST_TICK, killer.level().getGameTime());
         }
     }
 
@@ -163,30 +186,22 @@ public class RacialEventHandler {
         CompoundTag data = player.getPersistentData();
         long now = player.level().getGameTime();
 
-        if (isCooldownReady(data, REVENANT_REVIVAL_COOLDOWN, now, REVENANT_REVIVAL_CD_TICKS)) {
-            int attempts = data.getInt(REVENANT_REVIVAL_ATTEMPTS);
-            if (attempts >= MAX_REVIVAL_ATTEMPTS) {
-                data.putInt(REVENANT_REVIVAL_ATTEMPTS, 0);
-                RunicRacesMod.LOGGER.warn("[RunicRaces] Revenant {} exceeded max revival attempts, using normal respawn",
-                        player.getName().getString());
-                return;
-            }
-            data.putInt(REVENANT_REVIVAL_ATTEMPTS, attempts + 1);
+        // Only record the death site here. The cooldown is stamped on *successful* revival
+        // (onPlayerRespawn) so a failed attempt (no safe spot, missing dimension) doesn't
+        // burn 30 minutes for nothing.
+        if (isCooldownReady(data, REAPER_REVIVAL_COOLDOWN, now, REAPER_REVIVAL_CD_TICKS)) {
+            data.putDouble(REAPER_DEATH_X, player.getX());
+            data.putDouble(REAPER_DEATH_Y, player.getY());
+            data.putDouble(REAPER_DEATH_Z, player.getZ());
+            data.putString(REAPER_DEATH_DIM, player.level().dimension().location().toString());
 
-            // Record death position for revival
-            data.putDouble(REVENANT_DEATH_X, player.getX());
-            data.putDouble(REVENANT_DEATH_Y, player.getY());
-            data.putDouble(REVENANT_DEATH_Z, player.getZ());
-            data.putString(REVENANT_DEATH_DIM, player.level().dimension().location().toString());
-            data.putLong(REVENANT_REVIVAL_COOLDOWN, now);
-
-            RunicRacesMod.debug("[RunicRaces] Revenant death recorded for {} at ({}, {}, {})",
+            RunicRacesMod.debug("[RunicRaces] Reaper death recorded for {} at ({}, {}, {})",
                     player.getName().getString(), player.getX(), player.getY(), player.getZ());
         }
     }
 
     /**
-     * On respawn, if the Revenant has a recorded death site, teleport them there
+     * On respawn, if the Reaper has a recorded death site, teleport them there
      * with reduced health and temporary invulnerability instead of normal respawn.
      */
     @SubscribeEvent
@@ -195,12 +210,12 @@ public class RacialEventHandler {
         if (!RaceHelper.isRace(player, "reaper")) return;
 
         CompoundTag data = player.getPersistentData();
-        if (!data.contains(REVENANT_DEATH_X)) return;
+        if (!data.contains(REAPER_DEATH_X)) return;
 
-        double x = data.getDouble(REVENANT_DEATH_X);
-        double y = data.getDouble(REVENANT_DEATH_Y);
-        double z = data.getDouble(REVENANT_DEATH_Z);
-        String dim = data.getString(REVENANT_DEATH_DIM);
+        double x = data.getDouble(REAPER_DEATH_X);
+        double y = data.getDouble(REAPER_DEATH_Y);
+        double z = data.getDouble(REAPER_DEATH_Z);
+        String dim = data.getString(REAPER_DEATH_DIM);
 
         ResourceLocation dimensionId = ResourceLocation.tryParse(dim);
         ServerLevel targetLevel = dimensionId == null ? null
@@ -213,24 +228,26 @@ public class RacialEventHandler {
                 player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 600, 4)); // Resistance V, 30s
                 player.addEffect(new MobEffectInstance(MobEffects.GLOWING, 600)); // Visible to others
                 RunicPresentation.fire(player, SignatureKey.REAPER_REVIVAL);
-                data.putInt(REVENANT_REVIVAL_ATTEMPTS, 0);
+                // Success is what consumes the 30-minute cooldown.
+                data.putLong(REAPER_REVIVAL_COOLDOWN, player.level().getGameTime());
 
-                RunicRacesMod.debug("[RunicRaces] Revenant {} revived at safe position ({}, {}, {})",
+                RunicRacesMod.debug("[RunicRaces] Reaper {} revived at safe position ({}, {}, {})",
                         player.getName().getString(), safePos.x, safePos.y, safePos.z);
             } else {
-                RunicRacesMod.LOGGER.warn("[RunicRaces] No safe revival position for Revenant {} near ({}, {}, {}), using normal respawn",
+                RunicRacesMod.LOGGER.warn("[RunicRaces] No safe revival position for Reaper {} near ({}, {}, {}), using normal respawn",
                         player.getName().getString(), x, y, z);
                 RunicPresentation.fire(player, SignatureKey.REAPER_REVIVAL_REJECTED);
             }
         } else {
-            RunicRacesMod.LOGGER.warn("[RunicRaces] Could not restore Revenant {} to death dimension '{}'",
+            RunicRacesMod.LOGGER.warn("[RunicRaces] Could not restore Reaper {} to death dimension '{}'",
                     player.getName().getString(), dim);
+            RunicPresentation.fire(player, SignatureKey.REAPER_REVIVAL_REJECTED);
         }
 
-        data.remove(REVENANT_DEATH_X);
-        data.remove(REVENANT_DEATH_Y);
-        data.remove(REVENANT_DEATH_Z);
-        data.remove(REVENANT_DEATH_DIM);
+        data.remove(REAPER_DEATH_X);
+        data.remove(REAPER_DEATH_Y);
+        data.remove(REAPER_DEATH_Z);
+        data.remove(REAPER_DEATH_DIM);
     }
 
     // ==================== MOUNTAIN DWARF: FORGE BLESSING ====================
@@ -240,11 +257,11 @@ public class RacialEventHandler {
     private static final float FORGE_BLESSING_CHANCE = 0.25f; // 25% chance
 
     /**
-     * Mountain Dwarf's Forge Blessing: when crafting items, there is a 25% chance
+     * Forge One's Forge Blessing crafting proc: when crafting items, there is a 25% chance
      * the item receives a bonus enchantment (Unbreaking I-II) representing
      * superior dwarven craftsmanship. 10-minute cooldown between procs.
      *
-     * Deep Dwarves get a weaker version (15% chance, Unbreaking I only).
+     * Runic Ones get a weaker version (15% chance, Unbreaking I only).
      */
     @SubscribeEvent
     public void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
@@ -268,10 +285,11 @@ public class RacialEventHandler {
         float chance = isForgeOne ? FORGE_BLESSING_CHANCE : 0.15f;
         if (player.getRandom().nextFloat() >= chance) return;
 
-        // Apply Forge Blessing: add Unbreaking enchantment
+        // Apply Forge Blessing: add Unbreaking enchantment. Skip items that already carry
+        // Unbreaking — ItemStack.enchant appends, so upgrading would leave a duplicate entry.
         int level = isForgeOne ? (player.getRandom().nextFloat() < 0.3f ? 2 : 1) : 1;
         int existing = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, crafted);
-        if (existing < level) {
+        if (existing == 0) {
             crafted.enchant(Enchantments.UNBREAKING, level);
             data.putLong(FORGE_BLESSING_COOLDOWN, now);
             RunicPresentation.fire(player, SignatureKey.FORGE_BLESSING, "Unbreaking " + toRoman(level));
@@ -361,16 +379,16 @@ public class RacialEventHandler {
 
         long now = player.level().getGameTime();
 
-        // --- Zombie sunlight decay escalation ---
+        // --- Zombie sunlight audio cues + HUD flag (the burn damage itself is JSON-driven) ---
         if ("zombie".equals(race)) {
             boolean exposedToSun = player.level().isDay()
                     && player.level().canSeeSky(player.blockPosition())
                     && !player.isInWaterOrRain();
             CompoundTag data = player.getPersistentData();
-            int sunTicks = data.getInt(VAMPIRE_SUN_TICKS);
+            int sunTicks = data.getInt(ZOMBIE_SUN_TICKS);
             if (exposedToSun) {
                 int newTicks = sunTicks + 10;
-                data.putInt(VAMPIRE_SUN_TICKS, newTicks);
+                data.putInt(ZOMBIE_SUN_TICKS, newTicks);
                 RaceStateTracker.setFlag(player, RaceStateFlags.SUNLIGHT_BURNING, true);
                 if (sunTicks == 0 && player.level() instanceof ServerLevel level) {
                     // First tick in sun: quiet hiss + smoke puff
@@ -388,7 +406,7 @@ public class RacialEventHandler {
                             net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, 1.2f);
                 }
             } else {
-                if (sunTicks > 0) data.putInt(VAMPIRE_SUN_TICKS, 0);
+                if (sunTicks > 0) data.putInt(ZOMBIE_SUN_TICKS, 0);
                 RaceStateTracker.setFlag(player, RaceStateFlags.SUNLIGHT_BURNING, false);
             }
         }
@@ -405,10 +423,19 @@ public class RacialEventHandler {
         }
 
         // --- Sky One / Wind Wyrm claustrophobia (tight-space) ---
+        // Mirrors the JSON penalty condition exactly (!exposed_to_sky): any roof at any
+        // height counts, so the warning rune lights whenever the debuff is actually live.
         if ("sky_one".equals(race) || "wind_wyrm".equals(race)) {
-            boolean tight = !player.level().canSeeSky(player.blockPosition())
-                    && player.blockPosition().getY() < player.level().getSeaLevel();
+            boolean tight = !player.level().canSeeSky(player.blockPosition());
             RaceStateTracker.setFlag(player, RaceStateFlags.TIGHT_SPACE, tight);
+        }
+
+        // --- Valen shoulder-check latch: re-arm once the sprint ends ---
+        if ("valen".equals(race) && !player.isSprinting()) {
+            CompoundTag data = player.getPersistentData();
+            if (data.getBoolean(VALEN_SHOVE_LATCH)) {
+                data.putBoolean(VALEN_SHOVE_LATCH, false);
+            }
         }
 
         // --- Volt Drake open-sky exposure (mirrors its grounded penalty) ---
@@ -456,21 +483,21 @@ public class RacialEventHandler {
      */
     private void tickHumanAdaptation(ServerPlayer player, long now) {
         CompoundTag data = player.getPersistentData();
-        int stacks = data.getInt(HUMAN_ADAPT_STACKS);
-        long lastBump = data.getLong(HUMAN_ADAPT_LAST_TICK);
+        int stacks = data.getInt(ADAPT_STACKS);
+        long lastBump = data.getLong(ADAPT_LAST_TICK);
 
         // Biome bump: compare against last recorded biome id.
         ResourceLocation biomeId = player.level().getBiome(player.blockPosition())
                 .unwrapKey().map(k -> k.location()).orElse(null);
         if (biomeId != null) {
             String current = biomeId.toString();
-            if (!current.equals(data.getString(HUMAN_ADAPT_BIOME))) {
-                data.putString(HUMAN_ADAPT_BIOME, current);
+            if (!current.equals(data.getString(ADAPT_BIOME))) {
+                data.putString(ADAPT_BIOME, current);
                 if (stacks < ADAPT_STACK_CAP) {
                     stacks++;
-                    data.putInt(HUMAN_ADAPT_STACKS, stacks);
+                    data.putInt(ADAPT_STACKS, stacks);
                     lastBump = now;
-                    data.putLong(HUMAN_ADAPT_LAST_TICK, now);
+                    data.putLong(ADAPT_LAST_TICK, now);
                 }
             }
         }
@@ -479,16 +506,16 @@ public class RacialEventHandler {
         if (stacks > 0 && now - lastBump >= ADAPT_STACK_DECAY_TICKS) {
             stacks--;
             lastBump = now;
-            data.putInt(HUMAN_ADAPT_STACKS, stacks);
-            data.putLong(HUMAN_ADAPT_LAST_TICK, now);
+            data.putInt(ADAPT_STACKS, stacks);
+            data.putLong(ADAPT_LAST_TICK, now);
         }
 
         applyAdaptationModifier(player, stacks);
         RaceStateTracker.setFlag(player, RaceStateFlags.ADAPTATION_ACTIVE, stacks > 0);
 
         // Surface the exact stack count on the client (rendered on the "A" rune). Diff to avoid spam.
-        if (data.getInt(HUMAN_ADAPT_SYNCED_STACKS) != stacks) {
-            data.putInt(HUMAN_ADAPT_SYNCED_STACKS, stacks);
+        if (data.getInt(ADAPT_SYNCED_STACKS) != stacks) {
+            data.putInt(ADAPT_SYNCED_STACKS, stacks);
             NetworkHandler.sendToPlayer(player, new S2CAdaptationStacksPacket(stacks));
         }
     }
@@ -497,24 +524,17 @@ public class RacialEventHandler {
     private static void applyAdaptationModifier(ServerPlayer player, int stacks) {
         AttributeInstance attr = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (attr == null) return;
-        AttributeModifier existing = attr.getModifier(HUMAN_ADAPT_UUID);
+        AttributeModifier existing = attr.getModifier(ADAPT_UUID);
         double target = stacks * 0.01; // +1% per stack
         if (target <= 0.0) {
-            if (existing != null) attr.removeModifier(HUMAN_ADAPT_UUID);
+            if (existing != null) attr.removeModifier(ADAPT_UUID);
             return;
         }
         if (existing == null || existing.getAmount() != target) {
-            if (existing != null) attr.removeModifier(HUMAN_ADAPT_UUID);
-            attr.addTransientModifier(new AttributeModifier(HUMAN_ADAPT_UUID,
+            if (existing != null) attr.removeModifier(ADAPT_UUID);
+            attr.addTransientModifier(new AttributeModifier(ADAPT_UUID,
                     "Runic Races Human Adaptation", target, AttributeModifier.Operation.MULTIPLY_TOTAL));
         }
-    }
-
-    private static boolean isFireDamage(DamageSource source) {
-        return source.is(DamageTypes.IN_FIRE)
-                || source.is(DamageTypes.ON_FIRE)
-                || source.is(DamageTypes.LAVA)
-                || source.is(DamageTypes.HOT_FLOOR);
     }
 
     // ==================== HUMAN: UNIVERSAL PALATE ====================
@@ -549,15 +569,23 @@ public class RacialEventHandler {
 
     /**
      * Valen: sprinting into a hostile mob delivers a "shoulder check" —
-     * extra knockback on the first hit of a sprint. Non-damaging, fantasy-forward.
+     * extra knockback on the first melee hit of a sprint. Non-damaging, fantasy-forward.
+     * Gated three ways: direct melee only (no projectiles), hostile targets only
+     * (no players/pets/villagers), and once per sprint (latch cleared in the player
+     * tick watcher when sprinting stops).
      */
     @SubscribeEvent
     public void onLivingAttack(LivingAttackEvent event) {
         if (!(event.getSource().getEntity() instanceof ServerPlayer attacker)) return;
+        if (event.getSource().getDirectEntity() != attacker) return; // melee only, no arrows/tridents
         if (!attacker.isSprinting()) return;
+        LivingEntity target = event.getEntity();
+        if (target == attacker || !isHostile(target)) return;
         if (!RaceHelper.isRace(attacker, "valen")) return;
-        net.minecraft.world.entity.LivingEntity target = event.getEntity();
-        if (target == attacker) return;
+
+        CompoundTag data = attacker.getPersistentData();
+        if (data.getBoolean(VALEN_SHOVE_LATCH)) return; // one shove per sprint
+        data.putBoolean(VALEN_SHOVE_LATCH, true);
 
         // Apply extra knockback in the attacker's look direction.
         Vec3 look = attacker.getLookAngle();
@@ -568,6 +596,57 @@ public class RacialEventHandler {
             level.playSound(null, target.getX(), target.getY(), target.getZ(),
                     net.minecraft.sounds.SoundEvents.IRON_GOLEM_ATTACK,
                     net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, 0.7f);
+        }
+    }
+
+    /** Hostility heuristic shared with tremor/glow actions: monsters, or mobs mid-aggro. */
+    private static boolean isHostile(LivingEntity entity) {
+        if (entity instanceof Enemy) return true;
+        return entity instanceof Mob mob && mob.getTarget() != null;
+    }
+
+    // ==================== KNOCKBACK & MELEE RIDERS ====================
+
+    /**
+     * Lightweight races take amplified knockback. Implemented here because a negative
+     * {@code generic.knockback_resistance} attribute modifier clamps to the attribute's
+     * [0,1] range and silently does nothing.
+     */
+    @SubscribeEvent
+    public void onLivingKnockBack(LivingKnockBackEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        String race = RaceHelper.getRaceName(player).orElse(null);
+        if (race == null) return;
+
+        float multiplier = RaceRegistry.getKnockbackTaken(race);
+        if (multiplier != 1.0f) {
+            event.setStrength(event.getStrength() * multiplier);
+        }
+    }
+
+    /**
+     * Direct-melee riders keyed off {@link RaceRegistry} metadata:
+     * venomous races (Arachnid, Serpen) inject Poison I; Blood Elves leech 20% of
+     * damage dealt (their own -30% modify_healing weakness taxes the returned heal).
+     */
+    @SubscribeEvent
+    public void onMeleeDamageDealt(LivingDamageEvent event) {
+        if (!(event.getSource().getEntity() instanceof ServerPlayer attacker)) return;
+        if (event.getSource().getDirectEntity() != attacker) return; // melee only
+        LivingEntity target = event.getEntity();
+        if (target == attacker || event.getAmount() <= 0.0f) return;
+
+        String race = RaceHelper.getRaceName(attacker).orElse(null);
+        if (race == null) return;
+
+        if (RaceRegistry.isVenomous(race)) {
+            // addEffect is a no-op on poison-immune targets (undead, other venomous races).
+            target.addEffect(new MobEffectInstance(MobEffects.POISON, 60, 0));
+        }
+
+        if ("blood_elf".equals(race)) {
+            attacker.heal(event.getAmount() * 0.2f);
         }
     }
 

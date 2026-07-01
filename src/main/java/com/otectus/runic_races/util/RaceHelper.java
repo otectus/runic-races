@@ -44,7 +44,7 @@ public class RaceHelper {
     }
 
     /**
-     * Get the player's current race ID (e.g. "runic_races:vampire").
+     * Get the player's current race ID (e.g. "runic_races:dark_elf").
      */
     public static Optional<ResourceLocation> getRaceId(Player player) {
         long tick = player.level().getGameTime();
@@ -85,7 +85,7 @@ public class RaceHelper {
     }
 
     /**
-     * Get just the race name (e.g. "vampire" from "runic_races:vampire").
+     * Get just the race name (e.g. "dark_elf" from "runic_races:dark_elf").
      */
     public static Optional<String> getRaceName(Player player) {
         return getRaceId(player).map(ResourceLocation::getPath);

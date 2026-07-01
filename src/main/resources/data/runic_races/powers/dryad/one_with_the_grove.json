@@ -15,12 +15,9 @@
     "type": "runic_races:biome_affinity",
     "name": "power.runic_races.dryad.one_with_the_grove.name",
     "description": "power.runic_races.dryad.one_with_the_grove.description",
-    "home_biome_tag": "forge:is_forest",
+    "home_biome_tag": "minecraft:is_forest",
     "speed_bonus": 0.06,
     "damage_bonus": 0.05,
-    "hostile_biome_tag": "forge:is_forest",
-    "speed_penalty": 0.0,
-    "damage_penalty": 0.0,
     "check_interval": 40
   },
   "sun_heal": {

@@ -25,7 +25,7 @@ public final class RaceRegistry {
     static {
         // === Human === gold · generalists, fortune, versatility
         register(new RaceDefinition("primian",   "human",   "Primian", 1.00f, 20,  1.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("celeron",   "human",   "Celeron", 0.95f, 22,  0.5, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("celeron",   "human",   "Celeron", 0.95f, 22,  0.5, 1.3f, false, RaceDefinition.NO_SLOTS));
         register(new RaceDefinition("magi",      "human",   "Magi",    1.00f, 16,  0.0, RaceDefinition.NO_SLOTS));
         register(new RaceDefinition("valen",     "human",   "Valen",   1.10f, 26,  0.0, RaceDefinition.NO_SLOTS));
         // === Elven === magenta · grace + arcane, frail bodies (tall & lithe)
@@ -42,18 +42,18 @@ public final class RaceRegistry {
         register(new RaceDefinition("sky_one",   "dwarven", "Sky One",   0.74f, 22, 0.0, dwarvenSlots()));
         register(new RaceDefinition("runic_one", "dwarven", "Runic One", 0.70f, 22, 0.5, dwarvenSlots()));
         // === Bestial === green · senses + agility, predatory
-        register(new RaceDefinition("arachnid",  "bestial", "Arachnid", 0.90f, 18, 0.0, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("avian",     "bestial", "Avian",    0.90f, 18, 0.0, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("arachnid",  "bestial", "Arachnid", 0.90f, 18, 0.0, 1.0f, true,  RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("avian",     "bestial", "Avian",    0.90f, 18, 0.0, 1.4f, false, RaceDefinition.NO_SLOTS));
         register(new RaceDefinition("canine",    "bestial", "Canine",   1.00f, 24, 0.0, RaceDefinition.NO_SLOTS));
         register(new RaceDefinition("feline",    "bestial", "Feline",   0.85f, 20, 0.0, RaceDefinition.NO_SLOTS));
         register(new RaceDefinition("kitsune",   "bestial", "Kitsune",  0.92f, 18, 0.5, RaceDefinition.NO_SLOTS));
-        register(new RaceDefinition("serpen",    "bestial", "Serpen",   0.95f, 18, 0.0, RaceDefinition.NO_SLOTS));
+        register(new RaceDefinition("serpen",    "bestial", "Serpen",   0.95f, 18, 0.0, 1.0f, true,  RaceDefinition.NO_SLOTS));
         // === Faeborne === teal · magic + illusion, small/fragile
         register(new RaceDefinition("changeling","faeborne","Changeling", 0.90f, 18, -0.5, faeborneSlots()));
         register(new RaceDefinition("dryad",     "faeborne","Dryad",      0.95f, 16,  0.0, faeborneSlots()));
-        register(new RaceDefinition("sprite",    "faeborne","Sprite",     0.45f, 12,  0.0, faeborneSlots()));
+        register(new RaceDefinition("sprite",    "faeborne","Sprite",     0.45f, 12,  0.0, 1.5f, false, faeborneSlots()));
         register(new RaceDefinition("nymph",     "faeborne","Nymph",      0.95f, 16,  0.0, faeborneSlots()));
-        register(new RaceDefinition("faerie",    "faeborne","Faerie",     0.50f, 12,  1.0, faeborneSlots()));
+        register(new RaceDefinition("faerie",    "faeborne","Faerie",     0.50f, 12,  1.0, 1.4f, false, faeborneSlots()));
         // === Undead === purple · undeath immunities + night power
         register(new RaceDefinition("zombie",    "undead",  "Zombie",   1.00f, 24,  0.0, undeadSlots()));
         register(new RaceDefinition("skeleton",  "undead",  "Skeleton", 0.95f, 22,  0.0, undeadSlots()));
@@ -135,6 +135,18 @@ public final class RaceRegistry {
     public static SlotGrant[] getSlotGrants(String raceName) {
         RaceDefinition def = RACES.get(raceName);
         return def != null ? def.curiosSlotGrants() : RaceDefinition.NO_SLOTS;
+    }
+
+    /** Multiplier on knockback received (1.0 = vanilla; lightweight races are above 1.0). */
+    public static float getKnockbackTaken(String raceName) {
+        RaceDefinition def = RACES.get(raceName);
+        return def != null ? def.knockbackTaken() : 1.0f;
+    }
+
+    /** Whether the race injects Poison on direct melee hits. */
+    public static boolean isVenomous(String raceName) {
+        RaceDefinition def = RACES.get(raceName);
+        return def != null && def.venomous();
     }
 
     /** Returns all distinct SlotGrant entries across all races, for cleanup purposes. */

@@ -12,13 +12,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
 
 /**
- * Custom Apoli entity action: places a Kobold {@code trap_marker} block at the
- * caster's current position, tagged with the caster's UUID and an auto-despawn
- * timer. Used by {@code kobold/improvised_trap.json} to turn the former AoE
- * panic-explosion into a real deployable trap the caster sets and walks away from.
+ * Custom Apoli entity action: places a {@code trap_marker} block at the caster's
+ * current position, tagged with the caster's UUID and an auto-despawn timer.
+ * Used by {@code arachnid/web_snare.json} — a deployable trap the caster sets
+ * and walks away from.
  * <p>
  * JSON usage:
  * <pre>
@@ -53,10 +52,7 @@ public class PlaceTrapAction extends EntityAction<PlaceTrapAction.Configuration>
 
         BlockPos pos = player.blockPosition();
         BlockState existing = level.getBlockState(pos);
-        if (!existing.canBeReplaced() && existing.getFluidState().getType() != Fluids.EMPTY && !existing.isAir()) {
-            // Don't overwrite non-replaceable blocks at the player's feet.
-            return;
-        }
+        // Don't overwrite non-replaceable blocks at the player's feet.
         if (!existing.canBeReplaced()) return;
 
         BlockState trap = ModBlocks.TRAP_MARKER.get().defaultBlockState();

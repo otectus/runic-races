@@ -25,6 +25,10 @@
         {
           "type": "origins:name",
           "name": "hotFloor"
+        },
+        {
+          "type": "origins:name",
+          "name": "fireball"
         }
       ]
     },

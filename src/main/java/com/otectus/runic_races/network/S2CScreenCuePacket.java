@@ -38,9 +38,8 @@ public class S2CScreenCuePacket {
     }
 
     public static void handle(S2CScreenCuePacket msg, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() ->
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHandler.receive(msg))
-        );
+        // Registered via consumerMainThread, so we're already on the client main thread here.
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientHandler.receive(msg));
         ctx.get().setPacketHandled(true);
     }
 

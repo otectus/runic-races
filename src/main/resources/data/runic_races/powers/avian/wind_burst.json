@@ -98,7 +98,7 @@
         {
           "type": "origins:spawn_particles",
           "particle": "minecraft:cloud",
-          "count": 20,
+          "count": 24,
           "speed": 0.2,
           "spread": {
             "x": 0.6,

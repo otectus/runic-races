@@ -4,7 +4,7 @@
     {
       "condition": {
         "type": "origins:origin",
-        "origin": "runic_races:family_fae",
+        "origin": "runic_races:family_faeborne",
         "layer": "runic_races:family"
       },
       "origins": [

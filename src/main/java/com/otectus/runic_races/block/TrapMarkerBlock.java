@@ -60,7 +60,11 @@ public class TrapMarkerBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        // entityInside (the pressure-plate pattern) rather than stepOn: with an empty
+        // collision shape this block is never an entity's supporting block, so stepOn
+        // would never fire. The block removes itself on trigger, so no re-entry dedup
+        // is needed.
         if (level.isClientSide) return;
         if (!(level instanceof ServerLevel server)) return;
         if (!(entity instanceof LivingEntity victim)) return;

@@ -23,15 +23,7 @@
     "damage_easy": 1.0,
     "damage_type": "minecraft:on_fire",
     "condition": {
-      "type": "origins:and",
-      "conditions": [
-        {
-          "type": "origins:exposed_to_sun"
-        },
-        {
-          "type": "origins:daytime"
-        }
-      ]
+      "type": "origins:exposed_to_sun"
     }
   },
   "healing": {

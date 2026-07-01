@@ -91,7 +91,7 @@
         {
           "type": "origins:spawn_particles",
           "particle": "minecraft:smoke",
-          "count": 18,
+          "count": 22,
           "speed": 0.1,
           "spread": {
             "x": 0.6,
@@ -102,7 +102,7 @@
         {
           "type": "origins:spawn_particles",
           "particle": "minecraft:squid_ink",
-          "count": 8,
+          "count": 10,
           "speed": 0.05,
           "spread": {
             "x": 0.6,

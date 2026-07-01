@@ -77,17 +77,14 @@ def particles(p, count, speed=0.3, sx=0.6, sy=0.8, sz=0.6):
     return {"type": "origins:spawn_particles", "particle": "minecraft:" + p, "count": count,
             "speed": speed, "spread": {"x": sx, "y": sy, "z": sz}}
 
-def set_on_fire(seconds):
-    return {"type": "origins:set_on_fire", "duration": seconds}
-
-def aoe(radius, target_effects=(), set_fire=None):
-    inner = [eff(e, d, a) for (e, d, a) in target_effects]
+def afflict(radius, target_effects=(), set_fire=None):
+    # Offensive AoE via the mod's own hostile-filtered action.
+    o = {"type": "runic_races:afflict_hostiles", "radius": radius,
+         "effects": [{"effect": "minecraft:" + e, "duration_ticks": d, "amplifier": a}
+                     for (e, d, a) in target_effects]}
     if set_fire:
-        inner.append(set_on_fire(set_fire))
-    action = inner[0] if len(inner) == 1 else {"type": "origins:and", "actions": inner}
-    return {"type": "origins:area_of_effect", "radius": radius,
-            "bientity_action": {"type": "origins:target_action", "action": action},
-            "bientity_condition": {"type": "origins:target_condition", "condition": {"type": "origins:living"}}}
+        o["set_on_fire_seconds"] = set_fire
+    return o
 
 def cooldown_subpowers(resource_id, cd):
     timer = {"type": "origins:resource", "min": 0, "max": cd, "start_value": 0,
@@ -102,13 +99,16 @@ def cooldown_subpowers(resource_id, cd):
                                              "change": -1}}}
     return timer, decay
 
-def active_power(race, file, cd, actions, name, desc):
+def active_power(race, file, cd, actions, name, desc, extra_conditions=None):
     rid = "%s:%s/%s_cooldown_timer" % (NS, race, file)
     timer, decay = cooldown_subpowers(rid, cd)
     full = list(actions) + [{"type": "origins:change_resource", "resource": rid, "change": cd}]
+    condition = {"type": "origins:resource", "resource": rid, "comparison": "==", "compare_to": 0}
+    if extra_conditions:
+        condition = {"type": "origins:and", "conditions": [condition] + list(extra_conditions)}
     active = {"type": "origins:active_self",
               "key": {"key": "key.origins.primary_active", "continuous": False},
-              "condition": {"type": "origins:resource", "resource": rid, "comparison": "==", "compare_to": 0},
+              "condition": condition,
               "entity_action": {"type": "origins:and", "actions": full}}
     LANG["power.%s.%s.%s.name" % (NS, race, file)] = name
     LANG["power.%s.%s.%s.description" % (NS, race, file)] = desc
@@ -153,20 +153,27 @@ def elytra():
     return {"type": "origins:elytra_flight", "render_elytra": False}
 
 def biome_aff(race, file, home_tag, sb, db, hostile_tag=None, sp=0.0, dp=0.0):
+    # hostile_* keys are only emitted when a genuinely hostile biome tag is given.
     o = {"type": "runic_races:biome_affinity",
          "name": "power.%s.%s.%s.name" % (NS, race, file),
          "description": "power.%s.%s.%s.description" % (NS, race, file),
-         "home_biome_tag": home_tag, "speed_bonus": sb, "damage_bonus": db,
-         "hostile_biome_tag": hostile_tag if hostile_tag else home_tag,
-         "speed_penalty": sp, "damage_penalty": dp, "check_interval": 40}
+         "home_biome_tag": home_tag, "speed_bonus": sb, "damage_bonus": db}
+    if hostile_tag:
+        o["hostile_biome_tag"] = hostile_tag
+        o["speed_penalty"] = sp
+        o["damage_penalty"] = dp
+    o["check_interval"] = 40
     return o
 
-def scaling(race, file, attribute, day, night, op="multiply_total"):
-    return {"type": "runic_races:scaling_attribute",
-            "name": "power.%s.%s.%s.name" % (NS, race, file),
-            "description": "power.%s.%s.%s.description" % (NS, race, file),
-            "attribute": attribute, "day_value": day, "night_value": night,
-            "operation": op, "check_interval": 40}
+def scaling(race, file, attribute, day, night, op="multiply_total", require_sky=False):
+    o = {"type": "runic_races:scaling_attribute",
+         "name": "power.%s.%s.%s.name" % (NS, race, file),
+         "description": "power.%s.%s.%s.description" % (NS, race, file),
+         "attribute": attribute, "day_value": day, "night_value": night,
+         "operation": op, "check_interval": 40}
+    if require_sky:
+        o["require_sky_exposure"] = True
+    return o
 
 def cond_attr(attribute, op, value, name, condition):
     return {"type": "origins:conditioned_attribute",
@@ -202,8 +209,9 @@ def dmg_taken_type(names, value):
             "modifier": {"operation": "multiply_total_multiplicative", "value": value}}
 
 def sun_dot(dps=1.0):
+    # exposed_to_sun already implies daytime; keep the condition minimal.
     return {"type": "origins:damage_over_time", "interval": 20, "damage": dps, "damage_easy": dps,
-            "damage_type": "minecraft:on_fire", "condition": SUN_COND}
+            "damage_type": "minecraft:on_fire", "condition": {"type": "origins:exposed_to_sun"}}
 
 def exhaustion(value):
     return {"type": "origins:modify_exhaustion",
@@ -251,11 +259,12 @@ FAMILY_FIRST = {"human": "primian", "elven": "high_elf", "dwarven": "deep_one", 
 FAMILY_ORDER = {"human": 10, "elven": 20, "dwarven": 30, "bestial": 40, "faeborne": 50, "undead": 60, "draconic": 70}
 FAMILY_RACES = {f: [] for f in FAMILY_ORDER}
 
-def wings_specs(race, file, flap):
+def wings_specs(race, file, flap_cd=None):
+    # flap_cd: per-race flap cooldown (ticks) for the flap resource, or falsy for glide-only wings.
     specs = [("elytra_flight", elytra())]
-    if flap:
+    if flap_cd:
         rid = "%s:%s/%s_flap_cooldown_timer" % (NS, race, file)
-        t, d = cooldown_subpowers(rid, 120)
+        t, d = cooldown_subpowers(rid, flap_cd)
         specs += [("flap_cooldown_timer", t), ("flap_cooldown_decay", d)]
     return specs
 
@@ -284,7 +293,7 @@ emit("primian", "human", 100, 1,
                              [sound("minecraft:entity.player.levelup", 0.7, 1.4)],
                              [particles("totem_of_undying", 30, 0.5), particles("happy_villager", 15, 0.2)]),
                    "Stroke of Fortune",
-                   "Fortune surges: Luck II, Absorption I, and Speed I for 8s. 100-second cooldown.")),
+                   "Fortune surges: Luck II for 10s, Absorption I and Speed I for 8s. 100-second cooldown.")),
      ("boundless_adaptability",
       bundle("primian", "boundless_adaptability", "Boundless Adaptability",
              "+1 heart, +1 Luck, +5% movement speed. You adapt to your surroundings, gaining brief speed as you explore new places.",
@@ -312,21 +321,21 @@ emit("celeron", "human", 101, 1,
      ("featherweight_frame",
       bundle("celeron", "featherweight_frame", "Featherweight Frame",
              "-2 hearts and you are knocked back further than most.",
-             [("health", health(-4.0, "Featherweight Health")),
-              ("knockback", kb_resist(-0.4, "Featherweight Knockback"))])))
+             [("health", health(-4.0, "Featherweight Health"))])))
 
 emit("magi", "human", 102, 2,
      "Humans birthed from raw magic — Primian descendants who survived lethal arcane overexposure; magic flows where blood should.",
      ("arcane_overflow",
       active_power("magi", "arcane_overflow", 900,
                    [consume_mana(30), eff("strength", 160, 1),
-                    aoe(6, [("weakness", 120, 1), ("glowing", 120, 0)])]
+                    afflict(6, [("weakness", 120, 1), ("glowing", 120, 0)])]
                    + present("magi", "arcane_overflow", "light_purple", "Arcane energy floods out!",
                              [sound("minecraft:block.amethyst_block.chime", 0.7, 1.2),
                               sound("minecraft:entity.illusioner.cast_spell", 0.5, 1.0)],
                              [particles("enchant", 40, 0.4, 2.0, 1.0, 2.0), particles("witch", 18, 0.2, 1.5, 1.0, 1.5)]),
                    "Arcane Overflow",
-                   "Release an arcane nova: enemies within 6 blocks are Weakened and revealed while you gain Strength. Spends 30 mana if Iron's Spellbooks is present. 45-second cooldown.")),
+                   "Release an arcane nova: enemies within 6 blocks are Weakened and revealed while you gain Strength. Spends 30 mana if Iron's Spellbooks is present. 45-second cooldown.",
+                   extra_conditions=[{"type": "runic_races:has_mana", "amount": 30}])),
      ("woven_of_magic",
       bundle("magi", "woven_of_magic", "Woven of Magic",
              "+15% magic damage. Your body is suffused with arcane power.",
@@ -350,7 +359,7 @@ emit("valen", "human", 103, 2,
                    "Plant yourself: Resistance III, Absorption II, and Slowness I for 6s. 60-second cooldown.")),
      ("fortitude",
       bundle("valen", "fortitude", "Fortitude",
-             "+2 hearts, +2 armor, knockback resistance, and +10% melee damage.",
+             "+2 hearts, +2 armor, knockback resistance, +10% melee damage, and a sprinting shoulder-check that staggers the first foe you strike.",
              [("health", health(4.0, "Valen Fortitude")), ("armor", armor(2.0, "Valen Armor")),
               ("kb", kb_resist(0.4, "Valen Stability")), ("melee", atk_dmg(0.10, "Valen Strength"))])),
      ("stalwart_not_swift",
@@ -364,7 +373,7 @@ emit("high_elf", "elven", 200, 2,
      ("arcane_reflex",
       active_power("high_elf", "arcane_reflex", 800,
                    [eff("absorption", 100, 1), eff("resistance", 100, 0),
-                    aoe(4, [("weakness", 60, 0)])]
+                    afflict(4, [("weakness", 60, 0)])]
                    + present("high_elf", "arcane_reflex", "light_purple", "Arcane wards flare to life!",
                              [sound("minecraft:block.amethyst_block.chime", 0.7, 1.4)],
                              [particles("enchant", 35, 0.3, 1.0, 1.2, 1.0)]),
@@ -378,7 +387,7 @@ emit("high_elf", "elven", 200, 2,
       bundle("high_elf", "fragile_grace", "Fragile Grace",
              "-2 hearts and +15% physical damage taken. Grace bought with fragility.",
              [("health", health(-4.0, "Fragile Health")),
-              ("phys", dmg_taken_type(["player", "mob", "arrow"], 0.15))])))
+              ("phys", dmg_taken_type(["player", "mob", "arrow", "trident", "thrown", "sting", "mob_projectile"], 0.15))])))
 
 emit("dark_elf", "elven", 201, 2,
      "Secretive masters of shadow and intrigue from moonless caverns; assassins who answer betrayal without mercy.",
@@ -387,14 +396,15 @@ emit("dark_elf", "elven", 201, 2,
                    [eff("invisibility", 120, 0, False), eff("speed", 120, 1)]
                    + present("dark_elf", "shadowmeld", "dark_purple", "You melt into shadow.",
                              [sound("minecraft:entity.illusioner.mirror_move", 0.6, 0.8)],
-                             [particles("smoke", 18, 0.1), particles("squid_ink", 8, 0.05)]),
+                             [particles("smoke", 22, 0.1), particles("squid_ink", 10, 0.05)]),
                    "Shadowmeld",
                    "Vanish into shadow: Invisibility and Speed II for 6s. 45-second cooldown.")),
      ("children_of_darkness",
       bundle("dark_elf", "children_of_darkness", "Children of Darkness",
-             "Night vision, +10% movement speed, and your strikes hit harder in the dark of night.",
+             "Night vision, +10% movement speed, and your strikes hit harder in the dark of night — but falter under the open daytime sky.",
              [("night_vision", night_vision()), ("speed", speed(0.10, "Shadow Step")),
-              ("night_power", scaling("dark_elf", "children_of_darkness", "generic.attack_damage", -0.05, 0.10))])),
+              ("night_power", scaling("dark_elf", "children_of_darkness", "generic.attack_damage", -0.05, 0.10,
+                                      require_sky=True))])),
      ("sunlight_sensitivity",
       bundle("dark_elf", "sunlight_sensitivity", "Sunlight Sensitivity",
              "-1 heart and you are sluggish and weaker under direct daylight.",
@@ -421,7 +431,12 @@ emit("moon_elf", "elven", 202, 2,
              "Water breathing, night vision, and stronger natural healing under the night sky.",
              [("water_breathing", imm("drowning") if False else {"type": "origins:water_breathing"}),
               ("night_vision", night_vision()),
-              ("night_regen", scaling("moon_elf", "tidecallers_grace", "generic.max_health", 0.0, 0.0))])),
+              ("night_regen", {"type": "origins:action_over_time",
+                               "name": "power.%s.moon_elf.tidecallers_grace.name" % NS,
+                               "description": "power.%s.moon_elf.tidecallers_grace.description" % NS,
+                               "interval": 100,
+                               "condition": {"type": "origins:daytime", "inverted": True},
+                               "entity_action": {"type": "origins:heal", "amount": 1.0}})])),
      ("waning_by_day",
       bundle("moon_elf", "waning_by_day", "Waning by Day",
              "-1.5 hearts and -10% magic damage; your power wanes under the daytime sun.",
@@ -439,10 +454,10 @@ emit("blood_elf", "elven", 203, 2,
                               sound("minecraft:entity.warden.heartbeat", 0.6, 1.2)],
                              [particles("damage_indicator", 40, 0.2, 0.6, 1.0, 0.6), particles("crimson_spore", 15, 0.1)]),
                    "Blood Frenzy",
-                   "Burn your own vitality into power: Strength II, Speed I, and Regeneration for 8s. 35-second cooldown.")),
+                   "Burn your own vitality into power: Strength II and Speed I for 8s, Regeneration for 5s. 35-second cooldown.")),
      ("bloodcraft",
       bundle("blood_elf", "bloodcraft", "Bloodcraft",
-             "+10% melee damage and +10% magic damage. Blood is power.",
+             "+10% melee damage and +10% magic damage, and your strikes leech a fifth of the damage dealt. Blood is power.",
              [("melee", atk_dmg(0.10, "Bloodcraft Strength")), ("magic", magic_bonus(0.10))])),
      ("price_of_power",
       bundle("blood_elf", "price_of_power", "Price of Power",
@@ -455,7 +470,7 @@ emit("ice_elf", "elven", 204, 2,
      "Cold, disciplined elves of glacial halls and northern lights; frost-mages and wardens, patient and steadfast.",
      ("frostbind",
       active_power("ice_elf", "frostbind", 800,
-                   [aoe(6, [("slowness", 120, 2)]), eff("speed", 80, 0)]
+                   [afflict(6, [("slowness", 120, 2)]), eff("speed", 80, 0)]
                    + present("ice_elf", "frostbind", "aqua", "Frost erupts around you!",
                              [sound("minecraft:block.glass.break", 0.6, 0.8),
                               sound("minecraft:block.powder_snow.break", 0.6, 1.2)],
@@ -471,7 +486,7 @@ emit("ice_elf", "elven", 204, 2,
      ("cold_blooded",
       bundle("ice_elf", "cold_blooded", "Cold-Blooded",
              "+25% fire damage taken. Heat is your undoing.",
-             [("fire", dmg_taken_type(FIRE_NAMES, 0.25))])))
+             [("fire", dmg_taken_type(FIRE_NAMES + ["fireball"], 0.25))])))
 
 def break_speed(value):
     return {"type": "origins:modify_break_speed",
@@ -488,7 +503,7 @@ emit("deep_one", "dwarven", 300, 1,
                    [tremor(18.0, 60)]
                    + present("deep_one", "tremorsense", "gray", "The stone reveals all.",
                              [sound("minecraft:entity.warden.heartbeat", 0.7, 0.8)],
-                             [particles("crit", 16, 0.1, 1.0, 0.1, 1.0)]),
+                             [particles("crit", 30, 0.1, 1.0, 0.1, 1.0)]),
                    "Tremorsense",
                    "Read the stone: nearby hostiles are revealed through walls. Best underground. 15-second cooldown.")),
      ("deep_dweller",
@@ -497,7 +512,7 @@ emit("deep_one", "dwarven", 300, 1,
              [("night_vision", night_vision()), ("armor", armor(2.0, "Deep Plating")),
               ("mining_fatigue_imm", imm("mining_fatigue")), ("mining", break_speed(0.20))])),
      ("sunlight_blindness",
-      bundle("deep_one", "sunlight_blindness", "Sunlight Blindness",
+      bundle("deep_one", "sunlight_blindness", "Sun-Dazzled",
              "-5% speed always; under open sky you are slowed and weakened by the glare.",
              [("slow", speed(-0.05, "Stocky Gait")),
               ("sun_slow", cond_attr("minecraft:generic.movement_speed", "multiply_total", -0.10,
@@ -576,7 +591,7 @@ emit("sky_one", "dwarven", 304, 2,
                    [vel(y=1.0, z=0.4), eff("slow_falling", 120, 0), eff("speed", 80, 0)]
                    + present("sky_one", "mountain_leap", "white", "You bound across the peaks!",
                              [sound("minecraft:entity.player.attack.sweep", 0.4, 1.5)],
-                             [particles("cloud", 25, 0.2)]),
+                             [particles("cloud", 30, 0.2)]),
                    "Mountain Leap",
                    "Bound high with Slow Falling and Speed for a safe landing. 20-second cooldown.")),
      ("sure_footed_sentinel",
@@ -596,7 +611,7 @@ emit("runic_one", "dwarven", 305, 3,
      "Dwarves steeped in stone-carved runes; rune-smiths who bind power into steel and stone, keepers of old knowledge.",
      ("rune_of_warding",
       active_power("runic_one", "rune_of_warding", 1200,
-                   [eff("resistance", 160, 1), eff("regeneration", 160, 0), aoe(6, [("slowness", 80, 1)])]
+                   [eff("resistance", 160, 1), eff("regeneration", 160, 0), afflict(6, [("slowness", 80, 1)])]
                    + sig("RUNIC_WARD"),
                    "Rune of Warding",
                    "Inscribe a ward of stone: Resistance and Regeneration for you while nearby foes are slowed. 60-second cooldown.")),
@@ -615,7 +630,7 @@ emit("arachnid", "bestial", 400, 2,
      "Patient weavers born of silk and shadow who read the world through vibration; venomous, precise, oath-bound.",
      ("web_snare",
       active_power("arachnid", "web_snare", 700,
-                   [place_trap(200), aoe(5, [("slowness", 120, 3)]), eff("slow_falling", 100, 0)]
+                   [place_trap(1200), afflict(5, [("slowness", 120, 3)]), eff("slow_falling", 100, 0)]
                    + present("arachnid", "web_snare", "white", "You cast a snaring web!",
                              [sound("minecraft:entity.spider.ambient", 0.6, 1.2),
                               sound("minecraft:block.wool.place", 0.5, 0.8)],
@@ -624,15 +639,15 @@ emit("arachnid", "bestial", 400, 2,
                    "Cast a web: foes within 5 blocks are rooted by Slowness IV and a trap is left underfoot. 35-second cooldown.")),
      ("weavers_senses",
       bundle("arachnid", "weavers_senses", "Weaver's Senses",
-             "Poison immunity, +10% attack speed, no fall damage, and constant vibration-sense of nearby creatures.",
+             "Poison immunity, +10% attack speed, no fall damage, venomous fangs, and constant vibration-sense of nearby creatures.",
              [("poison_imm", imm("poison")), ("attack_speed", atk_spd(0.10, "Spider Quickness")),
               ("no_fall", NOFALL),
               ("vibration", {"type": "origins:action_over_time", "interval": 100,
-                             "entity_action": glow(8.0, 80)})])),
+                             "entity_action": glow(8.0, 120)})])),
      ("fragile_carapace",
       bundle("arachnid", "fragile_carapace", "Fragile Carapace",
              "-1.5 hearts and +20% fire damage taken. Spiders fear flame.",
-             [("health", health(-3.0, "Fragile Shell")), ("fire", dmg_taken_type(FIRE_NAMES, 0.20))])))
+             [("health", health(-3.0, "Fragile Shell")), ("fire", dmg_taken_type(FIRE_NAMES + ["fireball"], 0.20))])))
 
 emit("avian", "bestial", 401, 2,
      "Proud, sharp-eyed folk of skyborne blood; scouts and storm-watchers bound to wind and song.",
@@ -641,18 +656,18 @@ emit("avian", "bestial", 401, 2,
                    [vel(y=1.1), eff("slow_falling", 140, 0), eff("speed", 80, 0)]
                    + present("avian", "wind_burst", "aqua", "You burst skyward!",
                              [sound("minecraft:entity.phantom.flap", 0.4, 1.4)],
-                             [particles("cloud", 20, 0.2), particles("poof", 8, 0.1)]),
+                             [particles("cloud", 24, 0.2), particles("poof", 8, 0.1)]),
                    "Wind Burst",
                    "Beat your wings for a skyward burst with Slow Falling. 20-second cooldown.")),
      ("skyborne",
       bundle("avian", "skyborne", "Skyborne",
              "Feathered wings for gliding flight, no fall damage, +10% speed, and keen night sight.",
-             wings_specs("avian", "skyborne", True)
+             wings_specs("avian", "skyborne", 35)
              + [("no_fall", NOFALL), ("speed", speed(0.10, "Swift Flight")), ("night_vision", night_vision())])),
      ("hollow_bones",
       bundle("avian", "hollow_bones", "Hollow Bones",
              "-2 hearts, easily knocked back, and -10% melee damage. A light, hollow frame.",
-             [("health", health(-4.0, "Hollow Frame")), ("kb", kb_resist(-0.4, "Light Frame")),
+             [("health", health(-4.0, "Hollow Frame")),
               ("melee", atk_dmg(-0.10, "Weak Grip"))])))
 
 emit("canine", "bestial", 402, 1,
@@ -670,11 +685,11 @@ emit("canine", "bestial", 402, 1,
              "+12% speed, night vision, +10% melee damage, and at home in the forest.",
              [("speed", speed(0.12, "Pack Speed")), ("night_vision", night_vision()),
               ("melee", atk_dmg(0.10, "Hunter's Bite")),
-              ("forest_home", biome_aff("canine", "pack_hunter", "forge:is_forest", 0.06, 0.05))])),
+              ("forest_home", biome_aff("canine", "pack_hunter", "minecraft:is_forest", 0.06, 0.05))])),
      ("ravenous",
       bundle("canine", "ravenous", "Ravenous",
-             "+25% hunger drain and -2 armor. Always hungry, thin of hide.",
-             [("hunger", exhaustion(0.25)), ("armor", armor(-2.0, "Thin Hide"))])))
+             "+40% hunger drain and -2 armor. Always hungry, thin of hide.",
+             [("hunger", exhaustion(0.4)), ("armor", armor(-2.0, "Thin Hide"))])))
 
 emit("feline", "bestial", 403, 2,
      "Graceful, instinctive folk of catlike blood; agile night-stalkers whose elegance hides predatory confidence.",
@@ -684,7 +699,7 @@ emit("feline", "bestial", 403, 2,
                    + present("feline", "pounce", "gold", "You pounce!",
                              [sound("minecraft:entity.cat.hiss", 0.6, 1.5),
                               sound("minecraft:entity.player.attack.sweep", 0.4, 1.2)],
-                             [particles("crit", 15, 0.3), particles("sweep_attack", 4, 0.2)]),
+                             [particles("crit", 24, 0.3), particles("sweep_attack", 6, 0.2)]),
                    "Pounce",
                    "Leap at your prey with a burst of Strength. 15-second cooldown.")),
      ("nine_lives",
@@ -703,8 +718,8 @@ emit("kitsune", "bestial", 404, 3,
      "Clever fox-spirits of enchanted blood; illusionists and wandering sages whose charm and hidden fire grow with age.",
      ("foxfire_illusion",
       active_power("kitsune", "foxfire_illusion", 800,
-                   [eff("invisibility", 120, 0, False), eff("speed", 120, 1),
-                    aoe(5, [("blindness", 80, 0), ("slowness", 80, 1)])]
+                   [eff("invisibility", 120, 0, False), eff("speed", 120, 1, False),
+                    afflict(5, [("blindness", 80, 0), ("slowness", 80, 1)])]
                    + present("kitsune", "foxfire_illusion", "light_purple", "Foxfire wreathes you!",
                              [sound("minecraft:entity.allay.ambient_with_item", 0.6, 1.4),
                               sound("minecraft:block.fire.ambient", 0.5, 1.5)],
@@ -719,21 +734,21 @@ emit("kitsune", "bestial", 404, 3,
       bundle("kitsune", "untamed_spirit", "Untamed Spirit",
              "-2 hearts and +15% physical damage taken. A spirit-frail body.",
              [("health", health(-4.0, "Spirit Frailty")),
-              ("phys", dmg_taken_type(["player", "mob", "arrow"], 0.15))])))
+              ("phys", dmg_taken_type(["player", "mob", "arrow", "trident", "thrown", "sting", "mob_projectile"], 0.15))])))
 
 emit("serpen", "bestial", 405, 2,
      "Calm, dangerous folk of snake blood; venomous mystics and assassins who strike with the quiet power of the coiled strike.",
      ("shed_skin",
-      active_power("serpen", "shed_skin", 600,
-                   [clear_cat("harmful"), eff("invisibility", 100, 0, False), eff("speed", 100, 0)]
+      active_power("serpen", "shed_skin", 900,
+                   [clear_cat("harmful"), eff("invisibility", 100, 0, False), eff("speed", 100, 0, False)]
                    + present("serpen", "shed_skin", "green", "You shed your skin.",
-                             [sound("minecraft:entity.snowball.throw" if False else "minecraft:entity.spider.ambient", 0.5, 0.6)],
-                             [particles("item_slime", 18, 0.1), particles("smoke", 8, 0.1)]),
+                             [sound("minecraft:entity.cat.hiss", 0.5, 0.6)],
+                             [particles("item_slime", 22, 0.1), particles("smoke", 10, 0.1)]),
                    "Shed Skin",
-                   "Slither free: cleanse all harmful effects and gain Invisibility and Speed for 5s. 30-second cooldown.")),
+                   "Slither free: cleanse all harmful effects and gain Invisibility and Speed for 5s. 45-second cooldown.")),
      ("venomous_coil",
       bundle("serpen", "venomous_coil", "Venomous Coil",
-             "Poison immunity, +10% speed, night vision, and thriving in the heat.",
+             "Poison immunity, venomous fangs, +10% speed, night vision, and thriving in the heat.",
              [("poison_imm", imm("poison")), ("speed", speed(0.10, "Coiled Speed")),
               ("night_vision", night_vision()),
               ("hot_home", biome_aff("serpen", "venomous_coil", "forge:is_hot", 0.06, 0.05,
@@ -751,7 +766,7 @@ emit("changeling", "faeborne", 500, 2,
                    [eff("invisibility", 120, 0, False), eff("speed", 100, 0)]
                    + present("changeling", "mirror_shift", "light_purple", "You slip behind a borrowed face.",
                              [sound("minecraft:entity.illusioner.mirror_move", 0.6, 1.0)],
-                             [particles("smoke", 18, 0.1), particles("portal", 10, 0.2)]),
+                             [particles("smoke", 20, 0.1), particles("portal", 12, 0.2)]),
                    "Mirror Shift",
                    "Slip away behind a glamour: Invisibility and Speed for 6s. 40-second cooldown.")),
      ("manyfaces",
@@ -760,14 +775,14 @@ emit("changeling", "faeborne", 500, 2,
              [("speed", speed(0.10, "Fluid Step")), ("luck", luck(1.0, "Borrowed Fortune"))])),
      ("hollow_identity",
       bundle("changeling", "hollow_identity", "Hollow Identity",
-             "-1 heart and -0.5 Luck. With no true self, fortune finds no purchase.",
-             [("health", health(-2.0, "Hollow Health")), ("luck", luck(-0.5, "No True Self"))])))
+             "-1 heart and -10% attack damage. With no true self, no strike lands with full conviction.",
+             [("health", health(-2.0, "Hollow Health")), ("attack", atk_dmg(-0.1, "No True Self"))])))
 
 emit("dryad", "faeborne", 501, 2,
      "Graceful forest-born fae bound to grove and root; gentle healers whose wrath is as old and unforgiving as the forest.",
      ("verdant_bloom",
       active_power("dryad", "verdant_bloom", 900,
-                   [eff("regeneration", 120, 1), heal(4.0), aoe(6, [("slowness", 120, 1)])]
+                   [eff("regeneration", 120, 1), heal(4.0), afflict(6, [("slowness", 120, 1)])]
                    + present("dryad", "verdant_bloom", "green", "Life blooms around you!",
                              [sound("minecraft:block.azalea.place", 0.7, 1.0),
                               sound("minecraft:block.moss.place", 0.5, 0.8)],
@@ -778,14 +793,14 @@ emit("dryad", "faeborne", 501, 2,
       bundle("dryad", "one_with_the_grove", "One with the Grove",
              "Poison immunity, at home in the forest, and you slowly heal in sunlight on the open ground.",
              [("poison_imm", imm("poison")),
-              ("forest_home", biome_aff("dryad", "one_with_the_grove", "forge:is_forest", 0.06, 0.05)),
+              ("forest_home", biome_aff("dryad", "one_with_the_grove", "minecraft:is_forest", 0.06, 0.05)),
               ("sun_heal", heal_over_time(300, 1.0, SUN_COND))])),
      ("kindling",
       bundle("dryad", "kindling", "Kindling",
              "Fire deals triple damage to you. Bark and leaf burn fast.",
              [("fire", dmg_taken_type(FIRE_NAMES, 2.0))])))
 
-emit("sprite", "faeborne", 502, 1,
+emit("sprite", "faeborne", 502, 2,
      "Tiny, lively fae of wild magic and starlight; quick-winged pranksters far more dangerous than they appear.",
      ("phase_shift",
       active_power("sprite", "phase_shift", 1800,
@@ -799,19 +814,19 @@ emit("sprite", "faeborne", 502, 1,
      ("gossamer_wings",
       bundle("sprite", "gossamer_wings", "Gossamer Wings",
              "Gossamer wings for gliding flight, Slow Falling, +30% speed, and +15% attack speed.",
-             wings_specs("sprite", "gossamer_wings", True)
+             wings_specs("sprite", "gossamer_wings", 30)
              + [("slow_fall", {"type": "origins:climbing"} if False else imm("none") if False else NOFALL),
                 ("speed", speed(0.30, "Sprite Swiftness")), ("attack_speed", atk_spd(0.15, "Sprite Flurry"))])),
      ("fragile_essence",
       bundle("sprite", "fragile_essence", "Fragile Essence",
              "-3 hearts and easily knocked from the air. A wisp of a body.",
-             [("health", health(-6.0, "Fragile Essence")), ("kb", kb_resist(-0.5, "Weightless"))])))
+             [("health", health(-6.0, "Fragile Essence"))])))
 
 emit("nymph", "faeborne", 503, 2,
      "Graceful nature spirits of rivers and springs; charming healers and enchantresses fierce in defense of their waters.",
      ("sirens_charm",
       active_power("nymph", "sirens_charm", 900,
-                   [aoe(8, [("slowness", 160, 1), ("weakness", 160, 0)]), eff("regeneration", 120, 0), heal(2.0)]
+                   [afflict(8, [("slowness", 160, 1), ("weakness", 160, 0)]), eff("regeneration", 120, 0), heal(2.0)]
                    + present("nymph", "sirens_charm", "aqua", "Your charm enthralls all who watch.",
                              [sound("minecraft:entity.allay.ambient_with_item", 0.7, 1.2),
                               sound("minecraft:block.water.ambient", 0.5, 1.4)],
@@ -835,21 +850,21 @@ emit("faerie", "faeborne", 504, 3,
      ("faerie_bargain",
       active_power("faerie", "faerie_bargain", 1000,
                    [eff("regeneration", 120, 0), eff("absorption", 120, 0),
-                    aoe(7, [("slowness", 120, 1), ("blindness", 120, 0), ("levitation", 40, 0)])]
+                    afflict(7, [("slowness", 120, 1), ("blindness", 120, 0), ("levitation", 40, 0)])]
                    + sig("FAERIE_GLAMOUR"),
                    "Faerie Bargain",
                    "Weave an old enchantment: bless yourself with Regeneration and Absorption while cursing nearby foes with Slowness, Blindness, and Levitation. 50-second cooldown.")),
      ("pixie_flight",
       bundle("faerie", "pixie_flight", "Pixie Flight",
              "Delicate wings for gliding flight, Slow Falling, +15% magic damage, +20% speed, and night vision.",
-             wings_specs("faerie", "pixie_flight", True)
+             wings_specs("faerie", "pixie_flight", 30)
              + [("magic", magic_bonus(0.15)), ("speed", speed(0.20, "Pixie Swiftness")),
                 ("night_vision", night_vision())])),
      ("cold_iron",
       bundle("faerie", "cold_iron", "Cold Iron",
              "-2.5 hearts, +20% physical damage taken, and easily knocked from the air. Cold iron is anathema to the fae.",
              [("health", health(-5.0, "Delicate Form")),
-              ("phys", dmg_taken_type(["player", "mob", "arrow"], 0.20)), ("kb", kb_resist(-0.4, "Weightless"))])))
+              ("phys", dmg_taken_type(["player", "mob", "arrow"], 0.20))])))
 
 # =================================================================== UNDEAD
 emit("zombie", "undead", 600, 1,
@@ -878,7 +893,7 @@ emit("skeleton", "undead", 601, 1,
      "Fleshless undead given motion by old oaths; eerie, tireless bonecrafters and unerring archers.",
      ("conscript_the_dead",
       active_power("skeleton", "conscript_the_dead", 1400,
-                   [summon("minecraft:skeleton", 2, 1200, 2.5)]
+                   [summon("runic_races:grave_servant", 2, 1200, 2.5)]
                    + present("skeleton", "conscript_the_dead", "white", "The dead answer your call!",
                              [sound("minecraft:entity.skeleton.ambient", 0.7, 0.8),
                               sound("minecraft:block.bone_block.break", 0.6, 0.8)],
@@ -900,11 +915,12 @@ emit("wraith", "undead", 602, 2,
      "Spectral undead shaped by sorrow and vengeance; silent, shadow-bound hunters who drain the soul and haunt forgotten graves.",
      ("spectral_phase",
       active_power("wraith", "spectral_phase", 900,
-                   [eff("invisibility", 100, 0, False), eff("resistance", 100, 1),
-                    eff("slow_falling", 100, 0), eff("speed", 100, 0), aoe(5, [("wither", 60, 0)])]
+                   [eff("invisibility", 100, 0, False), eff("resistance", 100, 1, False),
+                    eff("slow_falling", 100, 0, False), eff("speed", 100, 0, False),
+                    afflict(5, [("wither", 60, 0)]), heal(2.0)]
                    + sig("WRAITH_PHASE"),
                    "Spectral Phase",
-                   "Turn incorporeal: Invisibility, Resistance, and drifting Speed while you drain the life from nearby foes. 45-second cooldown.")),
+                   "Turn incorporeal: Invisibility, Resistance, and drifting Speed while you drain a sliver of life from the souls around you. 45-second cooldown.")),
      ("soul_touched",
       bundle("wraith", "soul_touched", "Soul-Touched",
              "Night vision, no fall damage, and your strikes grow deadlier in the dark of night.",
@@ -923,15 +939,14 @@ emit("demon", "undead", 603, 3,
      ("infernal_wrath",
       active_power("demon", "infernal_wrath", 1000,
                    [eff("strength", 160, 1), eff("fire_resistance", 160, 0),
-                    aoe(6, [("weakness", 100, 0)], set_fire=6)]
+                    afflict(6, [("weakness", 100, 0)], set_fire=6)]
                    + sig("DEMON_WRATH"),
                    "Infernal Wrath",
                    "Erupt in hellfire: gain Strength II and Fire Resistance while nearby foes are set ablaze and Weakened. 50-second cooldown.")),
      ("infernal_blood",
       bundle("demon", "infernal_blood", "Infernal Blood",
-             "Immune to fire, +15% melee damage, and stronger by night and in the heat.",
+             "Immune to fire, +15% melee damage, and stronger in the heat.",
              [("fire_imm", fire_immunity()), ("melee", atk_dmg(0.15, "Infernal Strength")),
-              ("night_power", scaling("demon", "infernal_blood", "generic.attack_damage", 0.0, 0.10)),
               ("hot_home", biome_aff("demon", "infernal_blood", "forge:is_hot", 0.05, 0.08))])),
      ("holy_vulnerability",
       bundle("demon", "holy_vulnerability", "Holy Vulnerability",
@@ -944,7 +959,7 @@ emit("reaper", "undead", 604, 3,
      "Grim harbingers touched by death's silence; soul-reaping executioners and solemn guardians of the final passage.",
      ("soul_harvest",
       active_power("reaper", "soul_harvest", 800,
-                   [aoe(6, [("wither", 100, 1), ("glowing", 100, 0)]), heal(4.0), eff("regeneration", 100, 0)]
+                   [afflict(6, [("wither", 100, 1), ("glowing", 100, 0)]), heal(4.0), eff("regeneration", 100, 0)]
                    + present("reaper", "soul_harvest", "dark_purple", "You reap the souls of the fallen!",
                              [sound("minecraft:block.bell.use", 0.6, 0.5),
                               sound("minecraft:entity.wither.ambient", 0.4, 1.4)],
@@ -953,7 +968,7 @@ emit("reaper", "undead", 604, 3,
                    "Sweep your scythe: nearby foes are Withered and revealed while their souls mend you. 40-second cooldown.")),
      ("harbinger_of_death",
       bundle("reaper", "harbinger_of_death", "Harbinger of Death",
-             "Immune to Wither, night vision, and +15% melee damage. Death once cheated returns you to the world (every 10 minutes).",
+             "Immune to Wither, night vision, and +15% melee damage. Death once cheated returns you to the world (every 30 minutes).",
              [("wither_imm", imm("wither")), ("night_vision", night_vision()),
               ("melee", atk_dmg(0.15, "Reaper's Edge"))])),
      ("touch_of_the_grave",
@@ -1024,7 +1039,7 @@ emit("sea_serpen", "draconic", 702, 2,
                                        "forge:is_hot", -0.05, 0.0))])),
      ("landbound_coils",
       bundle("sea_serpen", "landbound_coils", "Landbound Coils",
-             "-1 heart and +20% fire damage taken; far from water you are slow and weak.",
+             "-1 heart and +20% fire damage taken; far from water your coils grow sluggish.",
              [("health", health(-2.0, "Landbound")), ("fire", dmg_taken_type(FIRE_NAMES, 0.20)),
               ("dry_slow", cond_attr("minecraft:generic.movement_speed", "multiply_total", -0.10,
                                      "Beached", {"type": "origins:invert", "condition": WATER_COND}))])))
@@ -1080,8 +1095,15 @@ emit("wind_wyrm", "draconic", 705, 3,
      ("skylord",
       bundle("wind_wyrm", "skylord", "Skylord",
              "The strongest wings of all, Slow Falling, no fall damage, and +15% speed. Born to soar.",
-             wings_specs("wind_wyrm", "skylord", True)
-             + [("no_fall", NOFALL), ("speed", speed(0.15, "Skylord Swiftness"))])),
+             wings_specs("wind_wyrm", "skylord", 50)
+             + [("no_fall", NOFALL), ("speed", speed(0.15, "Skylord Swiftness")),
+                ("soft_wings", {"type": "origins:action_over_time", "interval": 20,
+                                "condition": {"type": "origins:and", "conditions": [
+                                    {"type": "origins:on_block", "inverted": True},
+                                    {"type": "origins:fall_flying", "inverted": True}]},
+                                "entity_action": {"type": "origins:apply_effect", "effect": {
+                                    "effect": "minecraft:slow_falling", "duration": 30, "amplifier": 0,
+                                    "is_ambient": True, "show_particles": False, "show_icon": False}}})])),
      ("untethered",
       bundle("wind_wyrm", "untethered", "Untethered",
              "-2 hearts; shut away underground you are slowed, weakened, and take more harm.",

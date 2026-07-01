@@ -74,7 +74,7 @@
         {
           "type": "origins:spawn_particles",
           "particle": "minecraft:crit",
-          "count": 16,
+          "count": 30,
           "speed": 0.1,
           "spread": {
             "x": 1.0,

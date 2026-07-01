@@ -3,7 +3,7 @@
 ## Quick Reference
 - **Mod ID**: `runic_races`
 - **Package**: `com.otectus.runic_races`
-- **Version**: 1.1.0
+- **Version**: 1.2.0
 - **MC**: 1.20.1 | **Forge**: 47.2.0 | **Java**: 17
 - **Mappings**: Official
 

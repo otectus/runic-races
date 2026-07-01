@@ -55,7 +55,7 @@
       "actions": [
         {
           "type": "runic_races:summon_minion",
-          "entity": "minecraft:skeleton",
+          "entity": "runic_races:grave_servant",
           "count": 2,
           "duration_ticks": 1200,
           "radius": 2.5

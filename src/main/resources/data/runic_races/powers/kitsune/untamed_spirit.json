@@ -31,6 +31,22 @@
         {
           "type": "origins:name",
           "name": "arrow"
+        },
+        {
+          "type": "origins:name",
+          "name": "trident"
+        },
+        {
+          "type": "origins:name",
+          "name": "thrown"
+        },
+        {
+          "type": "origins:name",
+          "name": "sting"
+        },
+        {
+          "type": "origins:name",
+          "name": "mob_projectile"
         }
       ]
     },

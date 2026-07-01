@@ -75,7 +75,7 @@ public final class SignatureRegistry {
                 Intensity.MAJOR
         ));
 
-        // ===== Demon: Infernal Wrath (MYTHIC) =====
+        // ===== Demon: Infernal Wrath (MAJOR — routine 50s active, not a life-saving moment) =====
         ENTRIES.put(SignatureKey.DEMON_WRATH, new SignatureEntry(
                 "message.runic_races.signature.demon.wrath",
                 ChatFormatting.RED,
@@ -85,13 +85,13 @@ public final class SignatureRegistry {
                         new SfxSpec(SoundEvents.GENERIC_EXPLODE, 0.5f, 1.0f)
                 ),
                 List.of(
-                        new VfxSpec(ParticleTypes.FLAME, 40, 0.8, 0.6, 0.8, 0.1),
-                        new VfxSpec(ParticleTypes.SOUL_FIRE_FLAME, 25, 0.6, 0.6, 0.6, 0.08),
-                        new VfxSpec(ParticleTypes.LAVA, 10, 0.5, 0.3, 0.5, 0.02)
+                        new VfxSpec(ParticleTypes.FLAME, 30, 0.8, 0.6, 0.8, 0.1),
+                        new VfxSpec(ParticleTypes.SOUL_FIRE_FLAME, 20, 0.6, 0.6, 0.6, 0.08),
+                        new VfxSpec(ParticleTypes.LAVA, 8, 0.5, 0.3, 0.5, 0.02)
                 ),
                 CueType.HEAT_SHIMMER,
                 25,
-                Intensity.MYTHIC
+                Intensity.MAJOR
         ));
 
         // ===== Feline: Nine Lives (MYTHIC — literal life-saving moment) =====
@@ -133,7 +133,7 @@ public final class SignatureRegistry {
                 Intensity.MAJOR
         ));
 
-        // ===== Runic One: Rune of Warding (MAJOR) =====
+        // ===== Runic One: Rune of Warding (MAJOR, 60 particles — top of band) =====
         ENTRIES.put(SignatureKey.RUNIC_WARD, new SignatureEntry(
                 "message.runic_races.signature.runic_one.runic_ward",
                 ChatFormatting.AQUA,
@@ -144,15 +144,15 @@ public final class SignatureRegistry {
                 ),
                 List.of(
                         new VfxSpec(ParticleTypes.ENCHANT, 30, 0.8, 1.0, 0.8, 0.3),
-                        new VfxSpec(ParticleTypes.END_ROD, 20, 0.8, 0.6, 0.8, 0.1),
-                        new VfxSpec(ParticleTypes.CRIT, 15, 0.6, 0.4, 0.6, 0.2)
+                        new VfxSpec(ParticleTypes.END_ROD, 18, 0.8, 0.6, 0.8, 0.1),
+                        new VfxSpec(ParticleTypes.CRIT, 12, 0.6, 0.4, 0.6, 0.2)
                 ),
                 CueType.VIGNETTE_PULSE,
                 20,
                 Intensity.MAJOR
         ));
 
-        // ===== Faerie: Faerie Bargain glamour (MYTHIC) =====
+        // ===== Faerie: Faerie Bargain glamour (MAJOR — routine 50s active) =====
         ENTRIES.put(SignatureKey.FAERIE_GLAMOUR, new SignatureEntry(
                 "message.runic_races.signature.faerie.glamour",
                 ChatFormatting.LIGHT_PURPLE,
@@ -162,24 +162,26 @@ public final class SignatureRegistry {
                         new SfxSpec(SoundEvents.BELL_BLOCK, 0.5f, 1.8f)
                 ),
                 List.of(
-                        new VfxSpec(ParticleTypes.FIREWORK, 30, 0.8, 1.0, 0.8, 0.2),
-                        new VfxSpec(ParticleTypes.END_ROD, 25, 0.8, 1.0, 0.8, 0.15),
-                        new VfxSpec(ParticleTypes.HAPPY_VILLAGER, 20, 0.8, 1.0, 0.8, 0.1)
+                        new VfxSpec(ParticleTypes.FIREWORK, 25, 0.8, 1.0, 0.8, 0.2),
+                        new VfxSpec(ParticleTypes.END_ROD, 20, 0.8, 1.0, 0.8, 0.15),
+                        new VfxSpec(ParticleTypes.HAPPY_VILLAGER, 15, 0.8, 1.0, 0.8, 0.1)
                 ),
                 CueType.VIGNETTE_PULSE,
                 25,
-                Intensity.MYTHIC
+                Intensity.MAJOR
         ));
 
-        // ===== Draconic breaths (MAJOR each; wind wyrm MYTHIC) =====
+        // ===== Draconic breaths (MAJOR each) =====
+        // Accent bursts only (~15 particles): the dominant VFX path for breaths is the
+        // cone fill emitted by ConeBreathAction (~42 particles at 2/step, range 7), so
+        // cone + accent lands inside the Major 30-60 band.
         ENTRIES.put(SignatureKey.FIRE_DRAKE_BREATH, new SignatureEntry(
                 "message.runic_races.signature.fire_drake.breath",
                 ChatFormatting.RED, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 1.3f),
                         new SfxSpec(SoundEvents.BLAZE_SHOOT, 0.6f, 0.6f)),
-                List.of(new VfxSpec(ParticleTypes.DRAGON_BREATH, 34, 0.8, 0.3, 0.8, 0.3),
-                        new VfxSpec(ParticleTypes.FLAME, 18, 0.6, 0.3, 0.6, 0.1),
-                        new VfxSpec(RaceColors.FORGE_EMBER, 8, 0.7, 0.3, 0.7, 0.05)),
+                List.of(new VfxSpec(ParticleTypes.DRAGON_BREATH, 10, 0.8, 0.3, 0.8, 0.3),
+                        new VfxSpec(RaceColors.FORGE_EMBER, 5, 0.7, 0.3, 0.7, 0.05)),
                 null, 0, Intensity.MAJOR));
 
         ENTRIES.put(SignatureKey.ICE_DRAKE_BREATH, new SignatureEntry(
@@ -187,9 +189,8 @@ public final class SignatureRegistry {
                 ChatFormatting.AQUA, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 1.5f),
                         new SfxSpec(SoundEvents.GLASS_BREAK, 0.5f, 0.7f)),
-                List.of(new VfxSpec(ParticleTypes.SNOWFLAKE, 34, 0.8, 0.3, 0.8, 0.2),
-                        new VfxSpec(ParticleTypes.DRAGON_BREATH, 13, 0.6, 0.3, 0.6, 0.2),
-                        new VfxSpec(RaceColors.GLACIAL_CYAN, 8, 0.7, 0.3, 0.7, 0.05)),
+                List.of(new VfxSpec(ParticleTypes.SNOWFLAKE, 10, 0.8, 0.3, 0.8, 0.2),
+                        new VfxSpec(RaceColors.GLACIAL_CYAN, 5, 0.7, 0.3, 0.7, 0.05)),
                 CueType.FROST_RIME, 20, Intensity.MAJOR));
 
         ENTRIES.put(SignatureKey.SEA_SERPEN_BREATH, new SignatureEntry(
@@ -197,9 +198,8 @@ public final class SignatureRegistry {
                 ChatFormatting.BLUE, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 1.1f),
                         new SfxSpec(SoundEvents.PLAYER_SPLASH, 0.7f, 0.8f)),
-                List.of(new VfxSpec(ParticleTypes.BUBBLE, 40, 0.8, 0.3, 0.8, 0.2),
-                        new VfxSpec(ParticleTypes.SPLASH, 15, 0.6, 0.3, 0.6, 0.1),
-                        new VfxSpec(ParticleTypes.DRAGON_BREATH, 10, 0.6, 0.3, 0.6, 0.2)),
+                List.of(new VfxSpec(ParticleTypes.BUBBLE, 10, 0.8, 0.3, 0.8, 0.2),
+                        new VfxSpec(ParticleTypes.SPLASH, 5, 0.6, 0.3, 0.6, 0.1)),
                 null, 0, Intensity.MAJOR));
 
         ENTRIES.put(SignatureKey.TERRA_DRAKE_BREATH, new SignatureEntry(
@@ -207,8 +207,8 @@ public final class SignatureRegistry {
                 ChatFormatting.DARK_GREEN, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 0.7f),
                         new SfxSpec(SoundEvents.GENERIC_EXPLODE, 0.4f, 0.6f)),
-                List.of(new VfxSpec(ParticleTypes.POOF, 35, 0.8, 0.4, 0.8, 0.1),
-                        new VfxSpec(ParticleTypes.CRIT, 20, 0.6, 0.3, 0.6, 0.2)),
+                List.of(new VfxSpec(ParticleTypes.POOF, 10, 0.8, 0.4, 0.8, 0.1),
+                        new VfxSpec(ParticleTypes.CRIT, 5, 0.6, 0.3, 0.6, 0.2)),
                 CueType.SHAKE, 10, Intensity.MAJOR));
 
         ENTRIES.put(SignatureKey.VOLT_DRAKE_BREATH, new SignatureEntry(
@@ -216,9 +216,8 @@ public final class SignatureRegistry {
                 ChatFormatting.YELLOW, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 1.6f),
                         new SfxSpec(SoundEvents.LIGHTNING_BOLT_THUNDER, 0.4f, 1.5f)),
-                List.of(new VfxSpec(ParticleTypes.ELECTRIC_SPARK, 34, 0.8, 0.3, 0.8, 0.3),
-                        new VfxSpec(ParticleTypes.CRIT, 13, 0.6, 0.3, 0.6, 0.2),
-                        new VfxSpec(RaceColors.VOLT_GOLD, 8, 0.7, 0.3, 0.7, 0.1)),
+                List.of(new VfxSpec(ParticleTypes.ELECTRIC_SPARK, 10, 0.8, 0.3, 0.8, 0.3),
+                        new VfxSpec(RaceColors.VOLT_GOLD, 5, 0.7, 0.3, 0.7, 0.1)),
                 null, 0, Intensity.MAJOR));
 
         ENTRIES.put(SignatureKey.WIND_WYRM_BREATH, new SignatureEntry(
@@ -226,10 +225,9 @@ public final class SignatureRegistry {
                 ChatFormatting.WHITE, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 1.2f),
                         new SfxSpec(SoundEvents.ENDER_DRAGON_FLAP, 0.6f, 0.7f)),
-                List.of(new VfxSpec(ParticleTypes.CLOUD, 40, 0.9, 0.4, 0.9, 0.3),
-                        new VfxSpec(ParticleTypes.POOF, 20, 0.6, 0.3, 0.6, 0.2),
-                        new VfxSpec(ParticleTypes.DRAGON_BREATH, 15, 0.7, 0.3, 0.7, 0.2)),
-                CueType.SHAKE, 15, Intensity.MYTHIC));
+                List.of(new VfxSpec(ParticleTypes.CLOUD, 10, 0.9, 0.4, 0.9, 0.3),
+                        new VfxSpec(ParticleTypes.DRAGON_BREATH, 5, 0.7, 0.3, 0.7, 0.2)),
+                CueType.SHAKE, 15, Intensity.MAJOR));
 
         // ===== Wing flaps =====
         ENTRIES.put(SignatureKey.SPRITE_WING_FLAP, new SignatureEntry(

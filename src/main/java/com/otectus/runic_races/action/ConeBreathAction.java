@@ -103,18 +103,22 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
         ParticleOptions primary = primaryParticle(config.element());
         ParticleOptions secondary = secondaryParticle(config.element());
 
-        // Spawn directional particles along the cone axis.
-        int steps = Math.max(4, (int) (range * 3));
+        // Spawn directional particles along the cone axis. Density is budgeted so that
+        // cone fill + the ~15-particle signature accent stays inside the Major VFX band
+        // (30-60 per ability): ~2.5 particles/step over range*2 steps ≈ 35 for range 7.
+        int steps = Math.max(4, (int) (range * 2));
         for (int i = 1; i <= steps; i++) {
             double t = (double) i / steps;
             Vec3 step = origin.add(look.scale(range * t));
             double spread = 0.15 + (config.halfAngleDegrees() / 90.0) * t * 0.8;
             level.sendParticles(primary,
                     step.x, step.y, step.z,
-                    4, spread, spread, spread, 0.02);
-            level.sendParticles(secondary,
-                    step.x, step.y, step.z,
-                    2, spread * 0.6, spread * 0.6, spread * 0.6, 0.01);
+                    2, spread, spread, spread, 0.02);
+            if (i % 2 == 0) {
+                level.sendParticles(secondary,
+                        step.x, step.y, step.z,
+                        1, spread * 0.6, spread * 0.6, spread * 0.6, 0.01);
+            }
         }
 
         // Gather candidate living entities in a bounding box that contains the cone.

@@ -38,7 +38,7 @@
     "entity_action": {
       "type": "runic_races:glow_hostiles",
       "radius": 8.0,
-      "duration_ticks": 80
+      "duration_ticks": 120
     }
   }
 }

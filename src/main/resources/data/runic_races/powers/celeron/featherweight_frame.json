@@ -3,8 +3,7 @@
   "name": "power.runic_races.celeron.featherweight_frame.name",
   "description": "power.runic_races.celeron.featherweight_frame.description",
   "subpowers": [
-    "health",
-    "knockback"
+    "health"
   ],
   "health": {
     "type": "origins:attribute",
@@ -13,15 +12,6 @@
       "operation": "addition",
       "value": -4.0,
       "name": "Featherweight Health"
-    }
-  },
-  "knockback": {
-    "type": "origins:attribute",
-    "modifier": {
-      "attribute": "minecraft:generic.knockback_resistance",
-      "operation": "addition",
-      "value": -0.4,
-      "name": "Featherweight Knockback"
     }
   }
 }

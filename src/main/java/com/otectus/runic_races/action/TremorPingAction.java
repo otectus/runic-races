@@ -4,29 +4,31 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
 /**
- * Custom Apoli entity action: Deep Dwarf "Tremor Ping". Only fires when the
- * caster is underground, sneaking, or standing on stone. Marks hostile mobs
- * within {@code radius} blocks with {@code minecraft:glowing} for
- * {@code duration_ticks}, emits a dust ring at the caster's feet and a bass
- * thrum sound. Safely no-ops when the gate fails.
+ * Custom Apoli entity action: tremor ping (Deep One "Tremorsense", Terra Drake
+ * "Seismic Breath" rider). Marks hostile mobs within {@code radius} blocks with
+ * {@code minecraft:glowing} for {@code duration_ticks}, emits a dust ring at the
+ * caster's feet and a bass thrum sound.
+ * <p>
+ * Deliberately ungated: an earlier version required sneaking/stone/underground and
+ * silently no-oped otherwise — but the calling JSON had already consumed the ability
+ * cooldown and played the full presentation, so the "gate" just ate charges. If an
+ * environmental gate returns, it must live in the power JSON's activation condition
+ * so the key-press is rejected before the cooldown is set.
  * <p>
  * JSON usage:
  * <pre>
@@ -59,8 +61,6 @@ public class TremorPingAction extends EntityAction<TremorPingAction.Configuratio
         if (!(entity instanceof LivingEntity caster)) return;
         if (!(entity.level() instanceof ServerLevel level)) return;
 
-        if (!canPing(level, caster)) return;
-
         AABB box = caster.getBoundingBox().inflate(config.radius());
         List<LivingEntity> nearby = level.getEntitiesOfClass(LivingEntity.class, box,
                 e -> e != caster && e.isAlive() && isHostile(e));
@@ -83,21 +83,6 @@ public class TremorPingAction extends EntityAction<TremorPingAction.Configuratio
 
         level.playSound(null, caster.getX(), caster.getY(), caster.getZ(),
                 SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 0.6f, 0.5f);
-    }
-
-    private static boolean canPing(ServerLevel level, LivingEntity caster) {
-        if (caster.isCrouching()) return true;
-
-        BlockPos feet = caster.blockPosition();
-        BlockState below = level.getBlockState(feet.below());
-        if (below.is(BlockTags.BASE_STONE_OVERWORLD)
-                || below.is(BlockTags.BASE_STONE_NETHER)
-                || below.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES)) {
-            return true;
-        }
-
-        // "Underground" heuristic: no direct sky light above caster's head.
-        return !level.canSeeSky(caster.blockPosition());
     }
 
     private static boolean isHostile(LivingEntity entity) {

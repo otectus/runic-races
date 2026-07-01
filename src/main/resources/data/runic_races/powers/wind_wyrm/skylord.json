@@ -7,7 +7,8 @@
     "flap_cooldown_timer",
     "flap_cooldown_decay",
     "no_fall",
-    "speed"
+    "speed",
+    "soft_wings"
   ],
   "elytra_flight": {
     "type": "origins:elytra_flight",
@@ -16,7 +17,7 @@
   "flap_cooldown_timer": {
     "type": "origins:resource",
     "min": 0,
-    "max": 120,
+    "max": 50,
     "start_value": 0,
     "hud_render": {
       "should_render": false,
@@ -62,6 +63,34 @@
       "operation": "multiply_total",
       "value": 0.15,
       "name": "Skylord Swiftness"
+    }
+  },
+  "soft_wings": {
+    "type": "origins:action_over_time",
+    "interval": 20,
+    "condition": {
+      "type": "origins:and",
+      "conditions": [
+        {
+          "type": "origins:on_block",
+          "inverted": true
+        },
+        {
+          "type": "origins:fall_flying",
+          "inverted": true
+        }
+      ]
+    },
+    "entity_action": {
+      "type": "origins:apply_effect",
+      "effect": {
+        "effect": "minecraft:slow_falling",
+        "duration": 30,
+        "amplifier": 0,
+        "is_ambient": true,
+        "show_particles": false,
+        "show_icon": false
+      }
     }
   }
 }

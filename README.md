@@ -56,7 +56,7 @@ A flagship Origins add-on for the **Runecraft** modpack. 37 deeply designed race
 | Race | Active | Passive / Weakness |
 |------|--------|--------------------|
 | **Zombie** | Undying Hunger | deathless flesh / sunlight decay |
-| **Skeleton** | Conscript the Dead | bonecraft archer / brittle bones |
+| **Skeleton** | Conscript the Dead | grave-servant summoner / brittle bones |
 | **Wraith** | Spectral Phase | soul-touched / sunlight & holy |
 | **Demon** | Infernal Wrath | infernal fire / holy & water |
 | **Reaper** | Soul Harvest | **death revival** / −50% healing |
@@ -85,7 +85,7 @@ All integrations are optional and config-toggleable. If a mod is absent, its fea
 ## Installation
 
 1. Requires **Origins Forge** (1.10.0.9+) installed in the modpack
-2. Drop `runic_races-1.1.0.jar` into the `mods/` folder
+2. Drop `runic_races-1.2.0.jar` into the `mods/` folder (required on **both** client and server)
 3. **Remove** the old KubeJS Runic Races datapack if present (`kubejs/data/runic_races/`)
 4. Existing players with preserved race names will keep their selection
 
@@ -132,6 +132,8 @@ If you leave both unbound, the legacy fallback stays active: while gliding, pres
 - `/runicraces info [player]` — Show selected race
 - `/runicraces list` — List all 37 races by family
 - `/runicraces debug` — Show current attribute values
+- `/runicraces validate` — (op) Cross-check the race registry against loaded origins/powers — run after editing datapacks
+- `/runicraces state <player>` — (op) Dump a player's effective race state (flags, cooldowns, adaptation stacks)
 
 ## Design Philosophy
 
@@ -146,7 +148,7 @@ If you leave both unbound, the legacy fallback stays active: while gliding, pres
 ```bash
 # Place the compile-only dependency jars in Dependencies/ (gitignored), then:
 ./gradlew build
-# Output: build/libs/runic_races-1.1.0.jar
+# Output: build/libs/runic_races-1.2.0.jar
 ```
 
 **Required:** `origins-forge`, `apoli-forge`, `calio-forge`. Apoli and Calio ship *inside*

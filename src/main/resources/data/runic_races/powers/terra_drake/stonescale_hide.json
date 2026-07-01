@@ -62,9 +62,6 @@
     "home_biome_tag": "forge:is_mountain",
     "speed_bonus": 0.05,
     "damage_bonus": 0.08,
-    "hostile_biome_tag": "forge:is_mountain",
-    "speed_penalty": 0.0,
-    "damage_penalty": 0.0,
     "check_interval": 40
   }
 }

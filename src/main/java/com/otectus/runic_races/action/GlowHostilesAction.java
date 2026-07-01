@@ -51,6 +51,7 @@ public class GlowHostilesAction extends EntityAction<GlowHostilesAction.Configur
     @Override
     public void execute(Configuration config, Entity entity) {
         if (!(entity instanceof LivingEntity caster)) return;
+        if (!(caster.level() instanceof net.minecraft.server.level.ServerLevel)) return;
 
         AABB box = caster.getBoundingBox().inflate(config.radius());
         List<LivingEntity> nearby = caster.level().getEntitiesOfClass(LivingEntity.class, box,

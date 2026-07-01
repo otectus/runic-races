@@ -18,7 +18,7 @@ with open("tools/race_lang.json") as f:
 
 
 def keep(k):
-    if k.startswith("layer.") or k.startswith("tooltip."):
+    if k.startswith("layer.") or k.startswith("tooltip.") or k.startswith("entity."):
         return True
     if k.startswith("message.runic_races.learning."):
         return True
@@ -38,7 +38,7 @@ NOTIF = {
     "skeleton.sunlight":    ("Sunlight sears your brittle bones.", "You slip back into the shade."),
     "wraith.sunlight":      ("Daylight banishes your spectral form.", "Shadow returns to shield you."),
     "reaper.sunlight":      ("The living sun shuns your grave-touched flesh.", "Twilight mercy returns."),
-    "deep_one.sunlight":    ("The surface glare blinds and slows you.", "Blessed darkness again."),
+    "deep_one.sunlight":    ("The surface glare dazzles and slows you.", "Blessed darkness again."),
     "dark_elf.sunlight":    ("Sunlight saps your shadowed strength.", "You return to welcome gloom."),
     "sky_one.tight_space":  ("The close dark presses in — you long for the peaks.", "Open air at last."),
     "wind_wyrm.tight_space":("Walls close around your wings — you cannot soar.", "The open sky is yours again."),

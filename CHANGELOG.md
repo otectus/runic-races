@@ -3,6 +3,92 @@
 All notable changes to Runic Races are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.2.0] — 2026-07-01 — Full Audit Remediation
+
+Every finding from the full bug/stability/balance audit (`AUDIT_REPORT.md`), fixed.
+
+### Fixed — critical
+- **Skeleton's Conscript the Dead now summons friendly Grave Servants** instead of hostile
+  vanilla skeletons (`conscript_the_dead.json` pointed at `minecraft:skeleton`; the
+  purpose-built ally entity was never referenced).
+- **Arachnid's Web Snare trap actually triggers.** The trap block used `stepOn`, which never
+  fires for a collision-less block; it now uses `entityInside` (pressure-plate pattern).
+  Trap lifetime raised from 10s to 60s.
+- **Crash hardening:** `check_interval: 0` in a third-party datapack power no longer causes a
+  divide-by-zero server crash (`biome_affinity` / `scaling_attribute` clamp to ≥1).
+
+### Fixed — broken weaknesses & passives
+- **Canine and Dryad forest affinity works** — `forge:is_forest` does not exist in Forge
+  1.20.1; both now use `minecraft:is_forest`, and `biome_affinity` warns once when a
+  referenced biome tag is defined by nothing.
+- **Lightweight knockback weaknesses are real.** Negative `knockback_resistance` modifiers
+  clamp to 0 and did nothing; Celeron (1.3×), Avian (1.4×), Faerie (1.4×), and Sprite (1.5×)
+  now take amplified knockback via a `LivingKnockBackEvent` handler driven by
+  `RaceRegistry` metadata.
+- **Moon Elf night regeneration exists** (heals half a heart every 5s at night) — the old
+  subpower was a configured 0.0/0.0 no-op that the tooltip advertised anyway.
+
+### Fixed — misfiring mechanics
+- **Valen's shoulder-check is gated:** direct melee only (no arrows/tridents), hostile
+  targets only (no players/pets/villagers), once per sprint. Previously it fired on every
+  sprint attack against anything, at any range, enabling juggle-locks.
+- **Reaper revival no longer burns its 30-minute cooldown on failure.** The cooldown is
+  consumed only on a successful revival; the lifetime attempt counter (which silently ate
+  legitimate revivals) is gone; the missing-dimension failure path now shows the rejection
+  cue; the tooltip's "10 minutes" now says 30.
+- **Tremor abilities no longer eat their cooldown while doing nothing** — the hidden
+  sneaking/stone/underground gate inside `tremor_ping` is removed (Deep One Tremorsense,
+  Terra Drake Seismic Breath).
+- **Magi's Arcane Overflow requires 30 mana to activate** (new `has_mana` gate), instead of
+  firing at 0 mana and draining into the negative.
+- **Nine Lives no longer wastes its charge on void damage or `/kill`** (invulnerability-
+  bypassing sources are excluded — Resistance V couldn't save you anyway).
+
+### Changed — targeting & new mechanics
+- **New `runic_races:afflict_hostiles` action**: all 11 offensive AoE actives (Rune of
+  Warding, Arcane Overflow, Arcane Reflex, Frostbind, Foxfire Illusion, Siren's Charm,
+  Infernal Wrath, Spectral Phase, Soul Harvest, Verdant Bloom, Web Snare) now hit only
+  hostile mobs — never party members, pets, or villagers. Rune of Warding is finally the
+  party ward its description promised.
+- **Doc-promised mechanics implemented:** Arachnid/Serpen venomous melee (Poison I on
+  direct hits), Blood Elf 20% melee lifesteal (taxed by their own −30% healing), Wraith's
+  Spectral Phase drains 1 heart back, Wind Wyrm gains the advertised slow-fall drift when
+  airborne and not gliding.
+
+### Balance
+- Demon: night attack bonus removed (fire/lava immunity stays the marquee).
+- Sprite: impact rating corrected to 2 (its knockback weakness is now real).
+- Serpen: Shed Skin cooldown 30s → 45s. Canine: hunger drain ×1.25 → ×1.4.
+- Changeling: self-cancelling −0.5 luck weakness replaced with −10% attack damage.
+- Primian: adaptation kill-stacks now require *different* mob types (no spawner farming),
+  matching the documented behavior.
+
+### Polish
+- Dark Elf's daytime attack malus only applies under open sky (new
+  `require_sky_exposure` option on `scaling_attribute`), matching its cave-dweller fantasy.
+- Flap cooldown HUD icons now sweep the full dial (flap resource max = actual cooldown).
+- Invisibility actives (Wraith/Kitsune/Serpen) no longer leak potion swirls from their
+  companion buffs.
+- VFX grammar normalized: Demon Wrath / Faerie Glamour / Galeforce Breath re-tiered from
+  mis-labeled "mythic" to Major (≤60 particles); dragon-breath cone density trimmed;
+  under-budget actives (Pounce, Mirror Shift, Wind Burst, Shed Skin, Shadowmeld, Mountain
+  Leap) raised into the 30–60 band; sun/claustrophobia HUD runes now match the actual
+  penalty conditions.
+- Weakness damage-type coverage widened (tridents/thrown/stings for High Elf & Kitsune,
+  fireballs for Ice Elf & Arachnid); Forge Blessing never duplicates an existing Unbreaking
+  enchantment; Serpen's shed-skin sound is no longer a spider hiss.
+- Removed 24 stale pre-overhaul origin models and an orphaned wing texture; fixed the
+  example datapack's family id (`family_faeborne`); `origins` dependency now requires 1.10+;
+  added a LICENSE file; removed the machine-specific `org.gradle.java.home` pin.
+
+### Added — diagnostics
+- `/runicraces validate` (op): cross-checks the race registry against loaded origins and
+  powers — run it after editing race datapacks.
+- `/runicraces state <player>` (op): dumps a player's effective race state (flags, cooldown
+  resources, adaptation stacks, revival cooldown, integration sync).
+- Five JUnit regression suites: registry↔data parity, cooldown resource IDs, power-JSON
+  lint (tags, intervals, targeting), VFX budgets, and lang-duration consistency.
+
 ## [1.1.0] — 2026-06-15 — Audit Hardening & Build Fixes
 
 A focused follow-up to the 1.0.0 overhaul: a full project audit pass plus the fixes it

@@ -54,44 +54,20 @@
       "type": "origins:and",
       "actions": [
         {
-          "type": "origins:area_of_effect",
+          "type": "runic_races:afflict_hostiles",
           "radius": 8,
-          "bientity_action": {
-            "type": "origins:target_action",
-            "action": {
-              "type": "origins:and",
-              "actions": [
-                {
-                  "type": "origins:apply_effect",
-                  "effect": {
-                    "effect": "minecraft:slowness",
-                    "duration": 160,
-                    "amplifier": 1,
-                    "is_ambient": false,
-                    "show_particles": true,
-                    "show_icon": true
-                  }
-                },
-                {
-                  "type": "origins:apply_effect",
-                  "effect": {
-                    "effect": "minecraft:weakness",
-                    "duration": 160,
-                    "amplifier": 0,
-                    "is_ambient": false,
-                    "show_particles": true,
-                    "show_icon": true
-                  }
-                }
-              ]
+          "effects": [
+            {
+              "effect": "minecraft:slowness",
+              "duration_ticks": 160,
+              "amplifier": 1
+            },
+            {
+              "effect": "minecraft:weakness",
+              "duration_ticks": 160,
+              "amplifier": 0
             }
-          },
-          "bientity_condition": {
-            "type": "origins:target_condition",
-            "condition": {
-              "type": "origins:living"
-            }
-          }
+          ]
         },
         {
           "type": "origins:apply_effect",

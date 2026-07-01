@@ -76,37 +76,16 @@
           }
         },
         {
-          "type": "origins:area_of_effect",
+          "type": "runic_races:afflict_hostiles",
           "radius": 6,
-          "bientity_action": {
-            "type": "origins:target_action",
-            "action": {
-              "type": "origins:and",
-              "actions": [
-                {
-                  "type": "origins:apply_effect",
-                  "effect": {
-                    "effect": "minecraft:weakness",
-                    "duration": 100,
-                    "amplifier": 0,
-                    "is_ambient": false,
-                    "show_particles": true,
-                    "show_icon": true
-                  }
-                },
-                {
-                  "type": "origins:set_on_fire",
-                  "duration": 6
-                }
-              ]
+          "effects": [
+            {
+              "effect": "minecraft:weakness",
+              "duration_ticks": 100,
+              "amplifier": 0
             }
-          },
-          "bientity_condition": {
-            "type": "origins:target_condition",
-            "condition": {
-              "type": "origins:living"
-            }
-          }
+          ],
+          "set_on_fire_seconds": 6
         },
         {
           "type": "runic_races:signature_presentation",

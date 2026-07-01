@@ -17,7 +17,7 @@
   "flap_cooldown_timer": {
     "type": "origins:resource",
     "min": 0,
-    "max": 120,
+    "max": 35,
     "start_value": 0,
     "hud_render": {
       "should_render": false,

@@ -93,7 +93,7 @@
         {
           "type": "origins:spawn_particles",
           "particle": "minecraft:crit",
-          "count": 15,
+          "count": 24,
           "speed": 0.3,
           "spread": {
             "x": 0.6,
@@ -104,7 +104,7 @@
         {
           "type": "origins:spawn_particles",
           "particle": "minecraft:sweep_attack",
-          "count": 4,
+          "count": 6,
           "speed": 0.2,
           "spread": {
             "x": 0.6,

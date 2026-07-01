@@ -5,7 +5,6 @@
   "subpowers": [
     "fire_imm",
     "melee",
-    "night_power",
     "hot_home"
   ],
   "fire_imm": {
@@ -45,16 +44,6 @@
       "name": "Infernal Strength"
     }
   },
-  "night_power": {
-    "type": "runic_races:scaling_attribute",
-    "name": "power.runic_races.demon.infernal_blood.name",
-    "description": "power.runic_races.demon.infernal_blood.description",
-    "attribute": "generic.attack_damage",
-    "day_value": 0.0,
-    "night_value": 0.1,
-    "operation": "multiply_total",
-    "check_interval": 40
-  },
   "hot_home": {
     "type": "runic_races:biome_affinity",
     "name": "power.runic_races.demon.infernal_blood.name",
@@ -62,9 +51,6 @@
     "home_biome_tag": "forge:is_hot",
     "speed_bonus": 0.05,
     "damage_bonus": 0.08,
-    "hostile_biome_tag": "forge:is_hot",
-    "speed_penalty": 0.0,
-    "damage_penalty": 0.0,
     "check_interval": 40
   }
 }

@@ -34,7 +34,14 @@ public final class OriginsPowerHelper {
 
         ConfiguredPower configuredPower = (ConfiguredPower) holder.value();
         OptionalInt value = configuredPower.getValue(player);
-        return value.isEmpty() || value.getAsInt() <= 0;
+        if (value.isEmpty()) {
+            // Fail closed, consistent with the container/holder guards above: a resource
+            // power whose value provider is misconfigured should not read as "ready".
+            RunicRacesMod.debug("[RunicRaces] isResourceReady fail-closed: power {} has no value for {}",
+                    powerId, player.getName().getString());
+            return false;
+        }
+        return value.getAsInt() <= 0;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

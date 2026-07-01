@@ -24,9 +24,9 @@ import net.minecraft.world.level.Level;
 import java.util.UUID;
 
 /**
- * Short-lived Revenant minion summoned by the {@code runic_races:summon_minion} action
- * fired from {@code grave_call.json}. Extends {@link Zombie} so the vanilla zombie
- * renderer and model can be reused without custom art assets.
+ * Short-lived Grave Servant minion summoned by the {@code runic_races:summon_minion} action
+ * fired from {@code skeleton/conscript_the_dead.json}. Extends {@link Zombie} so the vanilla
+ * zombie renderer and model can be reused without custom art assets.
  *
  * Behavior differences from a vanilla zombie:
  * <ul>
