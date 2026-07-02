@@ -49,6 +49,8 @@ NOTIF = {
     "frost_one.fire":       ("Fire! The heat unmakes your cold flesh.", "The flames are out."),
     "sea_serpen.fire":      ("Fire! Your scales dry and split.", "The flames are out."),
     "volt_drake.open_sky":  ("Under the open sky, the storm answers your call.", "Cut off from the sky, your power dims."),
+    "feline.submerged":     ("Water soaks your fur — every blow lands harder.", "You shake yourself dry."),
+    "volt_drake.submerged": ("Water grounds your storm — your scales spark and sputter.", "Dry again, the current rebuilds."),
 }
 for topic, (start, stop) in NOTIF.items():
     merged["message.runic_races.%s.start" % topic] = start

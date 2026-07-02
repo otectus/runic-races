@@ -21,6 +21,9 @@ public class RRServerConfig {
     public static final ForgeConfigSpec.BooleanValue NOTIFICATIONS_CHAT_MIRROR;
     public static final ForgeConfigSpec.BooleanValue NOTIFICATIONS_LEARNING_MODE;
 
+    // Server-authored VFX
+    public static final ForgeConfigSpec.DoubleValue BREATH_PARTICLE_DENSITY;
+
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
@@ -65,6 +68,13 @@ public class RRServerConfig {
                 .comment("Also banner the informational states (home/hostile biome, night empowered, adaptation) that are normally rune-only.",
                         "Useful while learning a race; noisy for veterans.")
                 .define("learningMode", false);
+        builder.pop();
+
+        builder.comment("Server-authored VFX tuning").push("vfx");
+        BREATH_PARTICLE_DENSITY = builder
+                .comment("Density multiplier for draconic breath-weapon particles broadcast by the server (0.0 = none, 1.0 = default, 2.0 = double).",
+                        "Below 0.5 the secondary accent particles are skipped entirely.")
+                .defineInRange("breathParticleDensity", 1.0, 0.0, 2.0);
         builder.pop();
 
         SPEC = builder.build();

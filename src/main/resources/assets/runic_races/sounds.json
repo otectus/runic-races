@@ -1,0 +1,205 @@
+{
+  "ability.deny": {
+    "subtitle": "subtitles.runic_races.ability.deny",
+    "sounds": [
+      {
+        "name": "minecraft:entity.villager.no",
+        "type": "event",
+        "volume": 0.7,
+        "pitch": 0.85
+      },
+      {
+        "name": "minecraft:entity.villager.no",
+        "type": "event",
+        "volume": 0.7,
+        "pitch": 0.75
+      }
+    ]
+  },
+  "ability.ready": {
+    "subtitle": "subtitles.runic_races.ability.ready",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.pling",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.6
+      }
+    ]
+  },
+  "wings.flap_small": {
+    "subtitle": "subtitles.runic_races.wings.flap_small",
+    "sounds": [
+      {
+        "name": "minecraft:entity.bee.loop",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 1.0
+      },
+      {
+        "name": "minecraft:entity.bee.loop",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 1.1
+      }
+    ]
+  },
+  "wings.flap_feather": {
+    "subtitle": "subtitles.runic_races.wings.flap_feather",
+    "sounds": [
+      {
+        "name": "minecraft:entity.phantom.flap",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 1.0
+      },
+      {
+        "name": "minecraft:entity.phantom.flap",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 1.1
+      }
+    ]
+  },
+  "wings.flap_large": {
+    "subtitle": "subtitles.runic_races.wings.flap_large",
+    "sounds": [
+      {
+        "name": "minecraft:entity.ender_dragon.flap",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 1.0
+      },
+      {
+        "name": "minecraft:entity.ender_dragon.flap",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 0.9
+      }
+    ]
+  },
+  "breath.fire": {
+    "subtitle": "subtitles.runic_races.breath.fire",
+    "sounds": [
+      {
+        "name": "minecraft:entity.blaze.shoot",
+        "type": "event",
+        "volume": 1.0,
+        "pitch": 0.6
+      },
+      {
+        "name": "minecraft:entity.blaze.shoot",
+        "type": "event",
+        "volume": 1.0,
+        "pitch": 0.7
+      }
+    ]
+  },
+  "breath.frost": {
+    "subtitle": "subtitles.runic_races.breath.frost",
+    "sounds": [
+      {
+        "name": "minecraft:block.glass.break",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 0.7
+      },
+      {
+        "name": "minecraft:block.powder_snow.break",
+        "type": "event",
+        "volume": 1.0,
+        "pitch": 0.6
+      }
+    ]
+  },
+  "breath.water": {
+    "subtitle": "subtitles.runic_races.breath.water",
+    "sounds": [
+      {
+        "name": "minecraft:entity.player.splash",
+        "type": "event",
+        "volume": 1.0,
+        "pitch": 0.8
+      },
+      {
+        "name": "minecraft:entity.player.splash",
+        "type": "event",
+        "volume": 1.0,
+        "pitch": 0.7
+      }
+    ]
+  },
+  "breath.earth": {
+    "subtitle": "subtitles.runic_races.breath.earth",
+    "sounds": [
+      {
+        "name": "minecraft:entity.generic.explode",
+        "type": "event",
+        "volume": 0.8,
+        "pitch": 0.6
+      },
+      {
+        "name": "minecraft:block.deepslate.break",
+        "type": "event",
+        "volume": 1.0,
+        "pitch": 0.5
+      }
+    ]
+  },
+  "breath.shock": {
+    "subtitle": "subtitles.runic_races.breath.shock",
+    "sounds": [
+      {
+        "name": "minecraft:entity.lightning_bolt.impact",
+        "type": "event",
+        "volume": 0.7,
+        "pitch": 1.3
+      },
+      {
+        "name": "minecraft:entity.lightning_bolt.impact",
+        "type": "event",
+        "volume": 0.7,
+        "pitch": 1.5
+      }
+    ]
+  },
+  "breath.wind": {
+    "subtitle": "subtitles.runic_races.breath.wind",
+    "sounds": [
+      {
+        "name": "minecraft:entity.ender_dragon.flap",
+        "type": "event",
+        "volume": 1.0,
+        "pitch": 0.7
+      },
+      {
+        "name": "minecraft:entity.ender_dragon.flap",
+        "type": "event",
+        "volume": 1.0,
+        "pitch": 0.6
+      }
+    ]
+  },
+  "mythic.revival": {
+    "subtitle": "subtitles.runic_races.mythic.revival",
+    "sounds": [
+      {
+        "name": "minecraft:item.totem.use",
+        "type": "event",
+        "volume": 0.8,
+        "pitch": 0.7
+      }
+    ]
+  },
+  "ward.activate": {
+    "subtitle": "subtitles.runic_races.ward.activate",
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.activate",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 1.2
+      }
+    ]
+  }
+}

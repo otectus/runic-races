@@ -3,7 +3,7 @@
 ## Quick Reference
 - **Mod ID**: `runic_races`
 - **Package**: `com.otectus.runic_races`
-- **Version**: 1.2.0
+- **Version**: 1.3.0
 - **MC**: 1.20.1 | **Forge**: 47.2.0 | **Java**: 17
 - **Mappings**: Official
 
@@ -53,9 +53,31 @@ hand-written-equivalent and authoritative):
 - `tools/generate_races.py` — origins/powers/layers + `tools/race_lang.json`
 - `tools/generate_icons.py` — downscales per-race art from `~/Notes/Runic Races/` to `textures/item/`
 - `tools/build_lang.py` — merges race_lang + notification copy into `en_us.json`
+- `tools/generate_wings.py` — recolors the 3 base wing textures into per-race variants (`textures/entity/`)
+- `tools/generate_particles.py` — emits the custom particle sprite frames (`textures/particle/`)
 Resource-id rule: cooldown resources are `runic_races:<race>/<powerFile>_cooldown_timer` and
 must match exactly in JSON and any Java that reads them (`FlightConfig`, `AbilityIconRegistry`,
 `RacialEventHandler`).
+
+## Custom particles & sounds
+- `registry/ModParticles.java` — 6 identity particles (`rune_glyph`, `soul_wisp`, `fae_sparkle`,
+  `ember_scale`, `frost_mote`, `venom_drip`); providers in `client/particle/RunicParticle`
+  (registration is common-side; providers client-only)
+- `registry/ModSounds.java` + `assets/runic_races/sounds.json` — custom sound events that
+  curate vanilla `.ogg`s via `"type": "event"`; bespoke audio can drop in without code changes
+- `SignatureEntry` Sfx/Vfx specs hold `Supplier`s so DeferredRegister objects can be referenced
+  before registration resolves
+
+## Wings & presentation
+- `client/render/WingType` maps the 8 flight races (avian, sprite, faerie, wind_wyrm + 4
+  elemental drakes) to per-race textures/animation params; `WingRenderLayer` handles state
+  (flap/hover/glide/swim/ground, riding/sleep/death hidden) — keep new races registry-driven
+- Client config (`RRClientConfig`): `wings.*` (enabled/showOnOtherPlayers/reducedMotion),
+  `effects.*` (cameraShake/screenCueIntensity/heavyEffects), `ambient.particleDensity`
+- Server config: `vfx.breathParticleDensity` scales `ConeBreathAction` particles
+- Ability deny cue: `client/AbilityDenyHandler` watches the Origins primary-active key and
+  pulses the HUD red via `RacialCooldownOverlay.triggerDenyPulse` (cooldown-only; mana/stamina
+  failures are not client-visible)
 
 ## VFX Density Guideline
 Tier every ability's particle count so VFX grammar stays consistent:

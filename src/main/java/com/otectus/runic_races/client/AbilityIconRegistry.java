@@ -23,6 +23,7 @@ public class AbilityIconRegistry {
             ItemStack icon,
             String name,
             int sortOrder,
+            boolean keyActivated,
             FamilyAccent accent
     ) {}
 
@@ -57,8 +58,9 @@ public class AbilityIconRegistry {
                 icon("avian/skyborne_flap_cooldown_timer", Items.PHANTOM_MEMBRANE, "Skyborne Wings", 2));
         register("canine", icon("canine/howl_of_the_pack_cooldown_timer", Items.BONE, "Howl of the Pack", 1));
         register("feline",
-                icon("feline/nine_lives_cooldown_timer", Items.TOTEM_OF_UNDYING, "Nine Lives", 1),
-                icon("feline/pounce_cooldown_timer", Items.RABBIT_FOOT, "Pounce", 2));
+                // Nine Lives is a passive cheat-death, not the primary-active keybind ability.
+                icon("feline/nine_lives_cooldown_timer", Items.TOTEM_OF_UNDYING, "Nine Lives", 1, false),
+                icon("feline/pounce_cooldown_timer", Items.RABBIT_FOOT, "Pounce", 2, true));
         register("kitsune", icon("kitsune/foxfire_illusion_cooldown_timer", Items.SOUL_LANTERN, "Foxfire Illusion", 1));
         register("serpen", icon("serpen/shed_skin_cooldown_timer", Items.LEATHER, "Shed Skin", 1));
 
@@ -99,11 +101,23 @@ public class AbilityIconRegistry {
         return RACE_ABILITIES.getOrDefault(raceName, Collections.emptyList());
     }
 
+    /** The ability fired by Origins' primary-active keybind, or empty for races without one. */
+    public static Optional<AbilityIcon> getPrimaryActive(String raceName) {
+        return getForRace(raceName).stream().filter(AbilityIcon::keyActivated).findFirst();
+    }
+
     public static Set<String> getAllRaces() {
         return RACE_ABILITIES.keySet();
     }
 
     private static AbilityIcon icon(String resourcePath, net.minecraft.world.item.Item item, String name, int order) {
+        // By convention the first slot is the primary-active keybind ability; passives and
+        // flap timers pass an explicit keyActivated via the 5-arg overload.
+        return icon(resourcePath, item, name, order, order == 1);
+    }
+
+    private static AbilityIcon icon(String resourcePath, net.minecraft.world.item.Item item, String name, int order,
+                                    boolean keyActivated) {
         // resourcePath is "<race>/<ability>_cooldown_timer"; the custom HUD art lives at
         // textures/gui/ability/<race>/<ability>.png (same stem, minus the cooldown suffix).
         String stem = resourcePath.endsWith("_cooldown_timer")
@@ -115,6 +129,7 @@ public class AbilityIconRegistry {
                 new ItemStack(item),
                 name,
                 order,
+                keyActivated,
                 FamilyAccent.UNKNOWN // overwritten in register() once we know the owning race
         );
     }
@@ -123,7 +138,8 @@ public class AbilityIconRegistry {
         FamilyAccent accent = FamilyAccent.forFamily(RaceRegistry.getFamily(race));
         List<AbilityIcon> tinted = new ArrayList<>(icons.length);
         for (AbilityIcon raw : icons) {
-            tinted.add(new AbilityIcon(raw.resourceId(), raw.texture(), raw.icon(), raw.name(), raw.sortOrder(), accent));
+            tinted.add(new AbilityIcon(raw.resourceId(), raw.texture(), raw.icon(), raw.name(),
+                    raw.sortOrder(), raw.keyActivated(), accent));
         }
         RACE_ABILITIES.put(race, List.copyOf(tinted));
     }

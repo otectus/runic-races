@@ -39,7 +39,7 @@ public final class RunicPresentation {
 
     public static void playSignatureSfx(ServerLevel level, Vec3 pos, SignatureEntry entry) {
         for (SfxSpec spec : entry.sounds()) {
-            level.playSound(null, pos.x, pos.y, pos.z, spec.sound(), SoundSource.PLAYERS, spec.volume(), spec.pitch());
+            level.playSound(null, pos.x, pos.y, pos.z, spec.sound().get(), SoundSource.PLAYERS, spec.volume(), spec.pitch());
         }
     }
 
@@ -48,7 +48,7 @@ public final class RunicPresentation {
         double y = pos.y + 0.3;
         double z = pos.z;
         for (VfxSpec spec : entry.particles()) {
-            level.sendParticles(spec.particle(), x, y, z, spec.count(),
+            level.sendParticles(spec.particle().get(), x, y, z, spec.count(),
                     spec.spreadX(), spec.spreadY(), spec.spreadZ(), spec.speed());
         }
     }

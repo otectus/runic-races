@@ -97,6 +97,14 @@ public class GraveServantEntity extends Zombie {
 
         if (level().isClientSide) return;
 
+        // Friendly-summon marking: a faint soul-wisp drip distinguishes owned grave
+        // servants from hostile zombies at a glance (they share the vanilla model).
+        if (tickCount % 20 == 0 && level() instanceof ServerLevel server) {
+            server.sendParticles(com.otectus.runic_races.registry.ModParticles.SOUL_WISP.get(),
+                    getX(), getY() + 1.4, getZ(),
+                    2, 0.25, 0.3, 0.25, 0.01);
+        }
+
         CompoundTag data = getPersistentData();
         if (data.contains(SummonMinionAction.EXPIRY_TAG)) {
             long expiresAt = data.getLong(SummonMinionAction.EXPIRY_TAG);

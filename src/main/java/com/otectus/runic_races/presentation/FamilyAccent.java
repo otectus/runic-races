@@ -14,21 +14,31 @@ import java.util.Locale;
  * resolves via {@code valueOf(family.toUpperCase())}.
  */
 public enum FamilyAccent {
-    HUMAN(0xFFD4A235, 0xFF7A5E1A),
-    ELVEN(0xFFD966D9, 0xFF6A2D6A),
-    DWARVEN(0xFF8899AA, 0xFF364450),
-    BESTIAL(0xFF66C266, 0xFF26612A),
-    FAEBORNE(0xFF55E0C0, 0xFF1E5A4C),
-    UNDEAD(0xFF9B59D9, 0xFF3F1E6A),
-    DRACONIC(0xFFD94A2B, 0xFF6A1F10),
-    UNKNOWN(0xFFCCCCCC, 0xFF555555);
+    HUMAN(0xFFD4A235, 0xFF7A5E1A, 1.0f),
+    ELVEN(0xFFD966D9, 0xFF6A2D6A, 1.15f),
+    DWARVEN(0xFF8899AA, 0xFF364450, 0.8f),
+    BESTIAL(0xFF66C266, 0xFF26612A, 0.95f),
+    FAEBORNE(0xFF55E0C0, 0xFF1E5A4C, 1.25f),
+    UNDEAD(0xFF9B59D9, 0xFF3F1E6A, 0.7f),
+    DRACONIC(0xFFD94A2B, 0xFF6A1F10, 0.85f),
+    UNKNOWN(0xFFCCCCCC, 0xFF555555, 1.0f);
 
     private final int accentColor;
     private final int frameShadow;
+    private final float readyPitch;
 
-    FamilyAccent(int accentColor, int frameShadow) {
+    FamilyAccent(int accentColor, int frameShadow, float readyPitch) {
         this.accentColor = accentColor;
         this.frameShadow = frameShadow;
+        this.readyPitch = readyPitch;
+    }
+
+    /**
+     * Pitch multiplier for the ability-ready HUD ding, so each family's ding is
+     * subtly recognizable (fae high and bright, undead low and hollow).
+     */
+    public float readyPitch() {
+        return readyPitch;
     }
 
     /** Fully-opaque ARGB accent color. */

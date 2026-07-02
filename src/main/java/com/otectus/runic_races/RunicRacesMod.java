@@ -49,9 +49,12 @@ public class RunicRacesMod {
         ModEntities.register(modBus);
         ModBlocks.register(modBus);
         ModBlockEntities.register(modBus);
+        com.otectus.runic_races.registry.ModParticles.register(modBus);
+        com.otectus.runic_races.registry.ModSounds.register(modBus);
 
         modBus.addListener(this::onCommonSetup);
         modBus.addListener(this::onEntityAttributeCreation);
+        modBus.addListener(this::onConfigReloading);
 
         // Register event handlers on the Forge event bus
         MinecraftForge.EVENT_BUS.register(new RacialEventHandler());
@@ -72,6 +75,24 @@ public class RunicRacesMod {
         // Initialize network and optional mod integrations
         event.enqueueWork(NetworkHandler::init);
         event.enqueueWork(IntegrationManager::init);
+    }
+
+    private void onConfigReloading(final net.minecraftforge.fml.event.config.ModConfigEvent.Reloading event) {
+        if (event.getConfig().getSpec() != RRServerConfig.SPEC) {
+            return;
+        }
+        // Server config changed at runtime (e.g. pehkui toggle, breath density) — re-sync
+        // every online player so integrations pick up the new values immediately.
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
+        if (server == null) {
+            return;
+        }
+        server.execute(() -> {
+            for (var player : server.getPlayerList().getPlayers()) {
+                IntegrationManager.syncPlayer(player);
+            }
+            debug("[RunicRaces] Server config reloaded — re-synced {} players", server.getPlayerList().getPlayerCount());
+        });
     }
 
     private void onRegisterCommands(final RegisterCommandsEvent event) {

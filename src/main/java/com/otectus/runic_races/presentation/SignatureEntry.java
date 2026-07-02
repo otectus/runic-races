@@ -25,14 +25,25 @@ public record SignatureEntry(
         int screenCueDurationTicks,
         Intensity intensity
 ) {
-    public record SfxSpec(SoundEvent sound, float volume, float pitch) {}
+    public record SfxSpec(java.util.function.Supplier<SoundEvent> sound, float volume, float pitch) {
+        /** Convenience for already-constructed vanilla sounds ({@code SoundEvents.*}). */
+        public SfxSpec(SoundEvent sound, float volume, float pitch) {
+            this(() -> sound, volume, pitch);
+        }
+    }
 
     public record VfxSpec(
-            ParticleOptions particle,
+            java.util.function.Supplier<? extends ParticleOptions> particle,
             int count,
             double spreadX,
             double spreadY,
             double spreadZ,
             double speed
-    ) {}
+    ) {
+        /** Convenience for already-constructed particles ({@code ParticleTypes.*}, {@code RaceColors.*}). */
+        public VfxSpec(ParticleOptions particle, int count,
+                       double spreadX, double spreadY, double spreadZ, double speed) {
+            this(() -> particle, count, spreadX, spreadY, spreadZ, speed);
+        }
+    }
 }

@@ -96,7 +96,7 @@
         },
         {
           "type": "origins:spawn_particles",
-          "particle": "minecraft:snowflake",
+          "particle": "runic_races:frost_mote",
           "count": 40,
           "speed": 0.2,
           "spread": {

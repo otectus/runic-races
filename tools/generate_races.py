@@ -74,7 +74,9 @@ def sound(s, vol, pitch):
     return {"type": "origins:play_sound", "sound": s, "volume": vol, "pitch": pitch}
 
 def particles(p, count, speed=0.3, sx=0.6, sy=0.8, sz=0.6):
-    return {"type": "origins:spawn_particles", "particle": "minecraft:" + p, "count": count,
+    # Bare names default to the minecraft namespace; pass "runic_races:x" for custom particles.
+    pid = p if ":" in p else "minecraft:" + p
+    return {"type": "origins:spawn_particles", "particle": pid, "count": count,
             "speed": speed, "spread": {"x": sx, "y": sy, "z": sz}}
 
 def afflict(radius, target_effects=(), set_fire=None):
@@ -474,7 +476,7 @@ emit("ice_elf", "elven", 204, 2,
                    + present("ice_elf", "frostbind", "aqua", "Frost erupts around you!",
                              [sound("minecraft:block.glass.break", 0.6, 0.8),
                               sound("minecraft:block.powder_snow.break", 0.6, 1.2)],
-                             [particles("snowflake", 40, 0.2, 2.0, 1.0, 2.0), particles("item_snowball", 12, 0.2)]),
+                             [particles("runic_races:frost_mote", 40, 0.2, 2.0, 1.0, 2.0), particles("item_snowball", 12, 0.2)]),
                    "Frostbind",
                    "Loose a frost nova: foes within 6 blocks are gripped by Slowness III. 40-second cooldown.")),
      ("winters_child",

@@ -7,6 +7,10 @@ import java.util.Optional;
 
 /**
  * Maps each winged race to its wing rendering configuration.
+ *
+ * Per-race textures are emitted by {@code tools/generate_wings.py} from the three
+ * hand-made bases (pixie/wyvern/drake); {@code drake_wings.png} is kept as the
+ * generator source even though no type references it directly.
  */
 @OnlyIn(Dist.CLIENT)
 public enum WingType {
@@ -14,36 +18,57 @@ public enum WingType {
             "textures/entity/pixie_wings.png",
             0.5f,
             -15f, -70f, -110f,
-            8, true, false,
+            8, true, false, true,
             1.5f, 25f, 0.3f
     ),
     FAERIE_WINGS(
-            "textures/entity/pixie_wings.png",
+            "textures/entity/faerie_wings.png",
             0.6f,
             -15f, -72f, -112f,
-            8, true, false,
+            8, true, false, true,
             1.4f, 22f, 0.3f
     ),
     AVIAN_WINGS(
-            "textures/entity/wyvern_wings.png",
+            "textures/entity/avian_wings.png",
             0.95f,
             -15f, -78f, -125f,
-            9, false, false,
+            9, false, false, false,
             1.1f, 14f, 0.45f
     ),
     WYVERN_WINGS(
             "textures/entity/wyvern_wings.png",
             1.0f,
             -15f, -75f, -120f,
-            10, false, false,
+            10, false, false, false,
             1.0f, 12f, 0.5f
     ),
-    DRAKE_WINGS(
-            "textures/entity/drake_wings.png",
+    FIRE_DRAKE_WINGS(
+            "textures/entity/fire_drake_wings.png",
             1.4f,
             -15f, -80f, -130f,
-            14, false, false,
+            14, false, false, false,
             0.7f, 8f, 0.7f
+    ),
+    ICE_DRAKE_WINGS(
+            "textures/entity/ice_drake_wings.png",
+            1.35f,
+            -15f, -80f, -130f,
+            14, false, false, false,
+            0.7f, 8f, 0.7f
+    ),
+    TERRA_DRAKE_WINGS(
+            "textures/entity/terra_drake_wings.png",
+            1.5f,
+            -15f, -82f, -132f,
+            16, false, false, false,
+            0.6f, 6f, 0.8f
+    ),
+    VOLT_DRAKE_WINGS(
+            "textures/entity/volt_drake_wings.png",
+            1.3f,
+            -15f, -78f, -128f,
+            12, false, false, false,
+            0.8f, 10f, 0.6f
     );
 
     private final String texturePath;
@@ -54,13 +79,14 @@ public enum WingType {
     private final int flapDurationTicks;
     private final boolean translucent;
     private final boolean cosmeticOnly;
+    private final boolean fullBright;
     private final float bankingSensitivity;
     private final float hoverFlutterAmplitudeDeg;
     private final float windBuffetScale;
 
     WingType(String texturePath, float scale,
              float foldedZDeg, float spreadZDeg, float downbeatZDeg,
-             int flapDurationTicks, boolean translucent, boolean cosmeticOnly,
+             int flapDurationTicks, boolean translucent, boolean cosmeticOnly, boolean fullBright,
              float bankingSensitivity, float hoverFlutterAmplitudeDeg, float windBuffetScale) {
         this.texturePath = texturePath;
         this.scale = scale;
@@ -70,6 +96,7 @@ public enum WingType {
         this.flapDurationTicks = flapDurationTicks;
         this.translucent = translucent;
         this.cosmeticOnly = cosmeticOnly;
+        this.fullBright = fullBright;
         this.bankingSensitivity = bankingSensitivity;
         this.hoverFlutterAmplitudeDeg = hoverFlutterAmplitudeDeg;
         this.windBuffetScale = windBuffetScale;
@@ -83,6 +110,8 @@ public enum WingType {
     public int getFlapDurationTicks() { return flapDurationTicks; }
     public boolean isTranslucent() { return translucent; }
     public boolean isCosmeticOnly() { return cosmeticOnly; }
+    /** Emissive rendering — gossamer fae wings glow softly in the dark. */
+    public boolean isFullBright() { return fullBright; }
     public float getBankingSensitivity() { return bankingSensitivity; }
     public float getHoverFlutterAmplitudeDeg() { return hoverFlutterAmplitudeDeg; }
     public float getWindBuffetScale() { return windBuffetScale; }
@@ -96,7 +125,10 @@ public enum WingType {
             case "faerie" -> FAERIE_WINGS;
             case "avian" -> AVIAN_WINGS;
             case "wind_wyrm" -> WYVERN_WINGS;
-            case "fire_drake", "ice_drake", "terra_drake", "volt_drake" -> DRAKE_WINGS;
+            case "fire_drake" -> FIRE_DRAKE_WINGS;
+            case "ice_drake" -> ICE_DRAKE_WINGS;
+            case "terra_drake" -> TERRA_DRAKE_WINGS;
+            case "volt_drake" -> VOLT_DRAKE_WINGS;
             default -> null;
         });
     }

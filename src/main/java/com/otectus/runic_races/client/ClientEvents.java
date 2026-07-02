@@ -1,9 +1,11 @@
 package com.otectus.runic_races.client;
 
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.client.particle.RunicParticle;
 import com.otectus.runic_races.client.render.WingModel;
 import com.otectus.runic_races.client.render.WingRenderLayer;
 import com.otectus.runic_races.registry.ModEntities;
+import com.otectus.runic_races.registry.ModParticles;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -46,6 +48,17 @@ public class ClientEvents {
     public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(WingRenderLayer.WING_MODEL_LAYER, WingModel::createLayer);
         RunicRacesMod.LOGGER.info("[RunicRaces] Registered wing model layer definition");
+    }
+
+    @SubscribeEvent
+    public static void onRegisterParticleProviders(net.minecraftforge.client.event.RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(ModParticles.RUNE_GLYPH.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.RUNE));
+        event.registerSpriteSet(ModParticles.SOUL_WISP.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.WISP));
+        event.registerSpriteSet(ModParticles.FAE_SPARKLE.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.SPARKLE));
+        event.registerSpriteSet(ModParticles.EMBER_SCALE.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.EMBER));
+        event.registerSpriteSet(ModParticles.FROST_MOTE.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.MOTE));
+        event.registerSpriteSet(ModParticles.VENOM_DRIP.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.DRIP));
+        RunicRacesMod.LOGGER.info("[RunicRaces] Registered {} custom particle providers", 6);
     }
 
     @SubscribeEvent

@@ -5,13 +5,10 @@ import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.config.RRClientConfig;
 import com.otectus.runic_races.presentation.FamilyAccent;
 import com.otectus.runic_races.util.RaceHelper;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -39,8 +36,18 @@ public class RacialCooldownOverlay implements IGuiOverlay {
     private static final int READY_TEXT_COLOR = 0xFF9BE0A2;
     private static final int COOLDOWN_TEXT_COLOR = 0xFFBBBBBB;
     private static final int FLASH_TICKS = 6;
+    private static final int DENY_TICKS = 12;
 
     private static boolean debugLogged = false;
+
+    // Deny pulses are triggered from AbilityDenyHandler (a different class), so this
+    // map is static; decremented per render frame like the ready flashes.
+    private static final Map<ResourceLocation, Integer> denyRemaining = new HashMap<>();
+
+    /** Pulse the given ability slot red for a few frames (pressed while on cooldown). */
+    public static void triggerDenyPulse(ResourceLocation resourceId) {
+        denyRemaining.put(resourceId, DENY_TICKS);
+    }
 
     // Cached race + resource state
     private String cachedRace = null;
@@ -210,6 +217,15 @@ public class RacialCooldownOverlay implements IGuiOverlay {
             graphics.fill(ix, iy, ix + ICON, iy + ICON, flashColor);
         }
 
+        // --- Deny pulse (red overlay: pressed while on cooldown) ---
+        Integer deny = denyRemaining.get(ability.resourceId());
+        if (deny != null && deny > 0) {
+            denyRemaining.put(ability.resourceId(), deny - 1);
+            float denyAlpha = (deny / (float) DENY_TICKS) * 0.6f;
+            int denyColor = ((int) (denyAlpha * 255) << 24) | 0xFF3333;
+            graphics.fill(ix, iy, ix + ICON, iy + ICON, denyColor);
+        }
+
         // --- Side text: seconds remaining / key hint ---
         int textX = x + SLOT + TEXT_GAP;
         int textY = y + (SLOT - font.lineHeight) / 2;
@@ -277,6 +293,12 @@ public class RacialCooldownOverlay implements IGuiOverlay {
             boolean prevReady = wasReady.getOrDefault(id, nowReady);
             if (nowReady && !prevReady) {
                 flashRemaining.put(id, FLASH_TICKS);
+                if (RRClientConfig.HUD_READY_GLOW.get()) {
+                    // forUI(sound, pitch, volume) — pitch varies per family for identity
+                    Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
+                            com.otectus.runic_races.registry.ModSounds.ABILITY_READY.get(),
+                            ability.accent().readyPitch(), 0.6f));
+                }
             } else {
                 Integer remaining = flashRemaining.get(id);
                 if (remaining != null && remaining > 0) {
@@ -287,34 +309,12 @@ public class RacialCooldownOverlay implements IGuiOverlay {
         }
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private void updateResourceCache(Player player, List<AbilityIconRegistry.AbilityIcon> abilities) {
-        try {
-            IPowerContainer container = IPowerContainer.get(player).orElse(null);
-            if (container == null) return;
-
-            for (AbilityIconRegistry.AbilityIcon ability : abilities) {
-                ResourceLocation resId = ability.resourceId();
-                try {
-                    if (!container.hasPower(resId)) continue;
-                    Holder holder = container.getPower(resId);
-                    if (holder == null || !holder.isBound()) continue;
-
-                    ConfiguredPower cp = (ConfiguredPower) holder.value();
-                    OptionalInt val = cp.getValue(player);
-                    OptionalInt max = cp.getMaximum(player);
-
-                    if (val.isPresent() && max.isPresent()) {
-                        resourceCache.put(resId, new ResourceState(val.getAsInt(), max.getAsInt()));
-                        continue;
-                    }
-                } catch (Exception ignored) {
-                    // Power not found or incompatible type
-                }
-                resourceCache.putIfAbsent(resId, new ResourceState(0, 1));
-            }
-        } catch (Exception e) {
-            // Origins not loaded — silently skip
+        for (AbilityIconRegistry.AbilityIcon ability : abilities) {
+            ResourceLocation resId = ability.resourceId();
+            com.otectus.runic_races.client.state.ClientCooldownReader.read(player, resId).ifPresentOrElse(
+                    s -> resourceCache.put(resId, new ResourceState(s.value(), s.max())),
+                    () -> resourceCache.putIfAbsent(resId, new ResourceState(0, 1)));
         }
     }
 }

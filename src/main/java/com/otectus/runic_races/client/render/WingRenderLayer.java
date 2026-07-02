@@ -44,7 +44,6 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
     private final WeakHashMap<AbstractClientPlayer, WingAnimState> animStates = new WeakHashMap<>();
 
     private static final float DEG_TO_RAD = Mth.PI / 180.0F;
-    private static final int RACE_CACHE_TICKS = 100;
 
     private static final double FLAP_VELOCITY_THRESHOLD = 0.15;
     private static final float STATE_LERP_SPEED = 0.12F;
@@ -61,28 +60,32 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
                        AbstractClientPlayer player, float limbSwing, float limbSwingAmount,
                        float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
 
+        if (!com.otectus.runic_races.config.RRClientConfig.WINGS_ENABLED.get()) return;
+        if (player != net.minecraft.client.Minecraft.getInstance().player
+                && !com.otectus.runic_races.config.RRClientConfig.WINGS_ON_OTHER_PLAYERS.get()) return;
         if (player.isInvisible()) return;
+        // Hidden outright where a folded pose would clip badly through the pose model.
+        if (player.isSleeping() || player.isDeadOrDying()) return;
         if (player.getItemBySlot(EquipmentSlot.CHEST).is(Items.ELYTRA)) return;
 
         WingAnimState state = animStates.computeIfAbsent(player, p -> new WingAnimState());
         int currentTick = player.tickCount;
 
-        // --- Refresh cached wing type periodically ---
-        if (state.wingType == null && state.lastCheckTick == 0
-                || currentTick - state.lastCheckTick > RACE_CACHE_TICKS) {
-            state.wingType = RaceHelper.getRaceName(player)
-                    .flatMap(WingType::forRaceName)
-                    .orElse(null);
-            state.lastCheckTick = currentTick;
-        }
-
-        WingType wingType = state.wingType;
+        // RaceHelper memoizes per-player per-tick, so this is cheap enough to resolve
+        // every frame — and race switches update the wings on the very next tick.
+        WingType wingType = RaceHelper.getRaceName(player)
+                .flatMap(WingType::forRaceName)
+                .orElse(null);
         if (wingType == null) return;
 
         // --- State detection ---
-        boolean airborne = !player.onGround();
+        // A mount's motion is not the player's own — treat riders as grounded so horse
+        // jumps don't spike deltaY into phantom flaps and the wings stay folded.
+        boolean riding = player.isPassenger();
+        boolean airborne = !player.onGround() && !riding;
         boolean isFallFlying = player.isFallFlying();
         boolean isGliding = airborne && isFallFlying && !wingType.isCosmeticOnly();
+        boolean reducedMotion = com.otectus.runic_races.config.RRClientConfig.WINGS_REDUCED_MOTION.get();
         double currentY = player.getDeltaMovement().y;
 
         // --- Flap detection ---
@@ -92,7 +95,7 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
                 && state.flapTicksRemaining <= 0) {
             state.flapTicksRemaining = wingType.getFlapDurationTicks();
         }
-        state.prevDeltaY = currentY;
+        state.prevDeltaY = riding ? 0.0 : currentY;
 
         // --- Per-tick updates (not per-frame) ---
         if (currentTick != state.lastAnimTick) {
@@ -183,6 +186,7 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
         } else if (isHovering) {
             // ===== HOVER STATE =====
             float flutterAmp = wingType.getHoverFlutterAmplitudeDeg() * DEG_TO_RAD;
+            if (reducedMotion) flutterAmp *= 0.3F;
             float flutter = Mth.sin(ageInTicks * 0.6F) * flutterAmp;
             float hoverBase = (wingType.getFoldedZDeg() + wingType.getSpreadZDeg()) * 0.5F * DEG_TO_RAD;
 
@@ -205,6 +209,7 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
             float speedNorm = Mth.clamp(state.smoothedHorizSpeed * 5.0F, 0.0F, 1.0F);
             float oscFreq = Mth.lerp(speedNorm, 0.08F, 0.03F);
             float oscAmp = Mth.lerp(speedNorm, 5.0F * DEG_TO_RAD, 2.0F * DEG_TO_RAD);
+            if (reducedMotion) oscAmp *= 0.5F;
             float glideOsc = Mth.sin(ageInTicks * oscFreq) * oscAmp;
 
             // Velocity-responsive pitch
@@ -217,7 +222,7 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
             targetRightZRot = -baseZ + bankAngle;
 
             // Wind buffeting at high speed
-            if (state.smoothedHorizSpeed > 0.3F) {
+            if (!reducedMotion && state.smoothedHorizSpeed > 0.3F) {
                 float speedFactor = Mth.clamp((state.smoothedHorizSpeed - 0.3F) * 3.0F, 0.0F, 1.0F);
                 float buffetScale = wingType.getWindBuffetScale() * 4.0F * DEG_TO_RAD * speedFactor;
                 targetLeftZRot += pseudoNoise(ageInTicks, state.noiseSeed) * buffetScale;
@@ -236,6 +241,23 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
             state.smoothedLeftYRot += (targetLeftYRot - state.smoothedLeftYRot) * STATE_LERP_SPEED;
             state.smoothedRightYRot += (targetRightYRot - state.smoothedRightYRot) * STATE_LERP_SPEED;
 
+        } else if (player.isVisuallySwimming() && !riding) {
+            // ===== SWIM STATE =====
+            // Wings sweep flat against the horizontal body; the parent PoseStack already
+            // carries the swim pitch, so only the local sweep-back is needed here.
+            targetXRot = Mth.PI / 12.0F + 0.3F;
+            float baseZ = wingType.getFoldedZDeg() * DEG_TO_RAD * 0.6F;
+            targetLeftZRot = baseZ;
+            targetRightZRot = -baseZ;
+            targetLeftYRot = -30.0F * DEG_TO_RAD;
+            targetRightYRot = 30.0F * DEG_TO_RAD;
+
+            state.smoothedXRot += (targetXRot - state.smoothedXRot) * STATE_LERP_SPEED;
+            state.smoothedLeftZRot += (targetLeftZRot - state.smoothedLeftZRot) * STATE_LERP_SPEED;
+            state.smoothedRightZRot += (targetRightZRot - state.smoothedRightZRot) * STATE_LERP_SPEED;
+            state.smoothedLeftYRot += (targetLeftYRot - state.smoothedLeftYRot) * STATE_LERP_SPEED;
+            state.smoothedRightYRot += (targetRightYRot - state.smoothedRightYRot) * STATE_LERP_SPEED;
+
         } else {
             // ===== GROUND STATE =====
             float walkSway = Mth.sin(limbSwing * 0.6F) * limbSwingAmount * 5.0F * DEG_TO_RAD;
@@ -243,6 +265,11 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
             // Breathing idle: subtle wing movement when stationary
             float breathFactor = 1.0F - Mth.clamp(limbSwingAmount * 10.0F, 0.0F, 1.0F);
             float breathOffset = Mth.sin(state.breathPhase) * 2.5F * DEG_TO_RAD * breathFactor;
+
+            if (reducedMotion || riding) {
+                walkSway = 0.0F;
+                breathOffset = 0.0F;
+            }
 
             targetXRot = Mth.PI / 12.0F;
             float baseZ = wingType.getFoldedZDeg() * DEG_TO_RAD + walkSway + breathOffset;
@@ -272,7 +299,13 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
 
         // --- Render ---
         poseStack.pushPose();
-        poseStack.translate(0.0F, 0.0F, 0.125F);
+        // 0.125 is exactly the body's back face (coplanar with the jacket overlay);
+        // sit slightly behind it, and further out when a chestplate back panel is worn.
+        float backOffset = 0.135F;
+        if (!player.getItemBySlot(EquipmentSlot.CHEST).isEmpty()) {
+            backOffset += 0.045F;
+        }
+        poseStack.translate(0.0F, 0.0F, backOffset);
 
         float scale = wingType.getScale();
         poseStack.scale(scale, scale, scale);
@@ -283,8 +316,9 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
                 : RenderType.entityCutoutNoCull(texture);
         VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
 
+        int light = wingType.isFullBright() ? net.minecraft.client.renderer.LightTexture.FULL_BRIGHT : packedLight;
         float alpha = wingType.isTranslucent() ? 0.85F : 1.0F;
-        wingModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+        wingModel.renderToBuffer(poseStack, vertexConsumer, light,
                 OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alpha);
 
         poseStack.popPose();
@@ -304,9 +338,6 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
      * Per-player animation state for smooth wing transitions and flight dynamics.
      */
     private static class WingAnimState {
-        WingType wingType;
-        int lastCheckTick;
-
         // Smoothed rotations (per-wing)
         float smoothedXRot = Mth.PI / 12.0F;
         float smoothedLeftZRot = -Mth.PI / 12.0F;

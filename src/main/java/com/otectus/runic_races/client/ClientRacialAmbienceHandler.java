@@ -62,10 +62,19 @@ public final class ClientRacialAmbienceHandler {
 
     private ClientRacialAmbienceHandler() {}
 
+    /** Scales a base particle count by {@code ambient.particleDensity}; fractional remainders spawn probabilistically. */
+    private static int scaled(int base) {
+        double density = RRClientConfig.AMBIENT_PARTICLE_DENSITY.get();
+        double exact = base * density;
+        int whole = (int) exact;
+        return whole + (Math.random() < exact - whole ? 1 : 0);
+    }
+
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         if (!RRClientConfig.AMBIENT_STATE_PARTICLES.get()) return;
+        if (RRClientConfig.AMBIENT_PARTICLE_DENSITY.get() <= 0.0) return;
 
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
@@ -120,7 +129,7 @@ public final class ClientRacialAmbienceHandler {
             double dist = dir.length();
             if (dist < 2.0 || dist > 24.0) continue;
             Vec3 step = dir.normalize();
-            int segments = Math.min(6, (int) (dist / 3.0));
+            int segments = scaled(Math.min(6, (int) (dist / 3.0)));
             for (int i = 1; i <= segments; i++) {
                 double t = i / (double) (segments + 1);
                 double px = origin.x + step.x * dist * t;
@@ -158,7 +167,7 @@ public final class ClientRacialAmbienceHandler {
 
         level.playLocalSound(player.getX(), player.getY(), player.getZ(),
                 SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.25f, 1.6f, false);
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < scaled(8); i++) {
             level.addParticle(ParticleTypes.END_ROD,
                     cx + (Math.random() - 0.5) * 0.4,
                     cy + Math.random() * 0.6,
@@ -211,7 +220,7 @@ public final class ClientRacialAmbienceHandler {
 
         if (isDrake && player.isOnFire()) {
             // Smoke wisps trail from the wings while burning.
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < scaled(3); i++) {
                 level.addParticle(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,
                         bx + (Math.random() - 0.5) * 0.8,
                         by + 0.2,
@@ -220,7 +229,7 @@ public final class ClientRacialAmbienceHandler {
             }
         } else if (("wind_wyrm".equals(race) || isDrake) && player.isInWaterOrRain()) {
             // Drip particles when wet.
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < scaled(2); i++) {
                 level.addParticle(ParticleTypes.FALLING_WATER,
                         bx + (Math.random() - 0.5) * 0.7,
                         by + 0.1,
@@ -228,19 +237,23 @@ public final class ClientRacialAmbienceHandler {
                         0, 0, 0);
             }
         } else if (isPixie && !player.onGround() && !player.isFallFlying()) {
-            // Idle flutter sparkle while hovering.
-            level.addParticle(ParticleTypes.END_ROD,
-                    bx + (Math.random() - 0.5) * 0.5,
-                    by,
-                    bz + (Math.random() - 0.5) * 0.5,
-                    0, -0.01, 0);
+            // Idle flutter sparkle while hovering — gossamer shimmer, not generic end-rod.
+            for (int i = 0; i < scaled(1); i++) {
+                level.addParticle(com.otectus.runic_races.registry.ModParticles.FAE_SPARKLE.get(),
+                        bx + (Math.random() - 0.5) * 0.5,
+                        by,
+                        bz + (Math.random() - 0.5) * 0.5,
+                        0, -0.01, 0);
+            }
         } else if ("avian".equals(race) && !player.onGround() && !player.isFallFlying()) {
             // Soft feather-cloud while airborne.
-            level.addParticle(ParticleTypes.CLOUD,
-                    bx + (Math.random() - 0.5) * 0.5,
-                    by,
-                    bz + (Math.random() - 0.5) * 0.5,
-                    0, -0.01, 0);
+            for (int i = 0; i < scaled(1); i++) {
+                level.addParticle(ParticleTypes.CLOUD,
+                        bx + (Math.random() - 0.5) * 0.5,
+                        by,
+                        bz + (Math.random() - 0.5) * 0.5,
+                        0, -0.01, 0);
+            }
         }
     }
 }

@@ -58,7 +58,9 @@ public class StateRuneOverlay implements IGuiOverlay {
             new RuneDef(RaceStateFlags.REGROWTH_SUPPRESSED,0xFF995511, "R", "tooltip.runic_races.state.regrowth_suppressed"),
             new RuneDef(RaceStateFlags.BEAST_SURGE,        0xFFB03030, "B", "tooltip.runic_races.state.beast_surge"),
             new RuneDef(RaceStateFlags.ADAPTATION_ACTIVE,  0xFFD4A235, "A", "tooltip.runic_races.state.adapting"),
-            new RuneDef(RaceStateFlags.OPEN_SKY,           0xFF6688CC, "O", "tooltip.runic_races.state.open_sky")
+            new RuneDef(RaceStateFlags.OPEN_SKY,           0xFF6688CC, "O", "tooltip.runic_races.state.open_sky"),
+            new RuneDef(RaceStateFlags.SUBMERGED_WEAK,     0xFF3399DD, "W", "tooltip.runic_races.state.submerged_weak"),
+            new RuneDef(RaceStateFlags.DRY_SLUGGISH,       0xFFC2A366, "D", "tooltip.runic_races.state.dry_sluggish")
     );
 
     @Override

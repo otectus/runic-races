@@ -23,15 +23,20 @@ public final class CameraShakeHandler {
 
     @SubscribeEvent
     public static void onComputeCameraAngles(ViewportEvent.ComputeCameraAngles event) {
+        if (!com.otectus.runic_races.config.RRClientConfig.CAMERA_SHAKE_ENABLED.get()) return;
+
         float amp = ScreenCueRenderer.shakeAmplitude01();
         if (amp <= 0f) return;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 
+        float intensity = com.otectus.runic_races.config.RRClientConfig.SCREEN_CUE_INTENSITY.get().floatValue();
+        if (intensity <= 0f) return;
+
         // Smooth per-frame time base so the shake doesn't stutter at low tick rates.
         double t = mc.level.getGameTime() + event.getPartialTick();
-        float mag = amp * amp * MAX_DEGREES; // ease-out: falls off faster near the end
+        float mag = amp * amp * MAX_DEGREES * intensity; // ease-out: falls off faster near the end
 
         float roll = (float) Math.sin(t * 39.0) * mag;
         float pitch = (float) Math.cos(t * 31.0) * mag * 0.5f;

@@ -2,10 +2,14 @@ package com.otectus.runic_races.action;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.otectus.runic_races.config.RRServerConfig;
+import com.otectus.runic_races.registry.ModParticles;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -103,18 +107,27 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
         ParticleOptions primary = primaryParticle(config.element());
         ParticleOptions secondary = secondaryParticle(config.element());
 
-        // Spawn directional particles along the cone axis. Density is budgeted so that
-        // cone fill + the ~15-particle signature accent stays inside the Major VFX band
-        // (30-60 per ability): ~2.5 particles/step over range*2 steps ≈ 35 for range 7.
+        // Spawn directional particles along the cone axis. Budget (density 1.0, range 7,
+        // Major band 30-60 with the ~15-particle signature accent counted in):
+        //   cone primary 2/step * 14 steps = 28, secondary every 3rd step ≈ 4,
+        //   impact bursts ≤ 12, accent 15  →  ≈ 59 total.
+        // vfx.breathParticleDensity scales the cone/impact portions; below 0.5 the
+        // secondary accents are skipped entirely.
+        double density = RRServerConfig.BREATH_PARTICLE_DENSITY.get();
+        boolean skipSecondary = density < 0.5;
+        int primaryCount = (int) Math.max(density > 0 ? 1 : 0, Math.round(2 * density));
+        // Start the visual cone ~1.5 blocks out so the caster isn't blinded by their
+        // own breath in first person. Hit detection below still starts at the eyes.
+        double startDist = Math.min(1.5, range * 0.25);
         int steps = Math.max(4, (int) (range * 2));
-        for (int i = 1; i <= steps; i++) {
+        for (int i = 1; i <= steps && primaryCount > 0; i++) {
             double t = (double) i / steps;
-            Vec3 step = origin.add(look.scale(range * t));
+            Vec3 step = origin.add(look.scale(startDist + (range - startDist) * t));
             double spread = 0.15 + (config.halfAngleDegrees() / 90.0) * t * 0.8;
             level.sendParticles(primary,
                     step.x, step.y, step.z,
-                    2, spread, spread, spread, 0.02);
-            if (i % 2 == 0) {
+                    primaryCount, spread, spread, spread, 0.02);
+            if (i % 3 == 0 && !skipSecondary) {
                 level.sendParticles(secondary,
                         step.x, step.y, step.z,
                         1, spread * 0.6, spread * 0.6, spread * 0.6, 0.01);
@@ -128,6 +141,7 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
                 e -> e != caster && e.isAlive());
 
         DamageSource source = level.damageSources().mobAttack(caster);
+        int impactBursts = 0;
         for (LivingEntity target : candidates) {
             Vec3 toTarget = target.position().add(0, target.getBbHeight() * 0.5, 0).subtract(origin);
             double dist = toTarget.length();
@@ -138,6 +152,17 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
 
             target.hurt(source, config.damage());
             applyElementRider(config.element(), target, look, config.fireSeconds());
+
+            // Small on-hit burst so the breath visibly "lands" — capped at 4 targets
+            // to respect the budget in crowds.
+            if (!skipSecondary && impactBursts < 4) {
+                impactBursts++;
+                level.sendParticles(secondary,
+                        target.getX(), target.getY(0.5), target.getZ(),
+                        Math.max(1, (int) Math.round(3 * density)),
+                        target.getBbWidth() * 0.3, target.getBbHeight() * 0.3, target.getBbWidth() * 0.3,
+                        0.05);
+            }
         }
     }
 
@@ -146,7 +171,8 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
             case FIRE -> ParticleTypes.DRAGON_BREATH;
             case FROST -> ParticleTypes.SNOWFLAKE;
             case WATER -> ParticleTypes.BUBBLE;
-            case EARTH -> ParticleTypes.POOF;
+            // Seismic identity: actual stone-debris chips instead of generic poofs.
+            case EARTH -> new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState());
             case SHOCK -> ParticleTypes.ELECTRIC_SPARK;
             case WIND -> ParticleTypes.CLOUD;
         };
@@ -154,7 +180,8 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
 
     private static ParticleOptions secondaryParticle(Element element) {
         return switch (element) {
-            case FIRE -> ParticleTypes.FLAME;
+            // Drifting ember flakes make fire breath read as dragonfire, not a campfire.
+            case FIRE -> ModParticles.EMBER_SCALE.get();
             case FROST -> ParticleTypes.ITEM_SNOWBALL;
             case WATER -> ParticleTypes.SPLASH;
             case EARTH -> ParticleTypes.CRIT;

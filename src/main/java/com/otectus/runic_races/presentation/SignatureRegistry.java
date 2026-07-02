@@ -2,6 +2,8 @@ package com.otectus.runic_races.presentation;
 
 import com.otectus.runic_races.presentation.SignatureEntry.SfxSpec;
 import com.otectus.runic_races.presentation.SignatureEntry.VfxSpec;
+import com.otectus.runic_races.registry.ModParticles;
+import com.otectus.runic_races.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -31,12 +33,12 @@ public final class SignatureRegistry {
                 ChatFormatting.DARK_PURPLE,
                 true,
                 List.of(
-                        new SfxSpec(SoundEvents.WITHER_AMBIENT, 0.4f, 1.5f),
+                        new SfxSpec(ModSounds.MYTHIC_REVIVAL, 0.8f, 1.0f),
                         new SfxSpec(SoundEvents.BELL_BLOCK, 0.6f, 0.5f)
                 ),
                 List.of(
                         new VfxSpec(ParticleTypes.SOUL, 40, 0.6, 1.2, 0.6, 0.08),
-                        new VfxSpec(ParticleTypes.SCULK_SOUL, 25, 0.8, 1.5, 0.8, 0.1),
+                        new VfxSpec(ModParticles.SOUL_WISP, 25, 0.8, 1.5, 0.8, 0.1),
                         new VfxSpec(ParticleTypes.ENCHANT, 20, 0.8, 1.0, 0.8, 0.3)
                 ),
                 CueType.VIGNETTE_PULSE,
@@ -68,7 +70,7 @@ public final class SignatureRegistry {
                 List.of(
                         new VfxSpec(ParticleTypes.SOUL_FIRE_FLAME, 25, 0.5, 1.0, 0.5, 0.05),
                         new VfxSpec(ParticleTypes.SMOKE, 15, 0.5, 0.8, 0.5, 0.05),
-                        new VfxSpec(ParticleTypes.SOUL, 15, 0.6, 1.0, 0.6, 0.08)
+                        new VfxSpec(ModParticles.SOUL_WISP, 15, 0.6, 1.0, 0.6, 0.08)
                 ),
                 null,
                 0,
@@ -85,8 +87,9 @@ public final class SignatureRegistry {
                         new SfxSpec(SoundEvents.GENERIC_EXPLODE, 0.5f, 1.0f)
                 ),
                 List.of(
-                        new VfxSpec(ParticleTypes.FLAME, 30, 0.8, 0.6, 0.8, 0.1),
-                        new VfxSpec(ParticleTypes.SOUL_FIRE_FLAME, 20, 0.6, 0.6, 0.6, 0.08),
+                        // Soul-fire + embers: infernal palette, distinct from Fire Drake's dragon-breath cone.
+                        new VfxSpec(ParticleTypes.SOUL_FIRE_FLAME, 24, 0.7, 0.6, 0.7, 0.08),
+                        new VfxSpec(ModParticles.EMBER_SCALE, 18, 0.6, 0.6, 0.6, 0.06),
                         new VfxSpec(ParticleTypes.LAVA, 8, 0.5, 0.3, 0.5, 0.02)
                 ),
                 CueType.HEAT_SHIMMER,
@@ -125,7 +128,7 @@ public final class SignatureRegistry {
                 List.of(
                         new VfxSpec(ParticleTypes.FLAME, 18, 0.4, 0.6, 0.4, 0.05),
                         new VfxSpec(ParticleTypes.CRIT, 20, 0.4, 0.6, 0.4, 0.2),
-                        new VfxSpec(ParticleTypes.ENCHANT, 15, 0.6, 1.0, 0.6, 0.3),
+                        new VfxSpec(ModParticles.RUNE_GLYPH, 10, 0.6, 1.0, 0.6, 0.05),
                         new VfxSpec(RaceColors.FORGE_EMBER, 7, 0.4, 0.5, 0.4, 0.02)
                 ),
                 null,
@@ -140,11 +143,12 @@ public final class SignatureRegistry {
                 true,
                 List.of(
                         new SfxSpec(SoundEvents.ENCHANTMENT_TABLE_USE, 0.5f, 0.8f),
-                        new SfxSpec(SoundEvents.BEACON_ACTIVATE, 0.5f, 1.2f)
+                        new SfxSpec(ModSounds.WARD_ACTIVATE, 0.6f, 1.0f)
                 ),
                 List.of(
                         new VfxSpec(ParticleTypes.ENCHANT, 30, 0.8, 1.0, 0.8, 0.3),
-                        new VfxSpec(ParticleTypes.END_ROD, 18, 0.8, 0.6, 0.8, 0.1),
+                        // Rune glyphs hang in a ring, marking the warded zone for allies.
+                        new VfxSpec(ModParticles.RUNE_GLYPH, 18, 2.0, 0.6, 2.0, 0.02),
                         new VfxSpec(ParticleTypes.CRIT, 12, 0.6, 0.4, 0.6, 0.2)
                 ),
                 CueType.VIGNETTE_PULSE,
@@ -163,7 +167,7 @@ public final class SignatureRegistry {
                 ),
                 List.of(
                         new VfxSpec(ParticleTypes.FIREWORK, 25, 0.8, 1.0, 0.8, 0.2),
-                        new VfxSpec(ParticleTypes.END_ROD, 20, 0.8, 1.0, 0.8, 0.15),
+                        new VfxSpec(ModParticles.FAE_SPARKLE, 20, 0.8, 1.0, 0.8, 0.15),
                         new VfxSpec(ParticleTypes.HAPPY_VILLAGER, 15, 0.8, 1.0, 0.8, 0.1)
                 ),
                 CueType.VIGNETTE_PULSE,
@@ -179,7 +183,7 @@ public final class SignatureRegistry {
                 "message.runic_races.signature.fire_drake.breath",
                 ChatFormatting.RED, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 1.3f),
-                        new SfxSpec(SoundEvents.BLAZE_SHOOT, 0.6f, 0.6f)),
+                        new SfxSpec(ModSounds.BREATH_FIRE, 0.6f, 1.0f)),
                 List.of(new VfxSpec(ParticleTypes.DRAGON_BREATH, 10, 0.8, 0.3, 0.8, 0.3),
                         new VfxSpec(RaceColors.FORGE_EMBER, 5, 0.7, 0.3, 0.7, 0.05)),
                 null, 0, Intensity.MAJOR));
@@ -188,7 +192,7 @@ public final class SignatureRegistry {
                 "message.runic_races.signature.ice_drake.breath",
                 ChatFormatting.AQUA, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 1.5f),
-                        new SfxSpec(SoundEvents.GLASS_BREAK, 0.5f, 0.7f)),
+                        new SfxSpec(ModSounds.BREATH_FROST, 0.5f, 1.0f)),
                 List.of(new VfxSpec(ParticleTypes.SNOWFLAKE, 10, 0.8, 0.3, 0.8, 0.2),
                         new VfxSpec(RaceColors.GLACIAL_CYAN, 5, 0.7, 0.3, 0.7, 0.05)),
                 CueType.FROST_RIME, 20, Intensity.MAJOR));
@@ -197,7 +201,7 @@ public final class SignatureRegistry {
                 "message.runic_races.signature.sea_serpen.breath",
                 ChatFormatting.BLUE, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 1.1f),
-                        new SfxSpec(SoundEvents.PLAYER_SPLASH, 0.7f, 0.8f)),
+                        new SfxSpec(ModSounds.BREATH_WATER, 0.7f, 1.0f)),
                 List.of(new VfxSpec(ParticleTypes.BUBBLE, 10, 0.8, 0.3, 0.8, 0.2),
                         new VfxSpec(ParticleTypes.SPLASH, 5, 0.6, 0.3, 0.6, 0.1)),
                 null, 0, Intensity.MAJOR));
@@ -206,7 +210,7 @@ public final class SignatureRegistry {
                 "message.runic_races.signature.terra_drake.breath",
                 ChatFormatting.DARK_GREEN, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 0.7f),
-                        new SfxSpec(SoundEvents.GENERIC_EXPLODE, 0.4f, 0.6f)),
+                        new SfxSpec(ModSounds.BREATH_EARTH, 0.5f, 1.0f)),
                 List.of(new VfxSpec(ParticleTypes.POOF, 10, 0.8, 0.4, 0.8, 0.1),
                         new VfxSpec(ParticleTypes.CRIT, 5, 0.6, 0.3, 0.6, 0.2)),
                 CueType.SHAKE, 10, Intensity.MAJOR));
@@ -215,7 +219,7 @@ public final class SignatureRegistry {
                 "message.runic_races.signature.volt_drake.breath",
                 ChatFormatting.YELLOW, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 1.6f),
-                        new SfxSpec(SoundEvents.LIGHTNING_BOLT_THUNDER, 0.4f, 1.5f)),
+                        new SfxSpec(ModSounds.BREATH_SHOCK, 0.5f, 1.0f)),
                 List.of(new VfxSpec(ParticleTypes.ELECTRIC_SPARK, 10, 0.8, 0.3, 0.8, 0.3),
                         new VfxSpec(RaceColors.VOLT_GOLD, 5, 0.7, 0.3, 0.7, 0.1)),
                 null, 0, Intensity.MAJOR));
@@ -224,7 +228,7 @@ public final class SignatureRegistry {
                 "message.runic_races.signature.wind_wyrm.breath",
                 ChatFormatting.WHITE, true,
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 1.2f),
-                        new SfxSpec(SoundEvents.ENDER_DRAGON_FLAP, 0.6f, 0.7f)),
+                        new SfxSpec(ModSounds.BREATH_WIND, 0.6f, 1.0f)),
                 List.of(new VfxSpec(ParticleTypes.CLOUD, 10, 0.9, 0.4, 0.9, 0.3),
                         new VfxSpec(ParticleTypes.DRAGON_BREATH, 5, 0.7, 0.3, 0.7, 0.2)),
                 CueType.SHAKE, 15, Intensity.MAJOR));
@@ -233,7 +237,7 @@ public final class SignatureRegistry {
         ENTRIES.put(SignatureKey.SPRITE_WING_FLAP, new SignatureEntry(
                 "message.runic_races.signature.sprite.wing_flap",
                 ChatFormatting.LIGHT_PURPLE, true,
-                List.of(new SfxSpec(SoundEvents.BEE_LOOP, 0.2f, 2.0f)),
+                List.of(new SfxSpec(ModSounds.WINGS_FLAP_SMALL, 0.2f, 2.0f)),
                 List.of(new VfxSpec(ParticleTypes.END_ROD, 12, 0.3, 0.3, 0.3, 0.3),
                         new VfxSpec(ParticleTypes.CLOUD, 10, 0.3, 0.1, 0.3, 0.02)),
                 null, 0, Intensity.MINOR));
@@ -241,7 +245,7 @@ public final class SignatureRegistry {
         ENTRIES.put(SignatureKey.FAERIE_WING_FLAP, new SignatureEntry(
                 "message.runic_races.signature.faerie.wing_flap",
                 ChatFormatting.LIGHT_PURPLE, true,
-                List.of(new SfxSpec(SoundEvents.BEE_LOOP, 0.2f, 1.8f)),
+                List.of(new SfxSpec(ModSounds.WINGS_FLAP_SMALL, 0.2f, 1.8f)),
                 List.of(new VfxSpec(ParticleTypes.END_ROD, 12, 0.3, 0.3, 0.3, 0.3),
                         new VfxSpec(ParticleTypes.FIREWORK, 8, 0.3, 0.1, 0.3, 0.05)),
                 null, 0, Intensity.MINOR));
@@ -249,7 +253,7 @@ public final class SignatureRegistry {
         ENTRIES.put(SignatureKey.AVIAN_WING_FLAP, new SignatureEntry(
                 "message.runic_races.signature.avian.wing_flap",
                 ChatFormatting.AQUA, true,
-                List.of(new SfxSpec(SoundEvents.PHANTOM_FLAP, 0.3f, 1.4f)),
+                List.of(new SfxSpec(ModSounds.WINGS_FLAP_FEATHER, 0.3f, 1.4f)),
                 List.of(new VfxSpec(ParticleTypes.CLOUD, 12, 0.4, 0.2, 0.4, 0.1),
                         new VfxSpec(ParticleTypes.POOF, 8, 0.3, 0.1, 0.3, 0.02)),
                 null, 0, Intensity.MINOR));
@@ -257,7 +261,7 @@ public final class SignatureRegistry {
         ENTRIES.put(SignatureKey.WIND_WYRM_WING_FLAP, new SignatureEntry(
                 "message.runic_races.signature.wind_wyrm.wing_flap",
                 ChatFormatting.WHITE, true,
-                List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_FLAP, 0.5f, 1.2f)),
+                List.of(new SfxSpec(ModSounds.WINGS_FLAP_LARGE, 0.5f, 1.2f)),
                 List.of(new VfxSpec(ParticleTypes.CLOUD, 30, 0.5, 0.2, 0.5, 0.2)),
                 null, 0, Intensity.MAJOR));
 

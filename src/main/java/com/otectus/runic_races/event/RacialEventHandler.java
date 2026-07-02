@@ -451,6 +451,18 @@ public class RacialEventHandler {
             RaceStateTracker.setFlag(player, RaceStateFlags.FIRE_VULNERABLE, player.isOnFire());
         }
 
+        // --- Submerged-weakness readout (mirrors origins:submerged_in weakness conditions) ---
+        if ("feline".equals(race) || "volt_drake".equals(race)) {
+            boolean submerged = player.isEyeInFluid(net.minecraft.tags.FluidTags.WATER);
+            RaceStateTracker.setFlag(player, RaceStateFlags.SUBMERGED_WEAK, submerged);
+        }
+
+        // --- Sea Serpen dry-land sluggishness readout (mirrors landbound_coils) ---
+        if ("sea_serpen".equals(race)) {
+            boolean dry = !player.isEyeInFluid(net.minecraft.tags.FluidTags.WATER);
+            RaceStateTracker.setFlag(player, RaceStateFlags.DRY_SLUGGISH, dry);
+        }
+
         // --- Primian Adaptation stacks: biome change bump + timed decay ---
         if ("primian".equals(race)) {
             tickHumanAdaptation(player, now);
@@ -641,12 +653,35 @@ public class RacialEventHandler {
         if (race == null) return;
 
         if (RaceRegistry.isVenomous(race)) {
-            // addEffect is a no-op on poison-immune targets (undead, other venomous races).
-            target.addEffect(new MobEffectInstance(MobEffects.POISON, 60, 0));
+            // addEffect returns false on poison-immune targets (undead, other venomous races) —
+            // only show the venom landing when it actually took hold. Minor tier: 6 particles.
+            boolean applied = target.addEffect(new MobEffectInstance(MobEffects.POISON, 60, 0));
+            if (applied && attacker.level() instanceof ServerLevel level) {
+                level.sendParticles(com.otectus.runic_races.registry.ModParticles.VENOM_DRIP.get(),
+                        target.getX(), target.getY(0.6), target.getZ(),
+                        6, 0.3, 0.3, 0.3, 0.02);
+                // Serpen strikes hiss higher than the arachnid's skittering bite.
+                level.playSound(null, target.getX(), target.getY(), target.getZ(),
+                        net.minecraft.sounds.SoundEvents.SPIDER_STEP,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, "serpen".equals(race) ? 1.6f : 0.9f);
+            }
         }
 
         if ("blood_elf".equals(race)) {
+            // Lifesteal proc cue only when the heal actually matters (attacker is wounded).
+            boolean wounded = attacker.getHealth() < attacker.getMaxHealth();
             attacker.heal(event.getAmount() * 0.2f);
+            if (wounded && attacker.level() instanceof ServerLevel level) {
+                level.sendParticles(com.otectus.runic_races.presentation.RaceColors.CRIMSON_BLOOD,
+                        attacker.getX(), attacker.getY(1.0), attacker.getZ(),
+                        4, 0.3, 0.4, 0.3, 0.02);
+                level.sendParticles(net.minecraft.core.particles.ParticleTypes.DAMAGE_INDICATOR,
+                        target.getX(), target.getY(0.5), target.getZ(),
+                        3, 0.2, 0.2, 0.2, 0.1);
+                level.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(),
+                        net.minecraft.sounds.SoundEvents.HONEY_DRINK,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.3f, 1.4f);
+            }
         }
     }
 

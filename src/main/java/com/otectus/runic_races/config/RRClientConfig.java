@@ -30,6 +30,13 @@ public class RRClientConfig {
     public static final ForgeConfigSpec.BooleanValue AMBIENT_STATE_PARTICLES;
     public static final ForgeConfigSpec.BooleanValue SCREEN_CUES_ENABLED;
     public static final ForgeConfigSpec.BooleanValue STATE_RUNE_PULSE;
+    public static final ForgeConfigSpec.DoubleValue AMBIENT_PARTICLE_DENSITY;
+    public static final ForgeConfigSpec.BooleanValue WINGS_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue WINGS_ON_OTHER_PLAYERS;
+    public static final ForgeConfigSpec.BooleanValue WINGS_REDUCED_MOTION;
+    public static final ForgeConfigSpec.BooleanValue CAMERA_SHAKE_ENABLED;
+    public static final ForgeConfigSpec.DoubleValue SCREEN_CUE_INTENSITY;
+    public static final ForgeConfigSpec.BooleanValue HEAVY_EFFECTS_ENABLED;
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -85,6 +92,35 @@ public class RRClientConfig {
         STATE_RUNE_PULSE = builder
                 .comment("Briefly pulse a state rune when its flag turns on, drawing the eye to new conditions.")
                 .define("stateRunePulse", true);
+        AMBIENT_PARTICLE_DENSITY = builder
+                .comment("Density multiplier for ambient/cosmetic client particles (0.0 = none, 1.0 = default, 2.0 = double).")
+                .defineInRange("particleDensity", 1.0, 0.0, 2.0);
+        builder.pop();
+
+        builder.comment("Racial wing rendering").push("wings");
+        WINGS_ENABLED = builder
+                .comment("Render racial wings at all. Disable if wings conflict with cape/back cosmetics from other mods.")
+                .define("enabled", true);
+        WINGS_ON_OTHER_PLAYERS = builder
+                .comment("Render other players' racial wings (multiplayer). Disable for performance on crowded servers.")
+                .define("showOnOtherPlayers", true);
+        WINGS_REDUCED_MOTION = builder
+                .comment("Reduced motion / accessibility: disables wind buffeting, idle flutter, and walk sway.",
+                        "Wings still change pose with player state (fold, glide, flap) but stop micro-animating.")
+                .define("reducedMotion", false);
+        builder.pop();
+
+        builder.comment("Screen effects and accessibility").push("effects");
+        CAMERA_SHAKE_ENABLED = builder
+                .comment("Allow signature moments to shake the camera. Disable for motion sensitivity.")
+                .define("cameraShake", true);
+        SCREEN_CUE_INTENSITY = builder
+                .comment("Intensity multiplier for screen-overlay cues and camera shake (0.0 = invisible, 1.0 = full).")
+                .defineInRange("screenCueIntensity", 1.0, 0.0, 1.0);
+        HEAVY_EFFECTS_ENABLED = builder
+                .comment("Render the extra client-side flourish on mythic moments (revival spirals, dense signature bursts).",
+                        "Core gameplay-readable VFX always render; this only gates the theatrical extras.")
+                .define("heavyEffects", true);
         builder.pop();
 
         SPEC = builder.build();

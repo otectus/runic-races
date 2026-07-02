@@ -62,8 +62,10 @@ public class PehkuiIntegration implements ModIntegration {
 
     private void applyRaceScale(ServerPlayer player) {
         String race = RaceHelper.getRaceName(player).orElse(null);
-        if (race == null) return;
-        float scale = RaceHelper.getRaceScale(race);
+        // No race (origin cleared / non-runic origin picked) or integration toggled off
+        // mid-session → return the player to baseline instead of freezing the old scale.
+        boolean enabled = com.otectus.runic_races.config.RRServerConfig.PEHKUI_INTEGRATION.get();
+        float scale = (race == null || !enabled) ? 1.0f : RaceHelper.getRaceScale(race);
 
         try {
             ScaleData scaleData = RACE_SCALE_TYPE.getScaleData(player);
@@ -89,7 +91,7 @@ public class PehkuiIntegration implements ModIntegration {
             RunicRacesMod.debug(
                     "[RunicRaces] Set Pehkui scale for {} ({}) from {} to {} ({}x{} -> {}x{}, relocated={})",
                     player.getName().getString(),
-                    race,
+                    race == null ? "<no race>" : race,
                     currentScale,
                     scale,
                     previousDimensions.width,
@@ -99,7 +101,8 @@ public class PehkuiIntegration implements ModIntegration {
                     relocated
             );
         } catch (Exception e) {
-            RunicRacesMod.LOGGER.error("[RunicRaces] Failed to set Pehkui scale for {}: {}", race, e.getMessage());
+            RunicRacesMod.LOGGER.error("[RunicRaces] Failed to set Pehkui scale for {}: {}",
+                    player.getName().getString(), e.getMessage());
         }
     }
 

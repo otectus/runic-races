@@ -33,6 +33,39 @@ public final class ScreenCueRenderer {
     public static void enqueue(CueType cue, int durationTicks) {
         if (cue == null || durationTicks <= 0) return;
         ACTIVE.put(cue, new ActiveCue(durationTicks, durationTicks));
+        spawnHeavyFlourish(cue);
+    }
+
+    /**
+     * Client-only theatrical extra for the mythic cues (revival, nine lives, glamour):
+     * a burst of identity particles around the local player, on top of the
+     * server-broadcast VFX. Gated by {@code effects.heavyEffects}.
+     */
+    private static void spawnHeavyFlourish(CueType cue) {
+        if (!com.otectus.runic_races.config.RRClientConfig.HEAVY_EFFECTS_ENABLED.get()) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return;
+
+        net.minecraft.core.particles.ParticleOptions particle = switch (cue) {
+            case LIFE_RUNE_FLASH -> com.otectus.runic_races.registry.ModParticles.FAE_SPARKLE.get();
+            case VIGNETTE_PULSE -> com.otectus.runic_races.registry.ModParticles.SOUL_WISP.get();
+            default -> null;
+        };
+        if (particle == null) return;
+
+        // Rising spiral: 24 particles over two turns around the player.
+        double px = mc.player.getX();
+        double py = mc.player.getY();
+        double pz = mc.player.getZ();
+        for (int i = 0; i < 24; i++) {
+            double angle = (i / 24.0) * Math.PI * 4;
+            double radius = 0.9;
+            mc.level.addParticle(particle,
+                    px + Math.cos(angle) * radius,
+                    py + 0.1 + (i / 24.0) * 2.2,
+                    pz + Math.sin(angle) * radius,
+                    0, 0.02, 0);
+        }
     }
 
     @SubscribeEvent
@@ -65,17 +98,19 @@ public final class ScreenCueRenderer {
 
     private static void drawCue(GuiGraphics graphics, CueType cue, int w, int h, float progress) {
         // progress is 0.0 at enqueue, 1.0 at expiry
+        float intensity = com.otectus.runic_races.config.RRClientConfig.SCREEN_CUE_INTENSITY.get().floatValue();
+        if (intensity <= 0f) return;
         switch (cue) {
             case FREEZE_FRAME -> {
                 // Brief white flash, fades out fast
-                float alpha = clamp((1.0f - progress) * 0.5f);
+                float alpha = clamp((1.0f - progress) * 0.5f * intensity);
                 int color = (int) (alpha * 255) << 24 | 0xFFFFFF;
                 graphics.fill(0, 0, w, h, color);
             }
             case HEARTBEAT_FLASH -> {
                 // Red vignette edges, pulse shape
                 float pulse = (float) Math.sin(progress * Math.PI);
-                float alpha = clamp(pulse * 0.6f);
+                float alpha = clamp(pulse * 0.6f * intensity);
                 int color = (int) (alpha * 255) << 24 | 0xAA0000;
                 int edge = Math.min(w, h) / 6;
                 graphics.fill(0, 0, w, edge, color);
@@ -85,7 +120,7 @@ public final class ScreenCueRenderer {
             }
             case VIGNETTE_PULSE -> {
                 float pulse = (float) Math.sin(progress * Math.PI);
-                float alpha = clamp(pulse * 0.45f);
+                float alpha = clamp(pulse * 0.45f * intensity);
                 int color = (int) (alpha * 255) << 24 | 0x220033;
                 int edge = Math.min(w, h) / 4;
                 graphics.fill(0, 0, w, edge, color);
@@ -94,7 +129,7 @@ public final class ScreenCueRenderer {
                 graphics.fill(w - edge, 0, w, h, color);
             }
             case HEAT_SHIMMER -> {
-                float alpha = clamp((1.0f - progress) * 0.3f);
+                float alpha = clamp((1.0f - progress) * 0.3f * intensity);
                 int color = (int) (alpha * 255) << 24 | 0xFF4400;
                 graphics.fill(0, 0, w, h, color);
             }
@@ -104,7 +139,7 @@ public final class ScreenCueRenderer {
             }
             case LIFE_RUNE_FLASH -> {
                 float pulse = (float) Math.sin(progress * Math.PI);
-                float alpha = clamp(pulse * 0.55f);
+                float alpha = clamp(pulse * 0.55f * intensity);
                 int color = (int) (alpha * 255) << 24 | 0xFFDD55;
                 int size = Math.min(w, h) / 4;
                 int cx = w / 2 - size / 2;
@@ -114,7 +149,7 @@ public final class ScreenCueRenderer {
             case MOON_GLOW -> {
                 // Soft silver bloom creeping in from the edges, peaking mid-cue.
                 float pulse = (float) Math.sin(progress * Math.PI);
-                float alpha = clamp(pulse * 0.40f);
+                float alpha = clamp(pulse * 0.40f * intensity);
                 int color = (int) (alpha * 255) << 24 | 0xCFE0FF;
                 int edge = Math.min(w, h) / 5;
                 graphics.fill(0, 0, w, edge, color);
@@ -125,7 +160,7 @@ public final class ScreenCueRenderer {
             case FROST_RIME -> {
                 // Pale-cyan rime frosting in from the edges, peaking mid-cue.
                 float pulse = (float) Math.sin(progress * Math.PI);
-                float alpha = clamp(pulse * 0.45f);
+                float alpha = clamp(pulse * 0.45f * intensity);
                 int color = (int) (alpha * 255) << 24 | 0xA9E8FF;
                 int edge = Math.min(w, h) / 4;
                 graphics.fill(0, 0, w, edge, color);

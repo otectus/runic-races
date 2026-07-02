@@ -59,6 +59,12 @@ public final class NotificationRegistry {
 
         // ----- Open-sky weakness (OPEN_SKY bit) -----
         register("volt_drake", RaceStateFlags.OPEN_SKY, "volt_drake.open_sky", "yellow");
+
+        // ----- Submerged weaknesses (SUBMERGED_WEAK bit) -----
+        // DRY_SLUGGISH (Sea Serpen on land) stays rune-only: it would be lit
+        // near-constantly, and a banner every time they leave water is pure churn.
+        register("feline",     RaceStateFlags.SUBMERGED_WEAK, "feline.submerged",     "aqua");
+        register("volt_drake", RaceStateFlags.SUBMERGED_WEAK, "volt_drake.submerged", "yellow");
     }
 
     /**
