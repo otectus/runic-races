@@ -40,6 +40,18 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> MYTHIC_REVIVAL = register("mythic.revival");
     public static final RegistryObject<SoundEvent> WARD_ACTIVATE = register("ward.activate");
 
+    // Per-race signature layers (v1.4.0 identity pass)
+    public static final RegistryObject<SoundEvent> DASH_WHOOSH = register("dash.whoosh");
+    public static final RegistryObject<SoundEvent> HOWL_PACK = register("howl.pack");
+    public static final RegistryObject<SoundEvent> WEB_SNARE = register("web.snare");
+    public static final RegistryObject<SoundEvent> FOXFIRE_IGNITE = register("foxfire.ignite");
+    public static final RegistryObject<SoundEvent> MIRROR_SHIFT = register("mirror.shift");
+    public static final RegistryObject<SoundEvent> CHARM_SONG = register("charm.song");
+    public static final RegistryObject<SoundEvent> TREMOR_PULSE = register("tremor.pulse");
+    public static final RegistryObject<SoundEvent> SHIELD_BRACE = register("shield.brace");
+    public static final RegistryObject<SoundEvent> BLOOM_VERDANT = register("bloom.verdant");
+    public static final RegistryObject<SoundEvent> HARVEST_SOUL = register("harvest.soul");
+
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(RunicRacesMod.MOD_ID, name)));

@@ -168,6 +168,21 @@ public final class ScreenCueRenderer {
                 graphics.fill(0, 0, edge, h, color);
                 graphics.fill(w - edge, 0, w, h, color);
             }
+            case WIND_STREAK -> {
+                // Horizontal speed streaks along the left/right screen edges, fading fast.
+                // Reads as air rushing past during a dash/leap without obscuring the center.
+                float alpha = clamp((1.0f - progress) * 0.45f * intensity);
+                int color = (int) (alpha * 255) << 24 | 0xE8F4FF;
+                int band = Math.max(2, h / 90);
+                int edgeWidth = w / 4;
+                for (int i = 0; i < 5; i++) {
+                    // Streak rows spread vertically; length shrinks toward screen center.
+                    int y = h / 6 + i * h / 8;
+                    int len = edgeWidth - i * (edgeWidth / 7);
+                    graphics.fill(0, y, len, y + band, color);
+                    graphics.fill(w - len, h - y - band, w, h - y, color);
+                }
+            }
         }
     }
 

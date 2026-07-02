@@ -32,6 +32,20 @@ public class ModParticles {
     public static final RegistryObject<SimpleParticleType> FROST_MOTE = register("frost_mote");
     /** Venom droplet — Arachnid and Serpen venom procs. */
     public static final RegistryObject<SimpleParticleType> VENOM_DRIP = register("venom_drip");
+    /** Silk strand — Arachnid web snare spokes and weaver's-senses trembles. */
+    public static final RegistryObject<SimpleParticleType> WEB_STRAND = register("web_strand");
+    /** Falling leaf petal — Dryad bloom/grove ambience, Nymph accents. */
+    public static final RegistryObject<SimpleParticleType> LEAF_PETAL = register("leaf_petal");
+    /** Drifting down feather — Celeron dash/featherweight, Avian bursts. */
+    public static final RegistryObject<SimpleParticleType> FEATHER_DOWN = register("feather_down");
+    /** Sinking shadow curl — Dark Elf shadowmeld, Wraith trail, Changeling ripple. */
+    public static final RegistryObject<SimpleParticleType> SHADOW_WISP = register("shadow_wisp");
+    /** Teal spirit-flame — Kitsune foxfire orbs and night-sprint tail. */
+    public static final RegistryObject<SimpleParticleType> FOXFIRE = register("foxfire");
+    /** Azure arcane star — High Elf reflex, Magi overflow/leak ambience. */
+    public static final RegistryObject<SimpleParticleType> ARCANE_GLINT = register("arcane_glint");
+    /** Bone shard — Skeleton brittle-bones and Avian hollow-bones procs. */
+    public static final RegistryObject<SimpleParticleType> BONE_CHIP = register("bone_chip");
 
     private static RegistryObject<SimpleParticleType> register(String name) {
         return PARTICLES.register(name, () -> new SimpleParticleType(false));

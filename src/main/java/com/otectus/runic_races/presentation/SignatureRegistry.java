@@ -147,8 +147,8 @@ public final class SignatureRegistry {
                 ),
                 List.of(
                         new VfxSpec(ParticleTypes.ENCHANT, 30, 0.8, 1.0, 0.8, 0.3),
-                        // Rune glyphs hang in a ring, marking the warded zone for allies.
-                        new VfxSpec(ModParticles.RUNE_GLYPH, 18, 2.0, 0.6, 2.0, 0.02),
+                        // Rune glyphs hang in a perfect circle, marking the warded zone for allies.
+                        new VfxSpec(ModParticles.RUNE_GLYPH, 18, 2.0, 0.6, 2.0, 0.02, SignatureEntry.Shape.RING),
                         new VfxSpec(ParticleTypes.CRIT, 12, 0.6, 0.4, 0.6, 0.2)
                 ),
                 CueType.VIGNETTE_PULSE,

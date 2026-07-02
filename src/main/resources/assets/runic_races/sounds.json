@@ -201,5 +201,187 @@
         "pitch": 1.2
       }
     ]
+  },
+  "dash.whoosh": {
+    "subtitle": "subtitles.runic_races.dash.whoosh",
+    "sounds": [
+      {
+        "name": "minecraft:entity.player.attack.sweep",
+        "type": "event",
+        "volume": 0.8,
+        "pitch": 1.4
+      },
+      {
+        "name": "minecraft:entity.phantom.flap",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.6
+      }
+    ]
+  },
+  "howl.pack": {
+    "subtitle": "subtitles.runic_races.howl.pack",
+    "sounds": [
+      {
+        "name": "minecraft:entity.wolf.howl",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 0.8
+      },
+      {
+        "name": "minecraft:entity.wolf.growl",
+        "type": "event",
+        "volume": 0.6,
+        "pitch": 0.7
+      }
+    ]
+  },
+  "web.snare": {
+    "subtitle": "subtitles.runic_races.web.snare",
+    "sounds": [
+      {
+        "name": "minecraft:block.wool.place",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 0.6
+      },
+      {
+        "name": "minecraft:entity.spider.step",
+        "type": "event",
+        "volume": 0.8,
+        "pitch": 0.7
+      },
+      {
+        "name": "minecraft:block.wool.step",
+        "type": "event",
+        "volume": 0.7,
+        "pitch": 0.5
+      }
+    ]
+  },
+  "foxfire.ignite": {
+    "subtitle": "subtitles.runic_races.foxfire.ignite",
+    "sounds": [
+      {
+        "name": "minecraft:entity.fox.screech",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.3
+      },
+      {
+        "name": "minecraft:block.amethyst_block.chime",
+        "type": "event",
+        "volume": 0.8,
+        "pitch": 0.9
+      }
+    ]
+  },
+  "mirror.shift": {
+    "subtitle": "subtitles.runic_races.mirror.shift",
+    "sounds": [
+      {
+        "name": "minecraft:entity.illusioner.mirror_move",
+        "type": "event",
+        "volume": 0.8,
+        "pitch": 1.1
+      },
+      {
+        "name": "minecraft:entity.allay.item_thrown",
+        "type": "event",
+        "volume": 0.6,
+        "pitch": 0.8
+      }
+    ]
+  },
+  "charm.song": {
+    "subtitle": "subtitles.runic_races.charm.song",
+    "sounds": [
+      {
+        "name": "minecraft:entity.allay.ambient_without_item",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 1.1
+      },
+      {
+        "name": "minecraft:block.note_block.chime",
+        "type": "event",
+        "volume": 0.7,
+        "pitch": 1.4
+      },
+      {
+        "name": "minecraft:block.note_block.chime",
+        "type": "event",
+        "volume": 0.7,
+        "pitch": 1.8
+      }
+    ]
+  },
+  "tremor.pulse": {
+    "subtitle": "subtitles.runic_races.tremor.pulse",
+    "sounds": [
+      {
+        "name": "minecraft:block.deepslate.break",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 0.5
+      },
+      {
+        "name": "minecraft:entity.warden.sonic_charge",
+        "type": "event",
+        "volume": 0.25,
+        "pitch": 1.5
+      }
+    ]
+  },
+  "shield.brace": {
+    "subtitle": "subtitles.runic_races.shield.brace",
+    "sounds": [
+      {
+        "name": "minecraft:item.shield.block",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 0.8
+      },
+      {
+        "name": "minecraft:block.anvil.place",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.2
+      }
+    ]
+  },
+  "bloom.verdant": {
+    "subtitle": "subtitles.runic_races.bloom.verdant",
+    "sounds": [
+      {
+        "name": "minecraft:block.azalea.place",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 0.9
+      },
+      {
+        "name": "minecraft:item.bone_meal.use",
+        "type": "event",
+        "volume": 0.8,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "harvest.soul": {
+    "subtitle": "subtitles.runic_races.harvest.soul",
+    "sounds": [
+      {
+        "name": "minecraft:particle.soul_escape",
+        "type": "event",
+        "volume": 1.0,
+        "pitch": 0.7
+      },
+      {
+        "name": "minecraft:block.bell.resonate",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 0.6
+      }
+    ]
   }
 }

@@ -135,6 +135,126 @@ def venom_drip(frame):
     return img
 
 
+def web_strand(frame):
+    """White silk strand: a taut diagonal thread with anchor nodes and a slight sag."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    sag = [1, 2, 1][frame]
+    color = (245, 245, 240, 220)
+    dim = (200, 200, 195, 130)
+    # main thread from top-left to bottom-right with a midpoint sag
+    d.line([(2, 3), (8, 8 + sag)], fill=color, width=1)
+    d.line([(8, 8 + sag), (14, 12)], fill=color, width=1)
+    # cross-fibre glints
+    d.line([(5, 8), (7, 6 + sag)], fill=dim, width=1)
+    d.line([(9, 11), (11, 9 + sag)], fill=dim, width=1)
+    # anchor nodes
+    for x, y in ((2, 3), (8, 8 + sag), (14, 12)):
+        d.point((x, y), fill=(255, 255, 255, 255))
+    return img
+
+
+def leaf_petal(frame):
+    """Small green leaf with a lighter mid-vein, rotating per frame."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    rot = [0.0, math.pi / 6, math.pi / 3][frame]
+    cx, cy = 8, 8
+    # leaf as two arcs approximated by a rotated ellipse polygon
+    pts = []
+    for k in range(12):
+        a = 2 * math.pi * k / 12
+        rx, ry = 5.0, 2.6
+        x = rx * math.cos(a)
+        y = ry * math.sin(a)
+        pts.append((cx + x * math.cos(rot) - y * math.sin(rot),
+                    cy + x * math.sin(rot) + y * math.cos(rot)))
+    d.polygon(pts, fill=(80, 170, 60, 235), outline=(45, 110, 35, 255))
+    # mid-vein
+    vx, vy = 4.6 * math.cos(rot), 4.6 * math.sin(rot)
+    d.line([(cx - vx, cy - vy), (cx + vx, cy + vy)], fill=(150, 220, 120, 220), width=1)
+    return img
+
+
+def feather_down(frame):
+    """Soft white down feather: pale shaft with wispy barbs."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    lean = [-1, 0, 1][frame]
+    shaft = (235, 232, 225, 235)
+    barb = (250, 250, 245, 140)
+    d.line([(8 - lean, 3), (8 + lean, 13)], fill=shaft, width=1)
+    for i in range(4):
+        y = 4 + i * 2
+        w = 3 - i // 2
+        d.line([(8 - lean, y), (8 - lean - w, y + 2)], fill=barb, width=1)
+        d.line([(8 - lean, y), (8 - lean + w, y + 2)], fill=barb, width=1)
+    d.point((8 - lean, 3), fill=(255, 255, 255, 255))
+    return img
+
+
+def shadow_wisp(frame):
+    """Dark indigo curl — soul-wisp silhouette in shadow tones, faint edge glow."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    sway = [-1, 0, 1][frame]
+    soft_dot(d, 8 + sway, 7, 4.5, (40, 30, 70, 210))
+    for i, alpha in enumerate((130, 85, 45)):
+        soft_dot(d, 8 - sway, 10 + i * 2, 2.0 - i * 0.4, (25, 18, 45, alpha), layers=2)
+    # thin violet rim so it reads against dark backgrounds
+    d.ellipse([4 + sway, 3, 12 + sway, 11], outline=(110, 80, 160, 90))
+    return img
+
+
+def foxfire(frame):
+    """Teal-white spirit flame with a licking tip."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    flick = [0, 1, -1][frame]
+    # flame body
+    soft_dot(d, 8, 9, 4.0, (60, 210, 190, 230))
+    soft_dot(d, 8 + flick, 6, 2.6, (140, 250, 235, 240), layers=3)
+    # tip
+    d.line([(8 + flick, 3), (8, 6)], fill=(200, 255, 250, 220), width=1)
+    d.point((8 + flick, 3), fill=(240, 255, 255, 255))
+    return img
+
+
+def arcane_glint(frame):
+    """Azure 4-point star with a halo — arcane cousin of fae_sparkle."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    cx = cy = 8
+    length = [6, 5, 6][frame]
+    rot = [math.pi / 4, math.pi / 8, 0.0][frame]
+    color = (120, 190, 255, 245)
+    for k in range(4):
+        a = rot + k * math.pi / 2
+        d.line([(cx, cy), (cx + length * math.cos(a), cy + length * math.sin(a))],
+               fill=color, width=1)
+    d.ellipse([cx - 3, cy - 3, cx + 3, cy + 3], outline=(90, 150, 230, 90))
+    soft_dot(d, cx, cy, 2.0, (200, 230, 255, 255), layers=3)
+    return img
+
+
+def bone_chip(frame):
+    """Bone-white angular shard with a darker fracture line."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    rng = random.Random(4200 + frame)
+    cx, cy = 8, 8
+    pts = []
+    for k in range(5):
+        a = 2 * math.pi * k / 5 + rng.uniform(-0.35, 0.35)
+        r = 3.5 + rng.uniform(-1.0, 1.0)
+        pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    d.polygon(pts, fill=(228, 220, 200, 240), outline=(150, 140, 120, 255))
+    # fracture line
+    d.line([pts[0], pts[2]], fill=(170, 160, 140, 200), width=1)
+    d.point((cx, cy - 1), fill=(255, 250, 240, 255))
+    return img
+
+
 GENERATORS = {
     "rune_glyph": rune_glyph,
     "soul_wisp": soul_wisp,
@@ -142,6 +262,13 @@ GENERATORS = {
     "ember_scale": ember_scale,
     "frost_mote": frost_mote,
     "venom_drip": venom_drip,
+    "web_strand": web_strand,
+    "leaf_petal": leaf_petal,
+    "feather_down": feather_down,
+    "shadow_wisp": shadow_wisp,
+    "foxfire": foxfire,
+    "arcane_glint": arcane_glint,
+    "bone_chip": bone_chip,
 }
 
 

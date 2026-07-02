@@ -20,5 +20,7 @@ public enum CueType {
     /** Soft silver radial bloom from the screen edges inward. Used for Moon Elf moonlight. */
     MOON_GLOW,
     /** Pale-cyan vignette frosting (ice creeping in from the edges). Used for frost abilities. */
-    FROST_RIME
+    FROST_RIME,
+    /** Brief horizontal edge-streaks suggesting sudden speed. Used for dashes, leaps, wind bursts. */
+    WIND_STREAK
 }

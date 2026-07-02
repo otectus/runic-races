@@ -58,7 +58,14 @@ public class ClientEvents {
         event.registerSpriteSet(ModParticles.EMBER_SCALE.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.EMBER));
         event.registerSpriteSet(ModParticles.FROST_MOTE.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.MOTE));
         event.registerSpriteSet(ModParticles.VENOM_DRIP.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.DRIP));
-        RunicRacesMod.LOGGER.info("[RunicRaces] Registered {} custom particle providers", 6);
+        event.registerSpriteSet(ModParticles.WEB_STRAND.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.STRAND));
+        event.registerSpriteSet(ModParticles.LEAF_PETAL.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.LEAF));
+        event.registerSpriteSet(ModParticles.FEATHER_DOWN.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.LEAF));
+        event.registerSpriteSet(ModParticles.SHADOW_WISP.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.SHADE));
+        event.registerSpriteSet(ModParticles.FOXFIRE.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.WISP));
+        event.registerSpriteSet(ModParticles.ARCANE_GLINT.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.SPARKLE));
+        event.registerSpriteSet(ModParticles.BONE_CHIP.get(), s -> new RunicParticle.Provider(s, RunicParticle.Behavior.CHIP));
+        RunicRacesMod.LOGGER.info("[RunicRaces] Registered {} custom particle providers", 13);
     }
 
     @SubscribeEvent

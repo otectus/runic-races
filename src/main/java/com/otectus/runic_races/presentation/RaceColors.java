@@ -38,6 +38,14 @@ public final class RaceColors {
     public static final DustParticleOptions VERDANT_GREEN = dust(0x66C266);
     /** Undead souls — violet (matches UNDEAD accent). */
     public static final DustParticleOptions SOUL_VIOLET = dust(0x9B59D9);
+    /** High Elf / Magi — bright arcane azure. */
+    public static final DustParticleOptions ARCANE_AZURE = dust(0x6FB8FF);
+    /** Dark Elf — dusk-shadow indigo. */
+    public static final DustParticleOptions DUSK_INDIGO = dust(0x584A85);
+    /** Nymph / Sea Serpen — fresh tidal teal. */
+    public static final DustParticleOptions TIDAL_TEAL = dust(0x3ECFC0);
+    /** Valen / Iron One — burnished iron gray. */
+    public static final DustParticleOptions IRON_GRAY = dust(0xB9C0C8);
 
     private RaceColors() {}
 }

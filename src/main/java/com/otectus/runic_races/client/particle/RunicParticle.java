@@ -31,7 +31,15 @@ public class RunicParticle extends TextureSheetParticle {
         /** Frost mote: gentle crystalline fall, soft glow. */
         MOTE,
         /** Venom drip: falls under gravity and fades. */
-        DRIP
+        DRIP,
+        /** Web strand: shoots out laterally, brakes hard, then hangs with a slight sag. */
+        STRAND,
+        /** Leaf/petal/feather: tumbling fall with wide sideways sway, world-lit. */
+        LEAF,
+        /** Shadow wisp: soul-wisp sway but sinking instead of rising, world-lit. */
+        SHADE,
+        /** Bone chip: sharp physical shard, heavy fall with physics, world-lit. */
+        CHIP
     }
 
     private final SpriteSet sprites;
@@ -92,6 +100,34 @@ public class RunicParticle extends TextureSheetParticle {
                 this.quadSize = 0.08f;
                 this.hasPhysics = true;
             }
+            case STRAND -> {
+                this.lifetime = 40 + this.random.nextInt(14);
+                this.gravity = 0.004f;
+                this.friction = 0.72f; // hard brake: flies out, then hangs like anchored silk
+                this.quadSize = 0.11f;
+                this.hasPhysics = false;
+            }
+            case LEAF -> {
+                this.lifetime = 44 + this.random.nextInt(16);
+                this.gravity = 0.018f;
+                this.friction = 0.97f;
+                this.quadSize = 0.11f;
+                this.hasPhysics = false;
+            }
+            case SHADE -> {
+                this.lifetime = 36 + this.random.nextInt(12);
+                this.gravity = 0.008f; // sinks — darkness pools downward
+                this.friction = 0.95f;
+                this.quadSize = 0.12f;
+                this.hasPhysics = false;
+            }
+            case CHIP -> {
+                this.lifetime = 18 + this.random.nextInt(6);
+                this.gravity = 0.28f;
+                this.friction = 0.98f;
+                this.quadSize = 0.07f;
+                this.hasPhysics = true;
+            }
         }
         this.baseQuadSize = this.quadSize;
         setSpriteFromAge(sprites);
@@ -111,6 +147,17 @@ public class RunicParticle extends TextureSheetParticle {
                 }
                 case SPARKLE -> quadSize = baseQuadSize * (0.7f + 0.5f * Mth.sin(age * 1.1f));
                 case EMBER -> xd += Math.sin(age * 0.45) * 0.001;
+                case LEAF -> {
+                    // Wide falling-leaf sway plus a roll oscillation that reads as tumbling.
+                    xd += Math.sin((age + 5) * 0.25) * 0.003;
+                    zd += Math.cos((age + 11) * 0.22) * 0.003;
+                    oRoll = roll;
+                    roll = Mth.sin(age * 0.18f) * 0.6f;
+                }
+                case SHADE -> {
+                    xd += Math.sin((age + 7) * 0.35) * 0.0015;
+                    zd += Math.cos((age + 3) * 0.30) * 0.0015;
+                }
                 default -> { }
             }
             // Universal fade-out over the last third of the lifetime.
@@ -127,8 +174,12 @@ public class RunicParticle extends TextureSheetParticle {
 
     @Override
     protected int getLightColor(float partialTick) {
-        // All identity particles are magical/emissive except the venom drip.
-        return behavior == Behavior.DRIP ? super.getLightColor(partialTick) : 0xF000F0;
+        // Magical particles are emissive; physical matter (drips, leaves, shadows,
+        // bone chips) uses world lighting so it sits naturally in the scene.
+        return switch (behavior) {
+            case DRIP, LEAF, SHADE, CHIP -> super.getLightColor(partialTick);
+            default -> 0xF000F0;
+        };
     }
 
     public record Provider(SpriteSet sprites, Behavior behavior) implements ParticleProvider<SimpleParticleType> {
