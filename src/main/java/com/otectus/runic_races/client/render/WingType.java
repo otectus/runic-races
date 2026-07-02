@@ -19,56 +19,64 @@ public enum WingType {
             0.5f,
             -15f, -70f, -110f,
             8, true, false, true,
-            1.5f, 25f, 0.3f
+            1.5f, 25f, 0.3f,
+            WingModel.Silhouette.GOSSAMER, 0.9f, 1.15f
     ),
     FAERIE_WINGS(
             "textures/entity/faerie_wings.png",
             0.6f,
             -15f, -72f, -112f,
             8, true, false, true,
-            1.4f, 22f, 0.3f
+            1.4f, 22f, 0.3f,
+            WingModel.Silhouette.GOSSAMER, 0.9f, 1.15f
     ),
     AVIAN_WINGS(
             "textures/entity/avian_wings.png",
             0.95f,
             -15f, -78f, -125f,
             9, false, false, false,
-            1.1f, 14f, 0.45f
+            1.1f, 14f, 0.45f,
+            WingModel.Silhouette.FEATHERED, 0.55f, 1.25f
     ),
     WYVERN_WINGS(
             "textures/entity/wyvern_wings.png",
             1.0f,
             -15f, -75f, -120f,
             10, false, false, false,
-            1.0f, 12f, 0.5f
+            1.0f, 12f, 0.5f,
+            WingModel.Silhouette.MEMBRANE, 0.5f, 1.3f
     ),
     FIRE_DRAKE_WINGS(
             "textures/entity/fire_drake_wings.png",
             1.4f,
             -15f, -80f, -130f,
             14, false, false, false,
-            0.7f, 8f, 0.7f
+            0.7f, 8f, 0.7f,
+            WingModel.Silhouette.MEMBRANE, 0.45f, 1.35f
     ),
     ICE_DRAKE_WINGS(
             "textures/entity/ice_drake_wings.png",
             1.35f,
             -15f, -80f, -130f,
             14, false, false, false,
-            0.7f, 8f, 0.7f
+            0.7f, 8f, 0.7f,
+            WingModel.Silhouette.MEMBRANE, 0.45f, 1.35f
     ),
     TERRA_DRAKE_WINGS(
             "textures/entity/terra_drake_wings.png",
             1.5f,
             -15f, -82f, -132f,
             16, false, false, false,
-            0.6f, 6f, 0.8f
+            0.6f, 6f, 0.8f,
+            WingModel.Silhouette.MEMBRANE, 0.4f, 1.3f
     ),
     VOLT_DRAKE_WINGS(
             "textures/entity/volt_drake_wings.png",
             1.3f,
             -15f, -78f, -128f,
             12, false, false, false,
-            0.8f, 10f, 0.6f
+            0.8f, 10f, 0.6f,
+            WingModel.Silhouette.MEMBRANE, 0.5f, 1.35f
     );
 
     private final String texturePath;
@@ -83,11 +91,15 @@ public enum WingType {
     private final float bankingSensitivity;
     private final float hoverFlutterAmplitudeDeg;
     private final float windBuffetScale;
+    private final WingModel.Silhouette silhouette;
+    private final float tipLagFactor;
+    private final float tipOvershoot;
 
     WingType(String texturePath, float scale,
              float foldedZDeg, float spreadZDeg, float downbeatZDeg,
              int flapDurationTicks, boolean translucent, boolean cosmeticOnly, boolean fullBright,
-             float bankingSensitivity, float hoverFlutterAmplitudeDeg, float windBuffetScale) {
+             float bankingSensitivity, float hoverFlutterAmplitudeDeg, float windBuffetScale,
+             WingModel.Silhouette silhouette, float tipLagFactor, float tipOvershoot) {
         this.texturePath = texturePath;
         this.scale = scale;
         this.foldedZDeg = foldedZDeg;
@@ -100,6 +112,9 @@ public enum WingType {
         this.bankingSensitivity = bankingSensitivity;
         this.hoverFlutterAmplitudeDeg = hoverFlutterAmplitudeDeg;
         this.windBuffetScale = windBuffetScale;
+        this.silhouette = silhouette;
+        this.tipLagFactor = tipLagFactor;
+        this.tipOvershoot = tipOvershoot;
     }
 
     public String getTexturePath() { return texturePath; }
@@ -115,6 +130,12 @@ public enum WingType {
     public float getBankingSensitivity() { return bankingSensitivity; }
     public float getHoverFlutterAmplitudeDeg() { return hoverFlutterAmplitudeDeg; }
     public float getWindBuffetScale() { return windBuffetScale; }
+    /** Which articulated part group this race renders. */
+    public WingModel.Silhouette getSilhouette() { return silhouette; }
+    /** How quickly the outer tip chases the arm (fraction of the base lerp speed). */
+    public float getTipLagFactor() { return tipLagFactor; }
+    /** How far past the arm's angle the tip settles — reads as wing curvature and whip. */
+    public float getTipOvershoot() { return tipOvershoot; }
 
     /**
      * Returns the wing type for the given race name, or empty for non-winged races.

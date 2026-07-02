@@ -34,7 +34,8 @@ class StaleAssetTest {
     private static final Pattern COOLDOWN_LITERAL = Pattern.compile("\"([a-z_]+/[a-z_]+)_cooldown_timer\"");
 
     /** Generator-source textures intentionally kept without a direct WingType reference. */
-    private static final Set<String> ENTITY_TEXTURE_ALLOWLIST = Set.of("drake_wings.png");
+    private static final Set<String> ENTITY_TEXTURE_ALLOWLIST =
+            Set.of("drake_wings.png", "pixie_wings_base.png", "wyvern_wings_base.png");
 
     @Test
     void everyItemTextureAndModelBelongsToARace() throws IOException {

@@ -291,11 +291,33 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
             state.smoothedRightYRot += (targetRightYRot - state.smoothedRightYRot) * STATE_LERP_SPEED;
         }
 
+        // --- Cascaded tip lag ---
+        // The outer tip/primaries chase the arm's Z with their own (slower) smoothing and
+        // a slight overshoot — the FLAP snap above leaves the tip trailing through the
+        // downbeat and settling with a whip, which is the organic part of the motion.
+        float overshoot = wingType.getTipOvershoot();
+        float tipLerp = STATE_LERP_SPEED * wingType.getTipLagFactor();
+        state.smoothedLeftTipZ += (state.smoothedLeftZRot * overshoot - state.smoothedLeftTipZ) * tipLerp;
+        state.smoothedRightTipZ += (state.smoothedRightZRot * overshoot - state.smoothedRightTipZ) * tipLerp;
+        // Gossamer hindwings run a lazier chase of the forewing — a visible phase behind it.
+        float hindLerp = tipLerp * 0.6F;
+        state.smoothedLeftHindZ += (state.smoothedLeftZRot - state.smoothedLeftHindZ) * hindLerp;
+        state.smoothedRightHindZ += (state.smoothedRightZRot - state.smoothedRightHindZ) * hindLerp;
+
+        WingModel.Silhouette silhouette = wingType.getSilhouette();
+        float leftTipDelta = state.smoothedLeftTipZ - state.smoothedLeftZRot;
+        float rightTipDelta = state.smoothedRightTipZ - state.smoothedRightZRot;
+        float leftHindDelta = state.smoothedLeftHindZ - state.smoothedLeftZRot;
+        float rightHindDelta = state.smoothedRightHindZ - state.smoothedRightZRot;
+
         // --- Apply to model ---
-        wingModel.applyRotation(
-                state.smoothedXRot, state.smoothedLeftYRot, state.smoothedLeftZRot,
-                state.smoothedXRot, state.smoothedRightYRot, state.smoothedRightZRot
-        );
+        wingModel.setSilhouette(silhouette);
+        wingModel.applyPose(silhouette,
+                state.smoothedXRot,
+                state.smoothedLeftYRot, state.smoothedLeftZRot,
+                state.smoothedRightYRot, state.smoothedRightZRot,
+                leftTipDelta, rightTipDelta,
+                leftHindDelta, rightHindDelta);
 
         // --- Render ---
         poseStack.pushPose();
@@ -321,6 +343,21 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
         wingModel.renderToBuffer(poseStack, vertexConsumer, light,
                 OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alpha);
 
+        // Shimmer-blur ghost: during the fast gossamer flutter (hover/flap) a second faint
+        // pass at an angular offset reads as motion blur — cheap, no shaders.
+        boolean fastFlutter = isHovering || state.flapTicksRemaining > 0;
+        if (fastFlutter && wingType.isTranslucent() && !reducedMotion) {
+            float ghostOffset = 8.0F * DEG_TO_RAD;
+            wingModel.applyPose(silhouette,
+                    state.smoothedXRot,
+                    state.smoothedLeftYRot, state.smoothedLeftZRot - ghostOffset,
+                    state.smoothedRightYRot, state.smoothedRightZRot + ghostOffset,
+                    leftTipDelta, rightTipDelta,
+                    leftHindDelta, rightHindDelta);
+            wingModel.renderToBuffer(poseStack, vertexConsumer, light,
+                    OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 0.25F);
+        }
+
         poseStack.popPose();
     }
 
@@ -344,6 +381,12 @@ public class WingRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
         float smoothedRightZRot = Mth.PI / 12.0F;
         float smoothedLeftYRot = 0.0F;
         float smoothedRightYRot = 0.0F;
+
+        // Cascaded-lag chases (tip follows arm, hindwing follows forewing)
+        float smoothedLeftTipZ = -Mth.PI / 12.0F;
+        float smoothedRightTipZ = Mth.PI / 12.0F;
+        float smoothedLeftHindZ = -Mth.PI / 12.0F;
+        float smoothedRightHindZ = Mth.PI / 12.0F;
 
         // Flap detection
         double prevDeltaY;
