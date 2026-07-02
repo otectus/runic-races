@@ -3,7 +3,7 @@
 ## Quick Reference
 - **Mod ID**: `runic_races`
 - **Package**: `com.otectus.runic_races`
-- **Version**: 1.3.0
+- **Version**: 1.4.0
 - **MC**: 1.20.1 | **Forge**: 47.2.0 | **Java**: 17
 - **Mappings**: Official
 
@@ -50,34 +50,61 @@
 The 44 origins, 111 power JSONs, 2 origin layers, the 37 icon textures, and `en_us.json`
 are emitted by static generator scripts (NOT wired into Gradle — the committed JSON is
 hand-written-equivalent and authoritative):
-- `tools/generate_races.py` — origins/powers/layers + `tools/race_lang.json`
+- `tools/generate_races.py` — origins/powers/layers + `tools/race_lang.json`; its `PRESENT_SIG`
+  map swaps banner/sound/particle actions for `signature_presentation` on converted actives
 - `tools/generate_icons.py` — downscales per-race art from `~/Notes/Runic Races/` to `textures/item/`
+- `tools/generate_ability_icons.py` — hand-typed 16×16 grids, Scale2x+shaded to 32×32 HUD icons
 - `tools/build_lang.py` — merges race_lang + notification copy into `en_us.json`
-- `tools/generate_wings.py` — recolors the 3 base wing textures into per-race variants (`textures/entity/`)
+- `tools/generate_wings.py` — paints the 64×64 articulated wing sheets from the base art
+  (`pixie_wings_base.png`, `wyvern_wings_base.png`, `drake_wings.png` are the hand-made sources)
 - `tools/generate_particles.py` — emits the custom particle sprite frames (`textures/particle/`)
+- `tools/generate_overlays.py` — screen-cue overlay textures (`textures/gui/overlay/`)
+- `tools/generate_state_runes.py` — one 16×16 rune glyph per `RaceStateFlags` (`textures/gui/rune/`)
 Resource-id rule: cooldown resources are `runic_races:<race>/<powerFile>_cooldown_timer` and
 must match exactly in JSON and any Java that reads them (`FlightConfig`, `AbilityIconRegistry`,
 `RacialEventHandler`).
 
 ## Custom particles & sounds
-- `registry/ModParticles.java` — 6 identity particles (`rune_glyph`, `soul_wisp`, `fae_sparkle`,
-  `ember_scale`, `frost_mote`, `venom_drip`); providers in `client/particle/RunicParticle`
-  (registration is common-side; providers client-only)
-- `registry/ModSounds.java` + `assets/runic_races/sounds.json` — custom sound events that
+- `registry/ModParticles.java` — 13 identity particles (`rune_glyph`, `soul_wisp`, `fae_sparkle`,
+  `ember_scale`, `frost_mote`, `venom_drip`, `web_strand`, `leaf_petal`, `feather_down`,
+  `shadow_wisp`, `foxfire`, `arcane_glint`, `bone_chip`); behaviors in
+  `client/particle/RunicParticle` (registration common-side; providers client-only; physical
+  matter — DRIP/LEAF/SHADE/CHIP — is world-lit, magic is emissive)
+- `registry/ModSounds.java` + `assets/runic_races/sounds.json` — 23 sound events that
   curate vanilla `.ogg`s via `"type": "event"`; bespoke audio can drop in without code changes
 - `SignatureEntry` Sfx/Vfx specs hold `Supplier`s so DeferredRegister objects can be referenced
   before registration resolves
 
+## Signature presentation (every active)
+- ALL 37 actives route through `SignatureRegistry` (JSON has one
+  `runic_races:signature_presentation` action; the recipe — layered sounds, shaped particles,
+  banner, screen cue — lives in Java). Keep the family grammar: Human snap / Elven rise-implode /
+  Dwarven ground-burst / Bestial lunge / Faeborne swirl-pop / Undead sink-drain / Draconic exhale.
+- `SignatureEntry.VfxSpec` shapes: `POINT` (default), `RING`, `RING_IN`, `RING_ORBIT`, `HELIX`,
+  `DOME`, `LINE` (needs `RunicPresentation.fire(player, key, lineTarget)`), `SPOKES` —
+  spreadX = radius/length, spreadY = height, speed = directed velocity.
+- `client/ClientRacialAmbienceHandler` — one `AmbienceRoutine` per race (registry map);
+  `AmbienceCoverageTest` enforces every race is registered or explicitly quiet.
+
 ## Wings & presentation
-- `client/render/WingType` maps the 8 flight races (avian, sprite, faerie, wind_wyrm + 4
-  elemental drakes) to per-race textures/animation params; `WingRenderLayer` handles state
-  (flap/hover/glide/swim/ground, riding/sleep/death hidden) — keep new races registry-driven
-- Client config (`RRClientConfig`): `wings.*` (enabled/showOnOtherPlayers/reducedMotion),
-  `effects.*` (cameraShake/screenCueIntensity/heavyEffects), `ambient.particleDensity`
+- `client/render/WingModel` — one 64×64 bake, three silhouettes (`MEMBRANE` wyvern/drakes,
+  `FEATHERED` avian, `GOSSAMER` sprite/faerie) toggled via `setSilhouette`; outer tips lag the
+  arm (cascaded child parts, per-race `tipLagFactor`/`tipOvershoot` in `WingType`)
+- `WingRenderLayer` handles state (flap/hover/glide/swim/ground, riding/sleep/death hidden),
+  glide wingtip trails + landing puffs live in the ambience handler — keep new races registry-driven
+- Client config (`RRClientConfig`): `wings.*` (enabled/showOnOtherPlayers/reducedMotion/glideTrails),
+  `effects.*` (cameraShake/screenCueIntensity/heavyEffects/simpleCues/fovEffects),
+  `ambient.particleDensity`
 - Server config: `vfx.breathParticleDensity` scales `ConeBreathAction` particles
+- Screen cues draw tinted overlay textures (`textures/gui/overlay/`); `effects.simpleCues`
+  falls back to flat rects. `FovKickHandler` reads `ScreenCueRenderer.fovKickDelta()` (±6% max).
+- State runes: 16×16 glyphs in `textures/gui/rune/` (one per `RaceStateFlags`, enforced by
+  `StaleAssetTest`), family-accent frames, fade-in labels on first light
 - Ability deny cue: `client/AbilityDenyHandler` watches the Origins primary-active key and
   pulses the HUD red via `RacialCooldownOverlay.triggerDenyPulse` (cooldown-only; mana/stamina
   failures are not client-visible)
+- Badge pilot: `fire_drake/dragonfire_breath.json` carries an `origins:badge` keybind hint —
+  verify in a launcher before batching badges to all actives via `generate_races.py`
 
 ## VFX Density Guideline
 Tier every ability's particle count so VFX grammar stays consistent:

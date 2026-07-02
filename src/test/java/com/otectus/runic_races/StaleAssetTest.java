@@ -98,6 +98,46 @@ class StaleAssetTest {
     }
 
     @Test
+    void everyOverlayTextureIsReferencedByTheScreenCueRenderer() throws IOException {
+        String rendererSource = Files.readString(
+                Path.of("src/main/java/com/otectus/runic_races/client/presentation/ScreenCueRenderer.java"));
+        List<String> problems = new ArrayList<>();
+        try (Stream<Path> stream = Files.list(ASSETS.resolve("textures/gui/overlay"))) {
+            for (Path png : stream.sorted().toList()) {
+                if (!rendererSource.contains("textures/gui/overlay/" + png.getFileName())) {
+                    problems.add("Stale overlay texture (no ScreenCueRenderer reference): " + png);
+                }
+            }
+        }
+        assertTrue(problems.isEmpty(), String.join("\n", problems));
+    }
+
+    @Test
+    void runeTexturesMatchRaceStateFlagsExactly() throws IOException {
+        Set<String> expected = new TreeSet<>();
+        for (com.otectus.runic_races.common.state.RaceStateFlags flag :
+                com.otectus.runic_races.common.state.RaceStateFlags.values()) {
+            expected.add(flag.name().toLowerCase(java.util.Locale.ROOT) + ".png");
+        }
+        Set<String> onDisk = new TreeSet<>();
+        try (Stream<Path> stream = Files.list(ASSETS.resolve("textures/gui/rune"))) {
+            stream.sorted().forEach(p -> onDisk.add(p.getFileName().toString()));
+        }
+        List<String> problems = new ArrayList<>();
+        for (String name : expected) {
+            if (!onDisk.contains(name)) {
+                problems.add("Missing rune texture for flag: " + name + " (run tools/generate_state_runes.py?)");
+            }
+        }
+        for (String name : onDisk) {
+            if (!expected.contains(name)) {
+                problems.add("Stale rune texture (no RaceStateFlags constant): " + name);
+            }
+        }
+        assertTrue(problems.isEmpty(), String.join("\n", problems));
+    }
+
+    @Test
     void everyPowersDirectoryBelongsToARace() throws IOException {
         Set<String> races = RaceRegistry.allRaceNames();
         List<String> problems = new ArrayList<>();
