@@ -72,5 +72,11 @@
         }
       ]
     }
-  }
+  },
+  "badges": [
+    {
+      "sprite": "origins:textures/gui/badge/active.png",
+      "text": "power.runic_races.fire_drake.dragonfire_breath.badge"
+    }
+  ]
 }

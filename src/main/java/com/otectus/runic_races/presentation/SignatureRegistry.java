@@ -203,7 +203,9 @@ public final class SignatureRegistry {
                 List.of(new SfxSpec(SoundEvents.ENDER_DRAGON_GROWL, 0.9f, 1.1f),
                         new SfxSpec(ModSounds.BREATH_WATER, 0.7f, 1.0f)),
                 List.of(new VfxSpec(ParticleTypes.BUBBLE, 10, 0.8, 0.3, 0.8, 0.2),
-                        new VfxSpec(ParticleTypes.SPLASH, 5, 0.6, 0.3, 0.6, 0.1)),
+                        new VfxSpec(ParticleTypes.SPLASH, 5, 0.6, 0.3, 0.6, 0.1),
+                        // Tidal teal accent — sea_serpen's palette color, matching its HUD tint.
+                        new VfxSpec(RaceColors.TIDAL_TEAL, 5, 0.7, 0.3, 0.7, 0.05)),
                 null, 0, Intensity.MAJOR));
 
         ENTRIES.put(SignatureKey.TERRA_DRAKE_BREATH, new SignatureEntry(

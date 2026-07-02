@@ -182,8 +182,10 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
         return switch (element) {
             // Drifting ember flakes make fire breath read as dragonfire, not a campfire.
             case FIRE -> ModParticles.EMBER_SCALE.get();
-            case FROST -> ParticleTypes.ITEM_SNOWBALL;
-            case WATER -> ParticleTypes.SPLASH;
+            // Crystalline rime motes give frost breath a glitter the snowball item lacked.
+            case FROST -> ModParticles.FROST_MOTE.get();
+            // Rising bubble columns read as churning tide instead of flat splashes.
+            case WATER -> ParticleTypes.BUBBLE_COLUMN_UP;
             case EARTH -> ParticleTypes.CRIT;
             case SHOCK -> ParticleTypes.CRIT;
             case WIND -> ParticleTypes.POOF;

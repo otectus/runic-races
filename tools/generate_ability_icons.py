@@ -840,6 +840,69 @@ def validate():
     return errors
 
 
+def scale2x(img):
+    """EPX/Scale2x: doubles resolution while smoothing staircase diagonals
+    without blurring — pixel-art-preserving upscale to 32x32."""
+    w, h = img.size
+    src = img.load()
+    out = Image.new("RGBA", (w * 2, h * 2), (0, 0, 0, 0))
+    dst = out.load()
+
+    def at(x, y):
+        if 0 <= x < w and 0 <= y < h:
+            return src[x, y]
+        return (0, 0, 0, 0)
+
+    for y in range(h):
+        for x in range(w):
+            p = at(x, y)
+            a = at(x, y - 1)
+            b = at(x + 1, y)
+            c = at(x - 1, y)
+            d = at(x, y + 1)
+            e1 = c if (c == a and c != d and a != b) else p
+            e2 = b if (a == b and a != c and b != d) else p
+            e3 = c if (d == c and d != b and c != a) else p
+            e4 = b if (b == d and b != a and d != c) else p
+            dst[x * 2, y * 2] = e1
+            dst[x * 2 + 1, y * 2] = e2
+            dst[x * 2, y * 2 + 1] = e3
+            dst[x * 2 + 1, y * 2 + 1] = e4
+    return out
+
+
+def shade(img):
+    """Depth pass: vertical luminance gradient (+8% top, -8% bottom) plus a 1px
+    top-left inner highlight / bottom-right inner shade on opaque regions."""
+    w, h = img.size
+    px = img.load()
+
+    def opaque(x, y):
+        return 0 <= x < w and 0 <= y < h and px[x, y][3] > 0
+
+    for y in range(h):
+        f = 1.08 - 0.16 * (y / (h - 1))
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a == 0:
+                continue
+            px[x, y] = (min(255, int(r * f)), min(255, int(g * f)), min(255, int(b * f)), a)
+
+    rims = []
+    for y in range(h):
+        for x in range(w):
+            if px[x, y][3] == 0:
+                continue
+            if not opaque(x - 1, y) or not opaque(x, y - 1):
+                rims.append((x, y, 1.18))
+            elif not opaque(x + 1, y) or not opaque(x, y + 1):
+                rims.append((x, y, 0.85))
+    for x, y, f in rims:
+        r, g, b, a = px[x, y]
+        px[x, y] = (min(255, int(r * f)), min(255, int(g * f)), min(255, int(b * f)), a)
+    return img
+
+
 def main():
     errs = validate()
     if errs:
@@ -858,11 +921,14 @@ def main():
         for y, row in enumerate(rows):
             for x, ch in enumerate(row):
                 px[x, y] = PALETTE[ch]
+        # 32x32 polish: Scale2x diagonal smoothing + gradient/rim shading.
+        # (RacialCooldownOverlay blits with explicit source dims, still 16px on HUD.)
+        img = shade(scale2x(img))
         dest = os.path.join(OUT, stem + ".png")
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         img.save(dest)
 
-    print("Wrote %d icons (0 missing)" % len(ICONS))
+    print("Wrote %d icons (0 missing, 32x32)" % len(ICONS))
 
 
 if __name__ == "__main__":

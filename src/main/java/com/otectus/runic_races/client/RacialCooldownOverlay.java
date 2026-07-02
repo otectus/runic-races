@@ -195,7 +195,8 @@ public class RacialCooldownOverlay implements IGuiOverlay {
         int iy = y + FRAME;
         RenderSystem.enableBlend();
         if (hasTexture(ability.texture())) {
-            graphics.blit(ability.texture(), ix, iy, 0, 0, ICON, ICON, ICON, ICON);
+            // Icons are authored at 32x32 (Scale2x-polished); blit scales them into the 16px slot.
+            graphics.blit(ability.texture(), ix, iy, ICON, ICON, 0f, 0f, 32, 32, 32, 32);
         } else {
             graphics.renderItem(ability.icon(), ix, iy); // fallback: vanilla item stand-in
         }

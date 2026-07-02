@@ -24,19 +24,37 @@ import java.util.List;
  * State is read from {@link ClientRaceState}, pushed by the server whenever
  * a flag changes. This overlay does not query Origins directly.
  *
- * Runes are procedurally drawn (colored 10×10 squares + single-letter glyphs)
- * so no texture asset is needed yet; a future rune atlas can drop in without
- * changing the layout logic.
+ * Runes are 16×16 white-on-transparent glyphs from {@code textures/gui/rune/}
+ * (tools/generate_state_runes.py), tinted with each rune's semantic color over
+ * a dark backing framed in the player's family accent. When a rune first
+ * lights, its name fades in as a label above the row for a few seconds
+ * (mouse-captured HUDs can't hover-tooltip), gated by {@code stateRunePulse}.
  */
 public class StateRuneOverlay implements IGuiOverlay {
 
-    private static final int RUNE_SIZE = 10;
+    private static final int RUNE_SIZE = 12;
     private static final int RUNE_GAP = 2;
 
     // Rune-pulse animation: brief grow-and-shrink when a flag first turns on.
     private static final int PULSE_TICKS = 6;
     private static final float PULSE_MAX_SCALE = 0.4f;
     private static final long PULSE_SENTINEL = Long.MIN_VALUE;
+
+    // Fade-in/out label shown when a rune first lights.
+    private static final int LABEL_TICKS = 50;
+    private static final int LABEL_FADE_IN = 5;
+    private static final int LABEL_FADE_OUT = 12;
+
+    private static final java.util.Map<RaceStateFlags, net.minecraft.resources.ResourceLocation> RUNE_TEXTURES =
+            new java.util.EnumMap<>(RaceStateFlags.class);
+
+    static {
+        for (RaceStateFlags flag : RaceStateFlags.values()) {
+            RUNE_TEXTURES.put(flag, new net.minecraft.resources.ResourceLocation(
+                    com.otectus.runic_races.RunicRacesMod.MOD_ID,
+                    "textures/gui/rune/" + flag.name().toLowerCase(java.util.Locale.ROOT) + ".png"));
+        }
+    }
 
     private int lastFlags = 0;
     private final long[] pulseStart = new long[RaceStateFlags.values().length];
@@ -72,7 +90,10 @@ public class StateRuneOverlay implements IGuiOverlay {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         if (player == null || player.isSpectator() || mc.options.hideGui) return;
-        if (RaceHelper.getRaceName(player).isEmpty()) return;
+        String raceName = RaceHelper.getRaceName(player).orElse(null);
+        if (raceName == null) return;
+        com.otectus.runic_races.presentation.FamilyAccent accent =
+                com.otectus.runic_races.presentation.FamilyAccent.forFamily(RaceHelper.getRaceFamily(raceName));
 
         int flags = ClientRaceState.get();
 
@@ -131,13 +152,6 @@ public class StateRuneOverlay implements IGuiOverlay {
         Font font = mc.font;
         int cursorX = 0;
         for (RuneDef def : active) {
-            // The adaptation rune shows the live stack count in place of its "A" glyph.
-            String glyph = def.glyph();
-            if (def.flag() == RaceStateFlags.ADAPTATION_ACTIVE) {
-                int stacks = ClientRaceState.getAdaptationStacks();
-                if (stacks > 0) glyph = Integer.toString(stacks);
-            }
-
             float pulse = pulseScale(def.flag(), gameTime, partialTick);
             if (pulse != 1.0f) {
                 float cx = cursorX + RUNE_SIZE / 2.0f;
@@ -146,16 +160,57 @@ public class StateRuneOverlay implements IGuiOverlay {
                 graphics.pose().translate(cx, cy, 0);
                 graphics.pose().scale(pulse, pulse, 1.0f);
                 graphics.pose().translate(-cx, -cy, 0);
-                drawRune(graphics, font, cursorX, 0, def, alphaByte, glyph);
+                drawRune(graphics, font, cursorX, 0, def, alphaByte, accent);
                 graphics.pose().popPose();
             } else {
-                drawRune(graphics, font, cursorX, 0, def, alphaByte, glyph);
+                drawRune(graphics, font, cursorX, 0, def, alphaByte, accent);
             }
             cursorX += RUNE_SIZE + RUNE_GAP;
         }
 
+        // Fade-in/out label naming the most recently lit rune (HUD can't hover-tooltip).
+        if (RRClientConfig.STATE_RUNE_PULSE.get()) {
+            drawFreshRuneLabel(graphics, font, active, totalWidth, gameTime, partialTick);
+        }
+
         graphics.pose().popPose();
         RenderSystem.disableBlend();
+    }
+
+    /** Draws the tooltip text of the most recently pulsed active rune above the row. */
+    private void drawFreshRuneLabel(GuiGraphics graphics, Font font, List<RuneDef> active,
+                                    int rowWidth, long gameTime, float partialTick) {
+        RuneDef freshest = null;
+        long freshestStart = Long.MIN_VALUE;
+        for (RuneDef def : active) {
+            long start = pulseStart[def.flag().ordinal()];
+            if (start == PULSE_SENTINEL) continue;
+            float age = (gameTime - start) + partialTick;
+            if (age >= 0 && age < LABEL_TICKS && start > freshestStart) {
+                freshest = def;
+                freshestStart = start;
+            }
+        }
+        if (freshest == null) return;
+
+        float age = (gameTime - freshestStart) + partialTick;
+        float alpha;
+        if (age < LABEL_FADE_IN) {
+            alpha = age / LABEL_FADE_IN;
+        } else if (age > LABEL_TICKS - LABEL_FADE_OUT) {
+            alpha = (LABEL_TICKS - age) / LABEL_FADE_OUT;
+        } else {
+            alpha = 1.0f;
+        }
+        if (alpha < 0.1f) return; // sub-4 alpha renders opaque; skip the tail
+
+        net.minecraft.network.chat.Component label =
+                net.minecraft.network.chat.Component.translatable(freshest.tooltipKey());
+        int labelWidth = font.width(label);
+        int lx = rowWidth - labelWidth; // right-align with the row
+        int ly = -(font.lineHeight + 2);
+        int color = ((int) (alpha * 255) << 24) | (freshest.color() & 0x00FFFFFF);
+        graphics.drawString(font, label, lx, ly, color, true);
     }
 
     /** Returns the scale factor for a rune mid-pulse (1.0 when not pulsing). */
@@ -167,23 +222,36 @@ public class StateRuneOverlay implements IGuiOverlay {
         return 1.0f + PULSE_MAX_SCALE * (float) Math.sin((t / PULSE_TICKS) * Math.PI);
     }
 
-    private void drawRune(GuiGraphics graphics, Font font, int x, int y, RuneDef def, int alpha, String glyph) {
-        int fillColor = (alpha / 2 << 24) | (def.color() & 0x00FFFFFF);
-        int borderColor = (alpha << 24) | (def.color() & 0x00FFFFFF);
+    private void drawRune(GuiGraphics graphics, Font font, int x, int y, RuneDef def, int alpha,
+                          com.otectus.runic_races.presentation.FamilyAccent accent) {
+        // Dark backing so the tinted glyph reads against any scene.
+        int backing = ((alpha * 2 / 3) << 24);
+        graphics.fill(x + 1, y + 1, x + RUNE_SIZE - 1, y + RUNE_SIZE - 1, backing);
 
-        // Body
-        graphics.fill(x + 1, y + 1, x + RUNE_SIZE - 1, y + RUNE_SIZE - 1, fillColor);
-        // Border
+        // Family-accent frame ties the runes to the rest of the racial HUD.
+        int borderColor = accent.withAlpha(alpha);
         graphics.fill(x, y, x + RUNE_SIZE, y + 1, borderColor);
         graphics.fill(x, y + RUNE_SIZE - 1, x + RUNE_SIZE, y + RUNE_SIZE, borderColor);
         graphics.fill(x, y, x + 1, y + RUNE_SIZE, borderColor);
         graphics.fill(x + RUNE_SIZE - 1, y, x + RUNE_SIZE, y + RUNE_SIZE, borderColor);
 
-        // Glyph letter (or adaptation stack count) — centered horizontally, slightly high
-        int glyphWidth = font.width(glyph);
-        int gx = x + (RUNE_SIZE - glyphWidth) / 2;
-        int gy = y + 1;
-        int glyphColor = (alpha << 24) | 0x000000; // dark on colored background
-        graphics.drawString(font, glyph, gx, gy, glyphColor, false);
+        // Tinted 16x16 glyph scaled into the 10px interior.
+        int rgb = def.color();
+        RenderSystem.setShaderColor(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f,
+                (rgb & 0xFF) / 255f, alpha / 255f);
+        graphics.blit(RUNE_TEXTURES.get(def.flag()), x + 1, y + 1,
+                RUNE_SIZE - 2, RUNE_SIZE - 2, 0f, 0f, 16, 16, 16, 16);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+
+        // The adaptation rune overlays the live stack count on its diamond glyph.
+        if (def.flag() == RaceStateFlags.ADAPTATION_ACTIVE) {
+            int stacks = ClientRaceState.getAdaptationStacks();
+            if (stacks > 0) {
+                String count = Integer.toString(stacks);
+                int gx = x + (RUNE_SIZE - font.width(count)) / 2 + 1;
+                int gy = y + 2;
+                graphics.drawString(font, count, gx, gy, (alpha << 24) | 0xFFFFFF, false);
+            }
+        }
     }
 }

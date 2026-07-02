@@ -35,6 +35,8 @@ public class RRClientConfig {
     public static final ForgeConfigSpec.BooleanValue WINGS_ON_OTHER_PLAYERS;
     public static final ForgeConfigSpec.BooleanValue WINGS_REDUCED_MOTION;
     public static final ForgeConfigSpec.BooleanValue WINGS_GLIDE_TRAILS;
+    public static final ForgeConfigSpec.BooleanValue SIMPLE_CUES;
+    public static final ForgeConfigSpec.BooleanValue FOV_EFFECTS_ENABLED;
     public static final ForgeConfigSpec.BooleanValue CAMERA_SHAKE_ENABLED;
     public static final ForgeConfigSpec.DoubleValue SCREEN_CUE_INTENSITY;
     public static final ForgeConfigSpec.BooleanValue HEAVY_EFFECTS_ENABLED;
@@ -126,6 +128,14 @@ public class RRClientConfig {
                 .comment("Render the extra client-side flourish on mythic moments (revival spirals, dense signature bursts).",
                         "Core gameplay-readable VFX always render; this only gates the theatrical extras.")
                 .define("heavyEffects", true);
+        SIMPLE_CUES = builder
+                .comment("Draw screen cues as flat color rectangles instead of the textured radial",
+                        "vignettes / rime / heat-haze overlays. Accessibility / low-distraction option.")
+                .define("simpleCues", false);
+        FOV_EFFECTS_ENABLED = builder
+                .comment("Allow signature moments to nudge the field of view (breath push-out, impact punch-in).",
+                        "Total FOV change is clamped to +/-6% and also scales with screenCueIntensity.")
+                .define("fovEffects", true);
         builder.pop();
 
         SPEC = builder.build();
