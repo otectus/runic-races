@@ -61,10 +61,18 @@ public final class NotificationRegistry {
         register("volt_drake", RaceStateFlags.OPEN_SKY, "volt_drake.open_sky", "yellow");
 
         // ----- Submerged weaknesses (SUBMERGED_WEAK bit) -----
-        // DRY_SLUGGISH (Sea Serpen on land) stays rune-only: it would be lit
-        // near-constantly, and a banner every time they leave water is pure churn.
+        // DRY_SLUGGISH (Sea Serpen on land, Nymph out of rain) stays rune-only: it would
+        // be lit near-constantly, and a banner every time they leave water is pure churn.
         register("feline",     RaceStateFlags.SUBMERGED_WEAK, "feline.submerged",     "aqua");
         register("volt_drake", RaceStateFlags.SUBMERGED_WEAK, "volt_drake.submerged", "yellow");
+        register("iron_one",   RaceStateFlags.SUBMERGED_WEAK, "iron_one.submerged",   "gray");
+        register("sky_one",    RaceStateFlags.SUBMERGED_WEAK, "sky_one.submerged",    "white");
+
+        // ----- Canine ravenous hunger (RAVENOUS bit) -----
+        register("canine", RaceStateFlags.RAVENOUS, "canine.ravenous", "green");
+
+        // ----- Faerie cold iron (COLD_IRON_GRIP bit) -----
+        register("faerie", RaceStateFlags.COLD_IRON_GRIP, "faerie.cold_iron", "light_purple");
     }
 
     /**

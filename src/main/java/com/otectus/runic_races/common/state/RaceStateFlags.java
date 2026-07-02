@@ -30,8 +30,12 @@ public enum RaceStateFlags {
     OPEN_SKY(1 << 9),
     /** Player is submerged and taking amplified damage (Feline hydrophobia, Volt Drake wet scales). */
     SUBMERGED_WEAK(1 << 10),
-    /** Player is out of water and sluggish for it (Sea Serpen landbound coils). */
-    DRY_SLUGGISH(1 << 11);
+    /** Player is out of water and sluggish for it (Sea Serpen landbound coils, Nymph bound-to-water). */
+    DRY_SLUGGISH(1 << 11),
+    /** Canine hunger has dropped low — the Ravenous weakness is biting. */
+    RAVENOUS(1 << 12),
+    /** Faerie is gripping cold iron (iron tool/weapon in hand). */
+    COLD_IRON_GRIP(1 << 13);
 
     private final int mask;
 

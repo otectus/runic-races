@@ -51,6 +51,10 @@ NOTIF = {
     "volt_drake.open_sky":  ("Under the open sky, the storm answers your call.", "Cut off from the sky, your power dims."),
     "feline.submerged":     ("Water soaks your fur — every blow lands harder.", "You shake yourself dry."),
     "volt_drake.submerged": ("Water grounds your storm — your scales spark and sputter.", "Dry again, the current rebuilds."),
+    "iron_one.submerged":   ("You sink like the mountain you were carved from.", "Solid ground bears you up again."),
+    "sky_one.submerged":    ("Thin-air lungs were never meant for water.", "You gasp the open air."),
+    "canine.ravenous":      ("Your stomach knots — the hunt cannot wait.", "The hunger quiets, for now."),
+    "faerie.cold_iron":     ("Cold iron sears your fae skin!", "You cast the iron aside."),
 }
 for topic, (start, stop) in NOTIF.items():
     merged["message.runic_races.%s.start" % topic] = start

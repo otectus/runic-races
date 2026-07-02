@@ -123,6 +123,12 @@ public class RacialEventHandler {
         String race = RaceHelper.getRaceName(player).orElse(null);
         if (race == null) return;
 
+        // === Fragility procs: make "you are the squishy one" audible/visible (Minor tier) ===
+        // One shared 3-second debounce so a mob combo doesn't spam the cue.
+        if (event.getAmount() > 0.0f && player.level() instanceof ServerLevel level) {
+            fireFragilityProc(player, level, race, event);
+        }
+
         // === FELINE: NINE LIVES ===
         if ("feline".equals(race)) {
             // Don't burn the 10-minute charge on deaths it can't prevent (void, /kill):
@@ -147,6 +153,85 @@ public class RacialEventHandler {
                     RunicRacesMod.debug("[RunicRaces] Nine Lives triggered for {}", player.getName().getString());
                 }
             }
+        }
+    }
+
+    private static final String FRAGILITY_CUE_TICK = "runic_races:fragility_cue_tick";
+
+    /**
+     * Victim-side weakness cues (Minor tier, ≤8 particles). Each fragile race gets its own
+     * "that hurt more than it should" audio-visual language when its weakness actually bites.
+     */
+    private void fireFragilityProc(ServerPlayer player, ServerLevel level, String race, LivingDamageEvent event) {
+        long now = level.getGameTime();
+        CompoundTag data = player.getPersistentData();
+        if (now - data.getLong(FRAGILITY_CUE_TICK) < 60) return; // shared 3s debounce
+
+        float amount = event.getAmount();
+        boolean fall = event.getSource().is(DamageTypeTags.IS_FALL);
+        boolean magic = event.getSource().is(net.minecraft.world.damagesource.DamageTypes.MAGIC)
+                || event.getSource().is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC);
+        double x = player.getX();
+        double y = player.getY() + 1.0;
+        double z = player.getZ();
+
+        boolean fired = true;
+        switch (race) {
+            case "high_elf" -> {
+                // Fragile Grace: a heavy hit rings like struck crystal.
+                if (amount < 5.0f) { fired = false; break; }
+                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.AMETHYST_CLUSTER_BREAK,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.5f);
+                NetworkHandler.sendToPlayer(player, new S2CScreenCuePacket(CueType.VIGNETTE_PULSE, 8));
+            }
+            case "arachnid" -> {
+                // Fragile Carapace: chitin cracks under a heavy blow.
+                if (amount < 5.0f) { fired = false; break; }
+                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.TURTLE_EGG_CRACK,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, 0.6f);
+                level.sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT, x, y, z, 6, 0.3, 0.3, 0.3, 0.1);
+            }
+            case "skeleton" -> {
+                // Brittle Bones: chips fly on falls and heavy hits.
+                if (!fall && amount < 5.0f) { fired = false; break; }
+                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.BONE_BLOCK_BREAK,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.2f);
+                level.sendParticles(com.otectus.runic_races.registry.ModParticles.BONE_CHIP.get(),
+                        x, y, z, 6, 0.3, 0.3, 0.3, 0.08);
+            }
+            case "avian" -> {
+                // Hollow Bones: feathers burst loose when the landing goes wrong.
+                if (!fall) { fired = false; break; }
+                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.BONE_BLOCK_BREAK,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.35f, 1.5f);
+                level.sendParticles(com.otectus.runic_races.registry.ModParticles.FEATHER_DOWN.get(),
+                        x, y, z, 8, 0.4, 0.4, 0.4, 0.05);
+            }
+            case "sprite" -> {
+                // Fragile Essence: the gossamer form scatters sparks and cries out.
+                if (amount < 4.0f) { fired = false; break; }
+                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.BAT_HURT,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, 1.6f);
+                level.sendParticles(com.otectus.runic_races.registry.ModParticles.FAE_SPARKLE.get(),
+                        x, y, z, 6, 0.4, 0.4, 0.4, 0.1);
+            }
+            case "celeron" -> {
+                // Featherweight Frame: knocked around hard enough to shake feathers loose.
+                if (amount < 4.0f) { fired = false; break; }
+                level.sendParticles(com.otectus.runic_races.registry.ModParticles.FEATHER_DOWN.get(),
+                        x, y, z, 5, 0.4, 0.4, 0.4, 0.06);
+            }
+            case "demon" -> {
+                // Holy Vulnerability: sanctified magic flares gold and tolls a bell.
+                if (!magic) { fired = false; break; }
+                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.BELL_BLOCK,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, 2.0f);
+                level.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD, x, y, z, 6, 0.3, 0.4, 0.3, 0.05);
+            }
+            default -> fired = false;
+        }
+        if (fired) {
+            data.putLong(FRAGILITY_CUE_TICK, now);
         }
     }
 
@@ -419,7 +504,19 @@ public class RacialEventHandler {
             boolean burning = player.level().isDay()
                     && player.level().canSeeSky(player.blockPosition())
                     && !player.isInWaterOrRain();
+            boolean wasBurning = RaceStateFlags.SUNLIGHT_BURNING.isSet(RaceStateTracker.get(player));
             RaceStateTracker.setFlag(player, RaceStateFlags.SUNLIGHT_BURNING, burning);
+            // Grave-touched flesh sizzles the moment the sun finds it (dark_elf/reaper share
+            // the zombie's audio language at lower volume — deep_one/skeleton are dazzled, not burned).
+            if (burning && !wasBurning && ("dark_elf".equals(race) || "reaper".equals(race))
+                    && player.level() instanceof ServerLevel level) {
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.2f, 1.4f);
+                level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE,
+                        player.getX(), player.getY() + 1.2, player.getZ(),
+                        4, 0.2, 0.3, 0.2, 0.02);
+            }
         }
 
         // --- Sky One / Wind Wyrm claustrophobia (tight-space) ---
@@ -452,15 +549,64 @@ public class RacialEventHandler {
         }
 
         // --- Submerged-weakness readout (mirrors origins:submerged_in weakness conditions) ---
-        if ("feline".equals(race) || "volt_drake".equals(race)) {
+        // iron_one/sky_one sink like stones and drown fast; feline/volt_drake take amplified damage.
+        if ("feline".equals(race) || "volt_drake".equals(race)
+                || "iron_one".equals(race) || "sky_one".equals(race)) {
             boolean submerged = player.isEyeInFluid(net.minecraft.tags.FluidTags.WATER);
+            boolean wasSubmerged = RaceStateFlags.SUBMERGED_WEAK.isSet(RaceStateTracker.get(player));
             RaceStateTracker.setFlag(player, RaceStateFlags.SUBMERGED_WEAK, submerged);
+            // Storm scales short-circuit the moment they go under.
+            if ("volt_drake".equals(race) && submerged && !wasSubmerged
+                    && player.level() instanceof ServerLevel level) {
+                level.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
+                        player.getX(), player.getY() + 1.0, player.getZ(),
+                        8, 0.4, 0.5, 0.4, 0.1);
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.8f);
+            }
         }
 
-        // --- Sea Serpen dry-land sluggishness readout (mirrors landbound_coils) ---
+        // --- Dry-land sluggishness readout (Sea Serpen landbound coils, Nymph bound-to-water) ---
         if ("sea_serpen".equals(race)) {
             boolean dry = !player.isEyeInFluid(net.minecraft.tags.FluidTags.WATER);
             RaceStateTracker.setFlag(player, RaceStateFlags.DRY_SLUGGISH, dry);
+        }
+        if ("nymph".equals(race)) {
+            RaceStateTracker.setFlag(player, RaceStateFlags.DRY_SLUGGISH, !player.isInWaterOrRain());
+        }
+
+        // --- Canine ravenous hunger readout ---
+        if ("canine".equals(race)) {
+            boolean starving = player.getFoodData().getFoodLevel() < 6;
+            RaceStateTracker.setFlag(player, RaceStateFlags.RAVENOUS, starving);
+            // Stomach growl about every 30 seconds while running on empty.
+            if (starving && now % 600 < 10 && player.level() instanceof ServerLevel level) {
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        net.minecraft.sounds.SoundEvents.WOLF_GROWL,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.25f, 0.6f);
+            }
+        }
+
+        // --- Faerie cold-iron grip readout (iron tool/weapon in either hand) ---
+        if ("faerie".equals(race)) {
+            boolean gripping = isColdIron(player.getMainHandItem()) || isColdIron(player.getOffhandItem());
+            boolean wasGripping = RaceStateFlags.COLD_IRON_GRIP.isSet(RaceStateTracker.get(player));
+            RaceStateTracker.setFlag(player, RaceStateFlags.COLD_IRON_GRIP, gripping);
+            if (gripping && !wasGripping && player.level() instanceof ServerLevel level) {
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        net.minecraft.sounds.SoundEvents.LAVA_EXTINGUISH,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 0.25f, 1.7f);
+                level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE,
+                        player.getX(), player.getY() + 1.0, player.getZ(),
+                        3, 0.2, 0.2, 0.2, 0.02);
+            }
+        }
+
+        // --- Blood Elf: the price of power — heartbeat cue while critically wounded ---
+        if ("blood_elf".equals(race) && player.getHealth() / player.getMaxHealth() < 0.2f
+                && now % 100 < 10) {
+            NetworkHandler.sendToPlayer(player, new S2CScreenCuePacket(CueType.HEARTBEAT_FLASH, 15));
         }
 
         // --- Primian Adaptation stacks: biome change bump + timed decay ---
@@ -617,6 +763,13 @@ public class RacialEventHandler {
         return entity instanceof Mob mob && mob.getTarget() != null;
     }
 
+    /** Faerie cold-iron heuristic: any item whose registry path names iron (sword, tools, armor, ingot). */
+    private static boolean isColdIron(net.minecraft.world.item.ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        ResourceLocation id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(stack.getItem());
+        return id != null && id.getPath().contains("iron");
+    }
+
     // ==================== KNOCKBACK & MELEE RIDERS ====================
 
     /**
@@ -672,9 +825,16 @@ public class RacialEventHandler {
             boolean wounded = attacker.getHealth() < attacker.getMaxHealth();
             attacker.heal(event.getAmount() * 0.2f);
             if (wounded && attacker.level() instanceof ServerLevel level) {
-                level.sendParticles(com.otectus.runic_races.presentation.RaceColors.CRIMSON_BLOOD,
-                        attacker.getX(), attacker.getY(1.0), attacker.getZ(),
-                        4, 0.3, 0.4, 0.3, 0.02);
+                // Visible siphon: crimson droplets on a line from the victim into the elf.
+                Vec3 from = new Vec3(target.getX(), target.getY(0.6), target.getZ());
+                Vec3 to = new Vec3(attacker.getX(), attacker.getY(0.8), attacker.getZ());
+                Vec3 dir = to.subtract(from);
+                for (int i = 0; i < 5; i++) {
+                    Vec3 p = from.add(dir.scale(i / 4.0));
+                    level.sendParticles(com.otectus.runic_races.presentation.RaceColors.CRIMSON_BLOOD,
+                            p.x, p.y, p.z, 0,
+                            dir.x, dir.y, dir.z, 0.05);
+                }
                 level.sendParticles(net.minecraft.core.particles.ParticleTypes.DAMAGE_INDICATOR,
                         target.getX(), target.getY(0.5), target.getZ(),
                         3, 0.2, 0.2, 0.2, 0.1);
