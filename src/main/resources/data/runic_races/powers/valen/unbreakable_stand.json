@@ -87,45 +87,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.valen.unbreakable_stand",
-          "args": [],
-          "color": "gold",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.iron_golem.attack",
-          "volume": 0.6,
-          "pitch": 0.9
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:block.anvil.land",
-          "volume": 0.4,
-          "pitch": 1.2
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:crit",
-          "count": 30,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:enchanted_hit",
-          "count": 12,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "VALEN_STAND"
         },
         {
           "type": "origins:change_resource",

@@ -80,45 +80,8 @@
           ]
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.dryad.verdant_bloom",
-          "args": [],
-          "color": "green",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:block.azalea.place",
-          "volume": 0.7,
-          "pitch": 1.0
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:block.moss.place",
-          "volume": 0.5,
-          "pitch": 0.8
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:happy_villager",
-          "count": 40,
-          "speed": 0.2,
-          "spread": {
-            "x": 1.5,
-            "y": 1.0,
-            "z": 1.5
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:composter",
-          "count": 15,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "DRYAD_BLOOM"
         },
         {
           "type": "origins:change_resource",

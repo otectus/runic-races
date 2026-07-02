@@ -76,45 +76,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.frost_one.glacial_resolve",
-          "args": [],
-          "color": "aqua",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:block.beacon.activate",
-          "volume": 0.5,
-          "pitch": 0.7
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:block.powder_snow.break",
-          "volume": 0.6,
-          "pitch": 0.9
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:snowflake",
-          "count": 35,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.8,
-            "y": 1.0,
-            "z": 0.8
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:item_snowball",
-          "count": 10,
-          "speed": 0.1,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "FROST_ONE_RESOLVE"
         },
         {
           "type": "origins:change_resource",

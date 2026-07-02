@@ -83,45 +83,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.sprite.phase_shift",
-          "args": [],
-          "color": "light_purple",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.allay.ambient_with_item",
-          "volume": 0.6,
-          "pitch": 1.8
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:block.amethyst_block.chime",
-          "volume": 0.4,
-          "pitch": 1.8
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:end_rod",
-          "count": 35,
-          "speed": 0.3,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:firework",
-          "count": 12,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "SPRITE_PHASE"
         },
         {
           "type": "origins:change_resource",

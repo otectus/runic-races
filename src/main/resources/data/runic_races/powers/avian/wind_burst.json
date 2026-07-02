@@ -83,39 +83,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.avian.wind_burst",
-          "args": [],
-          "color": "aqua",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.phantom.flap",
-          "volume": 0.4,
-          "pitch": 1.4
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:cloud",
-          "count": 24,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:poof",
-          "count": 8,
-          "speed": 0.1,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "AVIAN_WIND_BURST"
         },
         {
           "type": "origins:change_resource",

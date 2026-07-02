@@ -80,34 +80,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.arachnid.web_snare",
-          "args": [],
-          "color": "white",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.spider.ambient",
-          "volume": 0.6,
-          "pitch": 1.2
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:block.wool.place",
-          "volume": 0.5,
-          "pitch": 0.8
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:crit",
-          "count": 30,
-          "speed": 0.2,
-          "spread": {
-            "x": 1.5,
-            "y": 0.8,
-            "z": 1.5
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "ARACHNID_WEB_SNARE"
         },
         {
           "type": "origins:change_resource",

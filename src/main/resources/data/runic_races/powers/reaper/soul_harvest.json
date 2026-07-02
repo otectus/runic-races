@@ -85,45 +85,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.reaper.soul_harvest",
-          "args": [],
-          "color": "dark_purple",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:block.bell.use",
-          "volume": 0.6,
-          "pitch": 0.5
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.wither.ambient",
-          "volume": 0.4,
-          "pitch": 1.4
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:soul",
-          "count": 40,
-          "speed": 0.2,
-          "spread": {
-            "x": 1.5,
-            "y": 1.0,
-            "z": 1.5
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:sculk_soul",
-          "count": 15,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "REAPER_HARVEST"
         },
         {
           "type": "origins:change_resource",

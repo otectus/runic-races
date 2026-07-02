@@ -76,45 +76,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.iron_one.shield_wall",
-          "args": [],
-          "color": "gray",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:item.shield.block",
-          "volume": 0.7,
-          "pitch": 0.8
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:block.anvil.place",
-          "volume": 0.4,
-          "pitch": 1.0
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:crit",
-          "count": 30,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:enchanted_hit",
-          "count": 10,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "IRON_ONE_SHIELD_WALL"
         },
         {
           "type": "origins:change_resource",

@@ -80,39 +80,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.serpen.shed_skin",
-          "args": [],
-          "color": "green",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.cat.hiss",
-          "volume": 0.5,
-          "pitch": 0.6
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:item_slime",
-          "count": 22,
-          "speed": 0.1,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:smoke",
-          "count": 10,
-          "speed": 0.1,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "SERPEN_SHED"
         },
         {
           "type": "origins:change_resource",

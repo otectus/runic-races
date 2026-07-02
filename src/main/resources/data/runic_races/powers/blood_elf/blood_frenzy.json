@@ -87,45 +87,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.blood_elf.blood_frenzy",
-          "args": [],
-          "color": "dark_red",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.ravager.roar",
-          "volume": 0.5,
-          "pitch": 1.6
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.warden.heartbeat",
-          "volume": 0.6,
-          "pitch": 1.2
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:damage_indicator",
-          "count": 40,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 1.0,
-            "z": 0.6
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:crimson_spore",
-          "count": 15,
-          "speed": 0.1,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "BLOOD_ELF_FRENZY"
         },
         {
           "type": "origins:change_resource",

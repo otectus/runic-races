@@ -87,39 +87,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.zombie.undying_hunger",
-          "args": [],
-          "color": "dark_green",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.zombie.ambient",
-          "volume": 0.7,
-          "pitch": 0.6
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:sculk_soul",
-          "count": 30,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:crimson_spore",
-          "count": 12,
-          "speed": 0.1,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "ZOMBIE_HUNGER"
         },
         {
           "type": "origins:change_resource",

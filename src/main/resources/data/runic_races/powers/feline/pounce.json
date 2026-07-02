@@ -72,45 +72,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.feline.pounce",
-          "args": [],
-          "color": "gold",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.cat.hiss",
-          "volume": 0.6,
-          "pitch": 1.5
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.player.attack.sweep",
-          "volume": 0.4,
-          "pitch": 1.2
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:crit",
-          "count": 24,
-          "speed": 0.3,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:sweep_attack",
-          "count": 6,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "FELINE_POUNCE"
         },
         {
           "type": "origins:change_resource",

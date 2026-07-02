@@ -231,9 +231,46 @@ def bundle(race, file, name, desc, specs):
     LANG["power.%s.%s.%s.description" % (NS, race, file)] = desc
     return out
 
+# v1.4.0: actives whose presentation moved into SignatureRegistry (Java). For these,
+# present() keeps registering the banner lang string (the registry entry reuses the
+# same message.<ns>.<race>.<file> key) but emits a single signature_presentation
+# action instead of banner/sound/particle JSON. Sounds/parts args are ignored —
+# the authoritative recipe lives in SignatureRegistry.java.
+PRESENT_SIG = {
+    ("primian", "stroke_of_fortune"): "PRIMIAN_FORTUNE",
+    ("celeron", "messengers_dash"): "CELERON_DASH",
+    ("magi", "arcane_overflow"): "MAGI_OVERFLOW",
+    ("valen", "unbreakable_stand"): "VALEN_STAND",
+    ("high_elf", "arcane_reflex"): "HIGH_ELF_REFLEX",
+    ("dark_elf", "shadowmeld"): "DARK_ELF_SHADOWMELD",
+    ("moon_elf", "moonlit_veil"): "MOON_ELF_VEIL",
+    ("blood_elf", "blood_frenzy"): "BLOOD_ELF_FRENZY",
+    ("ice_elf", "frostbind"): "ICE_ELF_FROSTBIND",
+    ("deep_one", "tremorsense"): "DEEP_ONE_TREMOR",
+    ("frost_one", "glacial_resolve"): "FROST_ONE_RESOLVE",
+    ("iron_one", "shield_wall"): "IRON_ONE_SHIELD_WALL",
+    ("sky_one", "mountain_leap"): "SKY_ONE_LEAP",
+    ("arachnid", "web_snare"): "ARACHNID_WEB_SNARE",
+    ("avian", "wind_burst"): "AVIAN_WIND_BURST",
+    ("canine", "howl_of_the_pack"): "CANINE_HOWL",
+    ("feline", "pounce"): "FELINE_POUNCE",
+    ("kitsune", "foxfire_illusion"): "KITSUNE_FOXFIRE",
+    ("serpen", "shed_skin"): "SERPEN_SHED",
+    ("changeling", "mirror_shift"): "CHANGELING_MIRROR",
+    ("dryad", "verdant_bloom"): "DRYAD_BLOOM",
+    ("sprite", "phase_shift"): "SPRITE_PHASE",
+    ("nymph", "sirens_charm"): "NYMPH_CHARM",
+    ("zombie", "undying_hunger"): "ZOMBIE_HUNGER",
+    ("skeleton", "conscript_the_dead"): "SKELETON_CONSCRIPT",
+    ("reaper", "soul_harvest"): "REAPER_HARVEST",
+}
+
 def present(race, file, color, text, sounds=(), parts=()):
     key = "message.%s.%s.%s" % (NS, race, file)
     LANG[key] = text
+    sig_key = PRESENT_SIG.get((race, file))
+    if sig_key:
+        return [signature(sig_key)]
     return [show_banner(key, color)] + list(sounds) + list(parts)
 
 def sig(key):

@@ -76,45 +76,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.ice_elf.frostbind",
-          "args": [],
-          "color": "aqua",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:block.glass.break",
-          "volume": 0.6,
-          "pitch": 0.8
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:block.powder_snow.break",
-          "volume": 0.6,
-          "pitch": 1.2
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "runic_races:frost_mote",
-          "count": 40,
-          "speed": 0.2,
-          "spread": {
-            "x": 2.0,
-            "y": 1.0,
-            "z": 2.0
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:item_snowball",
-          "count": 12,
-          "speed": 0.2,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "ICE_ELF_FROSTBIND"
         },
         {
           "type": "origins:change_resource",

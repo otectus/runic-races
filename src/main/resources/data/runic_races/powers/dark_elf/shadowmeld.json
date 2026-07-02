@@ -76,39 +76,8 @@
           }
         },
         {
-          "type": "runic_races:show_banner",
-          "translation_key": "message.runic_races.dark_elf.shadowmeld",
-          "args": [],
-          "color": "dark_purple",
-          "bold": true
-        },
-        {
-          "type": "origins:play_sound",
-          "sound": "minecraft:entity.illusioner.mirror_move",
-          "volume": 0.6,
-          "pitch": 0.8
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:smoke",
-          "count": 22,
-          "speed": 0.1,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
-        },
-        {
-          "type": "origins:spawn_particles",
-          "particle": "minecraft:squid_ink",
-          "count": 10,
-          "speed": 0.05,
-          "spread": {
-            "x": 0.6,
-            "y": 0.8,
-            "z": 0.6
-          }
+          "type": "runic_races:signature_presentation",
+          "key": "DARK_ELF_SHADOWMELD"
         },
         {
           "type": "origins:change_resource",
