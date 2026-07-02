@@ -34,6 +34,7 @@ public class RRClientConfig {
     public static final ForgeConfigSpec.BooleanValue WINGS_ENABLED;
     public static final ForgeConfigSpec.BooleanValue WINGS_ON_OTHER_PLAYERS;
     public static final ForgeConfigSpec.BooleanValue WINGS_REDUCED_MOTION;
+    public static final ForgeConfigSpec.BooleanValue WINGS_GLIDE_TRAILS;
     public static final ForgeConfigSpec.BooleanValue CAMERA_SHAKE_ENABLED;
     public static final ForgeConfigSpec.DoubleValue SCREEN_CUE_INTENSITY;
     public static final ForgeConfigSpec.BooleanValue HEAVY_EFFECTS_ENABLED;
@@ -108,6 +109,10 @@ public class RRClientConfig {
                 .comment("Reduced motion / accessibility: disables wind buffeting, idle flutter, and walk sway.",
                         "Wings still change pose with player state (fold, glide, flap) but stop micro-animating.")
                 .define("reducedMotion", false);
+        WINGS_GLIDE_TRAILS = builder
+                .comment("Per-race wingtip particle trails while gliding, plus a landing dust puff.",
+                        "Density follows ambient.particleDensity.")
+                .define("glideTrails", true);
         builder.pop();
 
         builder.comment("Screen effects and accessibility").push("effects");
