@@ -54,7 +54,7 @@ This is a design-side reference. The power JSON under
 | Dryad | Verdant Bloom (heal/root) | poison immune, forest, sun-heal | 3× fire damage |
 | Sprite | Phase Shift (blink) | wings, +20% spd, +10% atk spd | −3♥, 1.5× knockback taken |
 | Nymph | Siren's Charm (pacify) | water breathing, +10% magic, water-biome home | −1.5♥, +20% fire, hot-biome slow |
-| Faerie | Faerie Bargain (glamour) | wings, +15% magic, +20% spd, night vision | −2.5♥, +20% physical, 1.4× knockback taken |
+| Faerie | Faerie Bargain (glamour) | wings, +15% magic, +15% spd, night vision | −2.5♥, +20% physical, 1.4× knockback taken |
 
 ### Undead — purple · undeath immunities, night power
 | Race | Active | Passive | Weakness |
