@@ -97,7 +97,7 @@ public class RacialEventHandler {
     private static final String VALEN_SHOVE_LATCH = "runic_races:valen_shove_latch";
 
     // Cooldowns in ticks
-    private static final int NINE_LIVES_CD_TICKS = 12000; // 10 minutes
+    private static final int NINE_LIVES_CD_TICKS = 18000; // 15 minutes
     private static final int REAPER_REVIVAL_CD_TICKS = 36000; // 30 minutes
     private static final ResourceLocation NINE_LIVES_RESOURCE = new ResourceLocation(RunicRacesMod.MOD_ID, "feline/nine_lives_cooldown_timer");
 
@@ -130,7 +130,7 @@ public class RacialEventHandler {
 
         // === FELINE: NINE LIVES ===
         if ("feline".equals(race)) {
-            // Don't burn the 10-minute charge on deaths it can't prevent (void, /kill):
+            // Don't burn the 15-minute charge on deaths it can't prevent (void, /kill):
             // Resistance V doesn't stop invulnerability-bypassing damage, so the player
             // would spend the charge and die a second later anyway.
             if (event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return;
@@ -146,6 +146,9 @@ public class RacialEventHandler {
                     player.setHealth(2.0f); // 1 heart
                     player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 4)); // Resistance V, 2s
                     player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 1)); // Regen II, 3s
+                    // A spent life leaves you shaken: brief vulnerability window so a
+                    // cheated death is a scramble to safety, not a free re-engage.
+                    player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 1)); // Weakness II, 5s
                     OriginsPowerHelper.setResourceValue(player, NINE_LIVES_RESOURCE, NINE_LIVES_CD_TICKS);
 
                     RunicPresentation.fire(player, SignatureKey.FELINE_NINE_LIVES);
