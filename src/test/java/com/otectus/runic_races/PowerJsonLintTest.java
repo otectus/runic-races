@@ -35,6 +35,7 @@ class PowerJsonLintTest {
     /** The only biome tags racial biome_affinity powers may target. */
     private static final Set<String> BIOME_TAG_ALLOWLIST = Set.of(
             "minecraft:is_forest",
+            "minecraft:is_taiga",
             "forge:is_hot",
             "forge:is_cold",
             "forge:is_mountain",
