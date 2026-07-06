@@ -308,7 +308,7 @@
   "power.runic_races.feline.nine_lives.name": "Nine Lives & Night Eyes",
   "power.runic_races.feline.pounce.description": "Leap at your prey with a burst of Strength. 15-second cooldown.",
   "power.runic_races.feline.pounce.name": "Pounce",
-  "power.runic_races.fire_drake.cold_quenches_fire.description": "+30% cold damage taken, +20% hunger drain. Cold and water are your bane.",
+  "power.runic_races.fire_drake.cold_quenches_fire.description": "+35% cold damage taken, +35% damage while wet, +20% hunger drain. Cold and water are your bane.",
   "power.runic_races.fire_drake.cold_quenches_fire.name": "Cold Quenches Fire",
   "power.runic_races.fire_drake.dragonfire_breath.badge": "Active ability — fires with your Origins primary power key.",
   "power.runic_races.fire_drake.dragonfire_breath.description": "Breathe a cone of searing flame that ignites all it touches. 40-second cooldown.",

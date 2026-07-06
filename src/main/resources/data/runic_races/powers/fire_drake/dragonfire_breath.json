@@ -57,7 +57,7 @@
           "type": "runic_races:cone_breath",
           "range": 7.0,
           "half_angle_degrees": 22.0,
-          "damage": 7.0,
+          "damage": 6.0,
           "fire_seconds": 8,
           "element": "fire"
         },

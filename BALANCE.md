@@ -68,7 +68,7 @@ This is a design-side reference. The power JSON under
 ### Draconic — red · elemental breath + scales + flight
 | Race | Active | Passive | Weakness |
 |------|--------|---------|----------|
-| Fire Drake | Dragonfire Breath | fire immune, +3 armor, wings, hot | +30% cold/water, +hunger |
+| Fire Drake | Dragonfire Breath | fire immune, +3 armor, wings, hot | +35% cold/water, +hunger |
 | Ice Drake | Frost Breath | freeze immune, +3 armor, wings, cold | +30% fire, +hunger |
 | Sea Serpen | Tidal Breath | water breathing, +3 armor, ocean | +20% fire, dry-weak, −1♥ |
 | Terra Drake | Seismic Breath | +4 armor, KB immune, mining, wings | −10% spd/atk, +hunger |
