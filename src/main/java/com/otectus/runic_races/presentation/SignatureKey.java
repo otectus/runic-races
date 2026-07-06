@@ -60,5 +60,28 @@ public enum SignatureKey {
     FAERIE_WING_FLAP,
     AVIAN_WING_FLAP,
     WIND_WYRM_WING_FLAP,
-    FLIGHT_CANCEL
+    FLIGHT_CANCEL,
+    // Fragility procs (bannerless, victim-side "your weakness just bit" cues;
+    // gating conditions live in RacialEventHandler, shared "fragility" debounce channel)
+    HIGH_ELF_FRAGILITY,
+    ARACHNID_FRAGILITY,
+    SKELETON_FRAGILITY,
+    AVIAN_FRAGILITY,
+    SPRITE_FRAGILITY,
+    CELERON_FRAGILITY,
+    DEMON_FRAGILITY,
+    // Passive proc cues (bannerless; the passive's moment made visible)
+    PRIMIAN_ADAPTATION,
+    VALEN_SHOULDER_CHECK,
+    ZOMBIE_DEATHLESS,
+    ARACHNID_WEB_SENSE,
+    // Weakness onset cues (bannerless; fired on RaceStateFlags 0→1 edges via WeaknessCueRegistry)
+    WEAKNESS_SUNLIGHT_SEAR,
+    WEAKNESS_SUN_DAZZLE,
+    WEAKNESS_KINDLING,
+    WEAKNESS_THAW,
+    WEAKNESS_HYDROPHOBIA,
+    WEAKNESS_SHORT_CIRCUIT,
+    WEAKNESS_DRY,
+    WEAKNESS_COLD_IRON
 }

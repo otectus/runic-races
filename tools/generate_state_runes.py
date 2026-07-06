@@ -70,23 +70,6 @@ def fire_vulnerable():
     return img
 
 
-def regrowth_suppressed():
-    img, d = canvas()
-    d.line([(8, 13), (8, 7)], fill=W, width=1)                    # stem
-    d.arc([4, 4, 8, 8], 180, 340, fill=W, width=1)                # left leaf
-    d.arc([8, 4, 12, 8], 200, 0, fill=W, width=1)                 # right leaf
-    d.line([(3, 12), (13, 4)], fill=W, width=2)                   # suppression slash
-    return img
-
-
-def beast_surge():
-    img, d = canvas()
-    for i in range(3):
-        x = 4 + i * 3
-        d.line([(x, 3), (x + 2, 13)], fill=W, width=1)            # claw rakes
-    return img
-
-
 def adaptation_active():
     img, d = canvas()
     d.polygon([(8, 2), (14, 8), (8, 14), (2, 8)], outline=W)      # diamond frame; count draws over
@@ -140,8 +123,6 @@ GLYPHS = {
     "tight_space": tight_space,
     "sunlight_burning": sunlight_burning,
     "fire_vulnerable": fire_vulnerable,
-    "regrowth_suppressed": regrowth_suppressed,
-    "beast_surge": beast_surge,
     "adaptation_active": adaptation_active,
     "open_sky": open_sky,
     "submerged_weak": submerged_weak,

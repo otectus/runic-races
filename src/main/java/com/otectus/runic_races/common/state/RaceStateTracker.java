@@ -4,6 +4,9 @@ import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.network.NetworkHandler;
 import com.otectus.runic_races.network.S2CRaceStatePacket;
 import com.otectus.runic_races.notification.RaceNotificationService;
+import com.otectus.runic_races.presentation.RunicPresentation;
+import com.otectus.runic_races.presentation.SignatureKey;
+import com.otectus.runic_races.presentation.WeaknessCueRegistry;
 import com.otectus.runic_races.util.RaceHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -48,6 +51,16 @@ public final class RaceStateTracker {
             NetworkHandler.sendToPlayer(player, new S2CRaceStatePacket(updated));
             // A single-bit set only changes the field on a real edge, so 'on' is the new value.
             RaceNotificationService.onFlagTransition(player, flag, on);
+            if (on) {
+                // Sensory cue for the weakness starting to bite (words stay with the
+                // notification above). Debounced so flicker at a boundary (water
+                // surface, cave mouth) reads as one moment.
+                SignatureKey cue = WeaknessCueRegistry.onsetCue(
+                        RaceHelper.getRaceName(player).orElse(""), flag);
+                if (cue != null) {
+                    RunicPresentation.fireProc(player, cue, 100);
+                }
+            }
         }
     }
 

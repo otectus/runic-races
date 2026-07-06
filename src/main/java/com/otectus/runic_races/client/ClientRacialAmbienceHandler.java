@@ -119,9 +119,10 @@ public final class ClientRacialAmbienceHandler {
             }
         });
         ROUTINES.put("moon_elf", (p, l, t) -> {
-            // Silver motes rise around them under the open night sky.
+            // Moon slivers drift down around them under the open night sky — the
+            // tidecaller's night grace made visible while it quietly heals.
             if (every("moon_elf.motes", t, 60) && l.isNight() && l.canSeeSky(p.blockPosition())) {
-                puff(l, ParticleTypes.END_ROD, p.getX(), p.getY() + 0.4, p.getZ(), scaled(2), 0.6, 0.03);
+                puff(l, ModParticles.MOON_SLIVER.get(), p.getX(), p.getY() + 1.6, p.getZ(), scaled(2), 0.6, -0.01);
             }
         });
         ROUTINES.put("ice_elf", (p, l, t) -> {
@@ -188,7 +189,8 @@ public final class ClientRacialAmbienceHandler {
             maybeRunWingEnv(p, l, "avian", t);
             tickWingTrail(p, l, "avian", t);
         });
-        // arachnid: web-sense tremble is a Phase-4 proc (needs threat detection, not idle state).
+        // arachnid: the web-sense tremble fires server-side (ARACHNID_WEB_SENSE proc in
+        // GlowHostilesAction) when the pulse actually marks prey — no idle ambience.
 
         // ----- Faeborne -----
         ROUTINES.put("changeling", (p, l, t) -> {
@@ -201,9 +203,15 @@ public final class ClientRacialAmbienceHandler {
             }
         });
         ROUTINES.put("dryad", (p, l, t) -> {
-            // Leaves drift from them while on living ground.
+            // Leaves drift from them while on living ground; in direct sun the grove's
+            // healing shows as golden pollen instead.
             if (every("dryad.petal", t, 120) && standsOnLivingGround(l, p)) {
-                puff(l, ModParticles.LEAF_PETAL.get(), p.getX(), p.getY() + 1.5, p.getZ(), scaled(2), 0.5, -0.02);
+                boolean sunlit = l.isDay() && l.canSeeSky(p.blockPosition());
+                if (sunlit) {
+                    puff(l, ModParticles.POLLEN_MOTE.get(), p.getX(), p.getY() + 1.3, p.getZ(), scaled(2), 0.5, 0.01);
+                } else {
+                    puff(l, ModParticles.LEAF_PETAL.get(), p.getX(), p.getY() + 1.5, p.getZ(), scaled(2), 0.5, -0.02);
+                }
             }
         });
         ROUTINES.put("nymph", (p, l, t) -> {
@@ -262,12 +270,20 @@ public final class ClientRacialAmbienceHandler {
             if (every("fire_drake.ember", t, 160) && p.getDeltaMovement().lengthSqr() < 0.01) {
                 puff(l, ModParticles.EMBER_SCALE.get(), p.getX(), p.getY() + 1.4, p.getZ(), 1, 0.4, 0.01);
             }
+            // Emberscale Hide at work: standing in fire or lava unharmed, the scales shimmer.
+            if ((p.isOnFire() || p.isInLava()) && every("fire_drake.hide", t, 20)) {
+                puff(l, ModParticles.EMBER_SCALE.get(), p.getX(), p.getY() + 1.0, p.getZ(), scaled(3), 0.5, 0.03);
+            }
         });
         ROUTINES.put("ice_drake", (p, l, t) -> {
             maybeRunWingEnv(p, l, "ice_drake", t);
             tickWingTrail(p, l, "ice_drake", t);
             if (every("ice_drake.snow", t, 160) && isColdHere(l, p.blockPosition())) {
                 puff(l, ParticleTypes.SNOWFLAKE, p.getX(), p.getY() + 1.9, p.getZ(), scaled(2), 0.5, -0.02);
+            }
+            // Rimescale Hide at work: wading through powder snow unfrozen, rime dusts off.
+            if (p.isInPowderSnow && every("ice_drake.hide", t, 20)) {
+                puff(l, ModParticles.FROST_MOTE.get(), p.getX(), p.getY() + 1.0, p.getZ(), scaled(3), 0.5, 0.02);
             }
         });
         ROUTINES.put("terra_drake", (p, l, t) -> {

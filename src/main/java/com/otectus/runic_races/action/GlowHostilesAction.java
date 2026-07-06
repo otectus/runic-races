@@ -59,6 +59,14 @@ public class GlowHostilesAction extends EntityAction<GlowHostilesAction.Configur
         for (LivingEntity target : nearby) {
             target.addEffect(new MobEffectInstance(MobEffects.GLOWING, config.durationTicks(), 0, false, false));
         }
+
+        // Weaver's Senses self-cue: the web trembles when the pulse actually marks prey.
+        // Race-gated so the canine howl (which shares this action) stays howl-only.
+        if (!nearby.isEmpty() && caster instanceof net.minecraft.server.level.ServerPlayer player
+                && com.otectus.runic_races.util.RaceHelper.isRace(player, "arachnid")) {
+            com.otectus.runic_races.presentation.RunicPresentation.fireProc(
+                    player, com.otectus.runic_races.presentation.SignatureKey.ARACHNID_WEB_SENSE, 100);
+        }
     }
 
 }

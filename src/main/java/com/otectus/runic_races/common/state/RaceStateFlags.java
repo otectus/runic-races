@@ -18,12 +18,10 @@ public enum RaceStateFlags {
     TIGHT_SPACE(1 << 3),
     /** Player is currently taking sunlight damage (Vampire). */
     SUNLIGHT_BURNING(1 << 4),
-    /** Player is on fire and has fire-vulnerability (Dryad, Troll). */
+    /** Player is on fire and has fire-vulnerability (Dryad and other fire-weak races). */
     FIRE_VULNERABLE(1 << 5),
-    /** Regrowth suppressed by fire contact (Troll). */
-    REGROWTH_SUPPRESSED(1 << 6),
-    /** Lycanthrope is currently in Beast Surge (Strength III buff active). */
-    BEAST_SURGE(1 << 7),
+    // Bits 6 and 7 retired (Troll regrowth / Lycanthrope beast surge — races that never
+    // shipped). Re-use them only with a real server-side setter and a rune texture.
     /** Human Adaptation stack count > 0 (details tracked server-side). */
     ADAPTATION_ACTIVE(1 << 8),
     /** Player is exposed to the open sky — storm empowerment cue (Volt Drake's grounded penalty lifts). */

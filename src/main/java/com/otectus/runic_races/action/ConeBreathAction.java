@@ -171,7 +171,9 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
 
     private static ParticleOptions primaryParticle(Element element) {
         return switch (element) {
-            case FIRE -> ParticleTypes.DRAGON_BREATH;
+            // Actual flame: the vanilla dragon-breath particle is purple and read as
+            // ender magic, not dragonfire. Embers (secondary) carry the heat trail.
+            case FIRE -> ParticleTypes.FLAME;
             case FROST -> ParticleTypes.SNOWFLAKE;
             case WATER -> ParticleTypes.BUBBLE;
             // Seismic identity: actual stone-debris chips instead of generic poofs.
@@ -189,7 +191,8 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
             case FROST -> ModParticles.FROST_MOTE.get();
             // Rising bubble columns read as churning tide instead of flat splashes.
             case WATER -> ParticleTypes.BUBBLE_COLUMN_UP;
-            case EARTH -> ParticleTypes.CRIT;
+            // Stone chips tumble out of the seismic wave with real physics.
+            case EARTH -> ModParticles.ROCK_CHIP.get();
             case SHOCK -> ParticleTypes.CRIT;
             case WIND -> ParticleTypes.POOF;
         };

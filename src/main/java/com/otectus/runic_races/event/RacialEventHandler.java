@@ -30,6 +30,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -48,6 +49,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -123,9 +125,9 @@ public class RacialEventHandler {
         if (race == null) return;
 
         // === Fragility procs: make "you are the squishy one" audible/visible (Minor tier) ===
-        // One shared 3-second debounce so a mob combo doesn't spam the cue.
-        if (event.getAmount() > 0.0f && player.level() instanceof ServerLevel level) {
-            fireFragilityProc(player, level, race, event);
+        // One shared 3-second debounce channel so a mob combo doesn't spam the cue.
+        if (event.getAmount() > 0.0f && player.level() instanceof ServerLevel) {
+            fireFragilityProc(player, race, event);
         }
 
         // === FELINE: NINE LIVES ===
@@ -158,82 +160,30 @@ public class RacialEventHandler {
         }
     }
 
-    private static final String FRAGILITY_CUE_TICK = "runic_races:fragility_cue_tick";
-
     /**
-     * Victim-side weakness cues (Minor tier, ≤8 particles). Each fragile race gets its own
-     * "that hurt more than it should" audio-visual language when its weakness actually bites.
+     * Victim-side weakness cues (Minor tier). Each fragile race gets its own
+     * "that hurt more than it should" audio-visual language when its weakness actually
+     * bites. Gating stays here; the recipes live in {@link SignatureRegistry}. All
+     * seven share one debounce channel so a mob combo can't chain different cues.
      */
-    private void fireFragilityProc(ServerPlayer player, ServerLevel level, String race, LivingDamageEvent event) {
-        long now = level.getGameTime();
-        CompoundTag data = player.getPersistentData();
-        if (now - data.getLong(FRAGILITY_CUE_TICK) < 60) return; // shared 3s debounce
-
+    private void fireFragilityProc(ServerPlayer player, String race, LivingDamageEvent event) {
         float amount = event.getAmount();
         boolean fall = event.getSource().is(DamageTypeTags.IS_FALL);
         boolean magic = event.getSource().is(net.minecraft.world.damagesource.DamageTypes.MAGIC)
                 || event.getSource().is(net.minecraft.world.damagesource.DamageTypes.INDIRECT_MAGIC);
-        double x = player.getX();
-        double y = player.getY() + 1.0;
-        double z = player.getZ();
 
-        boolean fired = true;
-        switch (race) {
-            case "high_elf" -> {
-                // Fragile Grace: a heavy hit rings like struck crystal.
-                if (amount < 5.0f) { fired = false; break; }
-                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.AMETHYST_CLUSTER_BREAK,
-                        net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.5f);
-                NetworkHandler.sendToPlayer(player, new S2CScreenCuePacket(CueType.VIGNETTE_PULSE, 8));
-            }
-            case "arachnid" -> {
-                // Fragile Carapace: chitin cracks under a heavy blow.
-                if (amount < 5.0f) { fired = false; break; }
-                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.TURTLE_EGG_CRACK,
-                        net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, 0.6f);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT, x, y, z, 6, 0.3, 0.3, 0.3, 0.1);
-            }
-            case "skeleton" -> {
-                // Brittle Bones: chips fly on falls and heavy hits.
-                if (!fall && amount < 5.0f) { fired = false; break; }
-                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.BONE_BLOCK_BREAK,
-                        net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.2f);
-                level.sendParticles(com.otectus.runic_races.registry.ModParticles.BONE_CHIP.get(),
-                        x, y, z, 6, 0.3, 0.3, 0.3, 0.08);
-            }
-            case "avian" -> {
-                // Hollow Bones: feathers burst loose when the landing goes wrong.
-                if (!fall) { fired = false; break; }
-                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.BONE_BLOCK_BREAK,
-                        net.minecraft.sounds.SoundSource.PLAYERS, 0.35f, 1.5f);
-                level.sendParticles(com.otectus.runic_races.registry.ModParticles.FEATHER_DOWN.get(),
-                        x, y, z, 8, 0.4, 0.4, 0.4, 0.05);
-            }
-            case "sprite" -> {
-                // Fragile Essence: the gossamer form scatters sparks and cries out.
-                if (amount < 4.0f) { fired = false; break; }
-                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.BAT_HURT,
-                        net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, 1.6f);
-                level.sendParticles(com.otectus.runic_races.registry.ModParticles.FAE_SPARKLE.get(),
-                        x, y, z, 6, 0.4, 0.4, 0.4, 0.1);
-            }
-            case "celeron" -> {
-                // Featherweight Frame: knocked around hard enough to shake feathers loose.
-                if (amount < 4.0f) { fired = false; break; }
-                level.sendParticles(com.otectus.runic_races.registry.ModParticles.FEATHER_DOWN.get(),
-                        x, y, z, 5, 0.4, 0.4, 0.4, 0.06);
-            }
-            case "demon" -> {
-                // Holy Vulnerability: sanctified magic flares gold and tolls a bell.
-                if (!magic) { fired = false; break; }
-                level.playSound(null, x, y, z, net.minecraft.sounds.SoundEvents.BELL_BLOCK,
-                        net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, 2.0f);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD, x, y, z, 6, 0.3, 0.4, 0.3, 0.05);
-            }
-            default -> fired = false;
-        }
-        if (fired) {
-            data.putLong(FRAGILITY_CUE_TICK, now);
+        SignatureKey key = switch (race) {
+            case "high_elf" -> amount >= 5.0f ? SignatureKey.HIGH_ELF_FRAGILITY : null;
+            case "arachnid" -> amount >= 5.0f ? SignatureKey.ARACHNID_FRAGILITY : null;
+            case "skeleton" -> (fall || amount >= 5.0f) ? SignatureKey.SKELETON_FRAGILITY : null;
+            case "avian" -> fall ? SignatureKey.AVIAN_FRAGILITY : null;
+            case "sprite" -> amount >= 4.0f ? SignatureKey.SPRITE_FRAGILITY : null;
+            case "celeron" -> amount >= 4.0f ? SignatureKey.CELERON_FRAGILITY : null;
+            case "demon" -> magic ? SignatureKey.DEMON_FRAGILITY : null;
+            default -> null;
+        };
+        if (key != null) {
+            RunicPresentation.fireProc(player, key, "fragility", 60);
         }
     }
 
@@ -506,19 +456,9 @@ public class RacialEventHandler {
             boolean burning = player.level().isDay()
                     && player.level().canSeeSky(player.blockPosition())
                     && !player.isInWaterOrRain();
-            boolean wasBurning = RaceStateFlags.SUNLIGHT_BURNING.isSet(RaceStateTracker.get(player));
+            // The onset sizzle/dazzle cue fires from the flag edge (WeaknessCueRegistry):
+            // dark_elf/wraith/reaper sear, deep_one/skeleton get the silent glare.
             RaceStateTracker.setFlag(player, RaceStateFlags.SUNLIGHT_BURNING, burning);
-            // Grave-touched flesh sizzles the moment the sun finds it (dark_elf/reaper share
-            // the zombie's audio language at lower volume — deep_one/skeleton are dazzled, not burned).
-            if (burning && !wasBurning && ("dark_elf".equals(race) || "reaper".equals(race))
-                    && player.level() instanceof ServerLevel level) {
-                level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,
-                        net.minecraft.sounds.SoundSource.PLAYERS, 0.2f, 1.4f);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE,
-                        player.getX(), player.getY() + 1.2, player.getZ(),
-                        4, 0.2, 0.3, 0.2, 0.02);
-            }
         }
 
         // --- Sky One / Wind Wyrm claustrophobia (tight-space) ---
@@ -555,18 +495,8 @@ public class RacialEventHandler {
         if ("feline".equals(race) || "volt_drake".equals(race)
                 || "iron_one".equals(race) || "sky_one".equals(race)) {
             boolean submerged = player.isEyeInFluid(net.minecraft.tags.FluidTags.WATER);
-            boolean wasSubmerged = RaceStateFlags.SUBMERGED_WEAK.isSet(RaceStateTracker.get(player));
+            // Onset cues fire from the flag edge: feline yowl, volt_drake short-circuit.
             RaceStateTracker.setFlag(player, RaceStateFlags.SUBMERGED_WEAK, submerged);
-            // Storm scales short-circuit the moment they go under.
-            if ("volt_drake".equals(race) && submerged && !wasSubmerged
-                    && player.level() instanceof ServerLevel level) {
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
-                        player.getX(), player.getY() + 1.0, player.getZ(),
-                        8, 0.4, 0.5, 0.4, 0.1);
-                level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH,
-                        net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.8f);
-            }
         }
 
         // --- Dry-land sluggishness readout (Sea Serpen landbound coils, Nymph bound-to-water) ---
@@ -593,16 +523,8 @@ public class RacialEventHandler {
         // --- Faerie cold-iron grip readout (iron tool/weapon in either hand) ---
         if ("faerie".equals(race)) {
             boolean gripping = isColdIron(player.getMainHandItem()) || isColdIron(player.getOffhandItem());
-            boolean wasGripping = RaceStateFlags.COLD_IRON_GRIP.isSet(RaceStateTracker.get(player));
+            // The quench-hiss onset cue fires from the flag edge (WeaknessCueRegistry).
             RaceStateTracker.setFlag(player, RaceStateFlags.COLD_IRON_GRIP, gripping);
-            if (gripping && !wasGripping && player.level() instanceof ServerLevel level) {
-                level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        net.minecraft.sounds.SoundEvents.LAVA_EXTINGUISH,
-                        net.minecraft.sounds.SoundSource.PLAYERS, 0.25f, 1.7f);
-                level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE,
-                        player.getX(), player.getY() + 1.0, player.getZ(),
-                        3, 0.2, 0.2, 0.2, 0.02);
-            }
         }
 
         // --- Blood Elf: the price of power — heartbeat cue while critically wounded ---
@@ -658,6 +580,8 @@ public class RacialEventHandler {
                     data.putInt(ADAPT_STACKS, stacks);
                     lastBump = now;
                     data.putLong(ADAPT_LAST_TICK, now);
+                    // The moment of learning a new place — a small gold glint.
+                    RunicPresentation.fireProc(player, SignatureKey.PRIMIAN_ADAPTATION, 100);
                 }
             }
         }
@@ -752,11 +676,22 @@ public class RacialEventHandler {
         target.push(look.x * 0.6, 0.25, look.z * 0.6);
         target.hurtMarked = true;
 
-        if (attacker.level() instanceof ServerLevel level) {
-            level.playSound(null, target.getX(), target.getY(), target.getZ(),
-                    net.minecraft.sounds.SoundEvents.IRON_GOLEM_ATTACK,
-                    net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, 0.7f);
-        }
+        // Golem-swing thud plus iron dust along the impact line to the shoved target.
+        RunicPresentation.fire(attacker, SignatureKey.VALEN_SHOULDER_CHECK,
+                target.position().add(0, target.getBbHeight() * 0.5, 0));
+    }
+
+    /**
+     * Zombie Deathless Flesh: the JSON grants poison/hunger immunity — this only
+     * makes the block visible as a puff of grave-ash when something tries.
+     */
+    @SubscribeEvent
+    public void onEffectApplicable(MobEffectEvent.Applicable event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        MobEffect effect = event.getEffectInstance().getEffect();
+        if (effect != MobEffects.POISON && effect != MobEffects.HUNGER) return;
+        if (!RaceHelper.isRace(player, "zombie")) return;
+        RunicPresentation.fireProc(player, SignatureKey.ZOMBIE_DEATHLESS, 100);
     }
 
     /** Faerie cold-iron heuristic: any item whose registry path names iron (sword, tools, armor, ingot). */

@@ -58,8 +58,6 @@ class I18nKeyPresenceTest {
             "tooltip.runic_races.state.tight_space",
             "tooltip.runic_races.state.sunlight_burn",
             "tooltip.runic_races.state.fire_vulnerable",
-            "tooltip.runic_races.state.regrowth_suppressed",
-            "tooltip.runic_races.state.beast_surge",
             "tooltip.runic_races.state.adapting",
             "tooltip.runic_races.state.open_sky"
     );
