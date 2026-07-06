@@ -3,6 +3,117 @@
 All notable changes to Runic Races are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Fixed
+- **Wings render again for all winged races** (Avian, Sprite, Faerie, Wind Wyrm, and the
+  four drakes). Since the two-layer selection, `RaceHelper` could resolve the *family*
+  origin (`family_bestial` etc.) instead of the race — origin-map iteration order is
+  undefined — which silently disabled everything race-keyed: wings, Pehkui scale, ambience,
+  HUD icons, and integrations. Race resolution now reads the `runic_races:race` layer
+  explicitly.
+
+### Added
+- **"< Back" button on the race selection screen** (top-left). Players who confirmed a
+  heritage can return to the family screen and pick a different one; the server un-chooses
+  the family layer and Origins re-prompts from the top. Guarded server-side so a finished
+  character can't replay it to reset.
+
+## [1.4.0] — 2026-07-02 — Immersion & Visual Identity Overhaul
+
+A six-phase presentation overhaul: every race now looks, sounds, and moves like itself —
+signature actives, minute-to-minute ambience, visible weaknesses, articulated wings, and a
+rebuilt HUD/screen-cue layer.
+
+### Added — signature presentation (every active)
+- **All 37 actives now route through `SignatureRegistry`** (26 new keys), each with a shaped,
+  family-grammar recipe: Human snap / Elven rise-implode / Dwarven ground-burst / Bestial
+  lunge / Faeborne swirl-pop / Undead sink-drain / Draconic exhale. Power JSONs swap their
+  banner/sound/particle actions for a single `signature_presentation`.
+- **Shaped VFX**: `SignatureEntry.VfxSpec` gains `RING`, `RING_IN`, `RING_ORBIT`, `HELIX`,
+  `DOME`, `LINE` (caster→target streams), and `SPOKES`; showcase pieces include Arachnid's
+  web spokes, Deep One's seismic pulse ring, Kitsune's orbiting foxfire, Reaper's inward
+  soul stream, Changeling's freeze-frame mirror shift, and Sprite's blink-out implode.
+- **7 new identity particles** (`web_strand`, `leaf_petal`, `feather_down`, `shadow_wisp`,
+  `foxfire`, `arcane_glint`, `bone_chip`) — physical matter is world-lit, magic stays
+  emissive — plus 10 more curated sound events with subtitles, 4 new `RaceColors`, and a
+  `WIND_STREAK` edge cue for dashes and leaps.
+- **Dormant screen cues finally wired**: `MOON_GLOW` (Moon Elf veil), `HEARTBEAT_FLASH`
+  (Blood Elf frenzy), `FREEZE_FRAME` (Changeling mirror).
+
+### Added — ambience & weakness feedback
+- **Per-race ambience registry**: `ClientRacialAmbienceHandler` becomes one
+  `AmbienceRoutine` per race (shared rate limiter, density-scaled). 24 races gain
+  minute-to-minute identity — Magi arcane glints off enchanted gear, Kitsune foxfire tail
+  on night sprints, Wraith sneak shadow trail, Sea Serpen bubble wake, Terra Drake dust
+  footfalls, Feline campfire purr, and more.
+- **Glide wingtip trails** (config `wings.glideTrails`, per-race particle) and landing dust
+  rings scaled to wing size.
+- **Every fragile race tells you when it hurts**: victim-side fragility procs with a shared
+  3s debounce — High Elf rings like struck crystal, Arachnid chitin-crack, Skeleton bone
+  chips, Avian feather-burst on bad landings, Sprite sparkle-scatter, Demon gold flash +
+  bell toll on holy damage. Blood Elf lifesteal is now a visible crimson siphon line.
+- **New state flags + runes + banners**: `RAVENOUS` (Canine, low food) and `COLD_IRON_GRIP`
+  (Faerie holding iron); `SUBMERGED_WEAK` extended to Iron One / Sky One; Nymph gets the
+  `DRY_SLUGGISH` rune; Volt Drake short-circuits on submerge; Dark Elf / Reaper sizzle when
+  the sun first finds them.
+
+### Added — articulated wings
+- **`WingModel` rebuilt** as one 64×64 bake with three silhouettes toggled per race:
+  `MEMBRANE` (wyvern + drakes), `FEATHERED` (Avian), `GOSSAMER` (Sprite/Faerie).
+- **Cascaded tip lag**: wingtips chase the arm with per-race lag and overshoot, so flap
+  snaps whip through the downbeat and settle; gossamer hindwings run a lazier chase, and
+  fast flutter renders a faint ghost pass as motion blur (`reducedMotion`-gated).
+- `generate_wings.py` paints all wing islands from the hand-made base art.
+  **Resource-pack note:** wing texture layout changed 64×32 → 64×64.
+
+### Changed — HUD & screen cues
+- **Screen cues upgrade from flat rects to tinted textures**: real radial vignettes, frost
+  dendrites, and a three-strip wobbling heat shimmer; `effects.simpleCues` restores the
+  flat-rect path.
+- **FOV kicks** (`effects.fovEffects`): breath heat and wind rush push the FOV out, impacts
+  and the freeze-frame punch in — eased, intensity-scaled, clamped to ±6%.
+- **State rune HUD**: letter-boxes replaced by a 14-glyph thematic rune atlas with
+  family-accent frames and fade-in labels when a rune first lights.
+- Ability HUD icons upscaled to shaded 32×32 (Scale2x + gradient/rim pass); frost breath
+  gains rime motes, water breath churns with bubbles.
+- **Badge pilot**: Fire Drake's breath carries an `origins:badge` keybind hint to verify
+  in-game before batching badges to all actives.
+
+### Added — tests & docs
+- `AmbienceCoverageTest` (every race has a routine or is explicitly quiet);
+  `StaleAssetTest` gains overlay-texture and rune↔`RaceStateFlags` parity checks.
+- `CLAUDE.md` documents the signature-shape system, 13 particles, 23 sounds, wing
+  silhouettes, new config keys, the overlay/rune generators, and the badge pilot.
+
+## [1.3.0] — 2026-07-02 — VFX & Race Presentation Pass
+
+Foundation release for the presentation overhaul: custom particle/sound registries,
+per-race wing textures, responsiveness fixes, and a test-coverage push.
+
+### Added
+- **`ModParticles` registry** with 6 custom identity particles (`rune_glyph`, `soul_wisp`,
+  `fae_sparkle`, `ember_scale`, `frost_mote`, `venom_drip`) behind `RunicParticle`
+  behaviors.
+- **`ModSounds` registry** with 13 sound events curating vanilla audio via
+  `"type": "event"` in `sounds.json` — bespoke audio can drop in without code changes.
+- **Per-race wing textures** replacing shared family sheets.
+- **Ability deny/ready cues**: the HUD pulses red when an active is used on cooldown
+  (`AbilityDenyHandler`), and plays a ready ding when it comes back.
+- Submerged/dry state flags for water-bound races.
+- Six new test classes: `AbilityIconCoverageTest`, `ParticleAssetTest`,
+  `RaceScaleRangeTest`, `SignatureCoverageTest`, `StaleAssetTest`, `WingCoverageTest`.
+
+### Changed
+- New config knobs: `ambient.particleDensity` and `effects.screenCueIntensity`.
+- Pehkui height sync now reacts to config reloads.
+- Breath cone polish pass.
+- **Wings respond instantly to race switches** — `WingRenderLayer` resolves the wing type
+  per-frame (`RaceHelper` memoizes per tick) instead of caching for up to 5 seconds.
+- Per-family ability-ready ding pitch (`FamilyAccent.readyPitch()`); per-element breath and
+  per-tier flap subtitles (previously one shared string each).
+- `generate_icons.py` source-art path is no longer hardcoded to a specific home directory.
+
 ## [1.2.0] — 2026-07-01 — Full Audit Remediation
 
 Every finding from the full bug/stability/balance audit (`AUDIT_REPORT.md`), fixed.
