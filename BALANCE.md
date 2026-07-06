@@ -16,7 +16,7 @@ This is a design-side reference. The power JSON under
 | Primian | Stroke of Fortune (Luck/Abs/Speed) | +1♥, +1 luck, +5% spd, Adaptation stacks (new biomes/varied kills), Universal Palate (no food debuffs) | −10% magic, −5% melee |
 | Celeron | Messenger's Dash (Speed III) | +12% spd, +10% atk spd | −2♥, 1.3× knockback taken |
 | Magi | Arcane Overflow (AoE nova) | +15% magic | −2♥, +20% physical taken |
-| Valen | Unbreakable Stand (Res III) | +2♥, +2 armor, KB resist, +10% melee, sprint shoulder-check (once per sprint, hostiles only) | −10% spd, −10% atk spd |
+| Valen | Unbreakable Stand (Res III) | +2♥, +2 armor, KB resist, +10% melee, sprint shoulder-check (once per sprint, hostiles only) | −8% spd, −8% atk spd |
 
 ### Elven — magenta · arcane grace, frail bodies
 | Race | Active | Passive | Weakness |

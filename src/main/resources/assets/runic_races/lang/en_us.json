@@ -431,7 +431,7 @@
   "power.runic_races.terra_drake.stonescale_hide.name": "Stonescale Hide",
   "power.runic_races.valen.fortitude.description": "+2 hearts, +2 armor, knockback resistance, +10% melee damage, and a sprinting shoulder-check that staggers the first foe you strike.",
   "power.runic_races.valen.fortitude.name": "Fortitude",
-  "power.runic_races.valen.stalwart_not_swift.description": "-10% movement speed and -10% attack speed. Heavy and deliberate.",
+  "power.runic_races.valen.stalwart_not_swift.description": "-8% movement speed and -8% attack speed. Heavy and deliberate.",
   "power.runic_races.valen.stalwart_not_swift.name": "Stalwart, Not Swift",
   "power.runic_races.valen.unbreakable_stand.description": "Plant yourself: Resistance III, Absorption II, and Slowness I for 6s. 60-second cooldown.",
   "power.runic_races.valen.unbreakable_stand.name": "Unbreakable Stand",

@@ -11,7 +11,7 @@
     "modifier": {
       "attribute": "minecraft:generic.movement_speed",
       "operation": "multiply_total",
-      "value": -0.1,
+      "value": -0.08,
       "name": "Stalwart Slowness"
     }
   },
@@ -20,7 +20,7 @@
     "modifier": {
       "attribute": "minecraft:generic.attack_speed",
       "operation": "multiply_total",
-      "value": -0.1,
+      "value": -0.08,
       "name": "Stalwart Heft"
     }
   }
