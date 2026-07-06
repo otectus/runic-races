@@ -5,7 +5,9 @@ import com.otectus.runic_races.integration.ModIntegration;
 import com.otectus.runic_races.race.RaceRegistry;
 import com.otectus.runic_races.util.RaceHelper;
 import com.otectus.runic_races.util.StaminaHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Feather's Mod integration: assigns racial max stamina (feathers) to each race.
@@ -31,10 +33,27 @@ public class FeathersIntegration implements ModIntegration {
         applyRacialStamina(player);
     }
 
+    /** Feather's own default max, restored when a player no longer has a race. */
+    private static final int DEFAULT_MAX_FEATHERS = 20;
+
+    /** Persisted-NBT marker: we changed this player's max, so we own resetting it. */
+    private static final String APPLIED_TAG = "runic_races:feathers_racial_applied";
+
     private void applyRacialStamina(ServerPlayer player) {
         String race = RaceHelper.getRaceName(player).orElse(null);
-        if (race == null) return;
-        int maxFeathers = RaceRegistry.getMaxFeathers(race);
-        StaminaHelper.setPlayerMaxStamina(player, maxFeathers);
+        CompoundTag persisted = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
+        if (race == null) {
+            // Only reset players we previously modified — a pack that globally raised
+            // max feathers keeps its value for players this mod never touched.
+            if (persisted.getBoolean(APPLIED_TAG)) {
+                StaminaHelper.setPlayerMaxStamina(player, DEFAULT_MAX_FEATHERS);
+                persisted.remove(APPLIED_TAG);
+                player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
+            }
+            return;
+        }
+        StaminaHelper.setPlayerMaxStamina(player, RaceRegistry.getMaxFeathers(race));
+        persisted.putBoolean(APPLIED_TAG, true);
+        player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
     }
 }

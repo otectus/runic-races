@@ -92,6 +92,20 @@ public final class StaminaHelper {
     }
 
     /**
+     * Returns the player's maximum feathers, or {@code fallback} if Feather's is not
+     * installed or the call fails.
+     */
+    public static int getPlayerMaxStamina(Entity entity, int fallback) {
+        if (!isAvailable() || !(entity instanceof ServerPlayer player)) return fallback;
+        try {
+            return (int) getMaxFeathers.invoke(null, player);
+        } catch (Exception e) {
+            RunicRacesMod.debug("[RunicRaces] Failed to read max feathers for {}", entity.getName().getString());
+            return fallback;
+        }
+    }
+
+    /**
      * Sets the player's maximum feathers. Does nothing if Feather's is not installed.
      */
     public static void setPlayerMaxStamina(Entity entity, int max) {
