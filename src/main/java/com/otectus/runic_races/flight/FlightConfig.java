@@ -17,22 +17,22 @@ import java.util.function.Supplier;
  */
 public enum FlightConfig {
     SPRITE("sprite",
-            0.3, 30,
+            0.3, 30, 1,
             "sprite/gossamer_wings_flap_cooldown_timer",
             () -> ModSounds.WINGS_FLAP_SMALL.get(), 0.2f, 2.0f,
             "§d§lYour gossamer wings flutter!"),
     FAERIE("faerie",
-            0.32, 30,
+            0.32, 30, 1,
             "faerie/pixie_flight_flap_cooldown_timer",
             () -> ModSounds.WINGS_FLAP_SMALL.get(), 0.2f, 1.8f,
             "§d§lYour pixie wings shimmer and lift!"),
     AVIAN("avian",
-            0.45, 35,
+            0.45, 35, 1,
             "avian/skyborne_flap_cooldown_timer",
             () -> ModSounds.WINGS_FLAP_FEATHER.get(), 0.3f, 1.4f,
             "§b§lYou beat your wings and rise!"),
     WIND_WYRM("wind_wyrm",
-            0.7, 50,
+            0.7, 50, 2,
             "wind_wyrm/skylord_flap_cooldown_timer",
             () -> ModSounds.WINGS_FLAP_LARGE.get(), 0.5f, 1.2f,
             "§f§lYour wings ride the gale!");
@@ -40,18 +40,20 @@ public enum FlightConfig {
     private final String raceName;
     private final double flapVelocityY;
     private final int cooldownTicks;
+    private final int flapFeatherCost;
     private final ResourceLocation cooldownResource;
     private final Supplier<SoundEvent> flapSound;
     private final float flapVolume;
     private final float flapPitch;
     private final String flapMessage;
 
-    FlightConfig(String raceName, double flapVelocityY, int cooldownTicks,
+    FlightConfig(String raceName, double flapVelocityY, int cooldownTicks, int flapFeatherCost,
                  String cooldownResourcePath, Supplier<SoundEvent> flapSound, float flapVolume, float flapPitch,
                  String flapMessage) {
         this.raceName = raceName;
         this.flapVelocityY = flapVelocityY;
         this.cooldownTicks = cooldownTicks;
+        this.flapFeatherCost = flapFeatherCost;
         this.cooldownResource = new ResourceLocation(RunicRacesMod.MOD_ID, cooldownResourcePath);
         this.flapSound = flapSound;
         this.flapVolume = flapVolume;
@@ -62,6 +64,8 @@ public enum FlightConfig {
     public String getRaceName() { return raceName; }
     public double getFlapVelocityY() { return flapVelocityY; }
     public int getCooldownTicks() { return cooldownTicks; }
+    /** Feathers charged per flap when Feather's Mod is present (proportional to flap strength). */
+    public int getFlapFeatherCost() { return flapFeatherCost; }
     public ResourceLocation getCooldownResource() { return cooldownResource; }
     public SoundEvent getFlapSound() { return flapSound.get(); }
     public float getFlapVolume() { return flapVolume; }

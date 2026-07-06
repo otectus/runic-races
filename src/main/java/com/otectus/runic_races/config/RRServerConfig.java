@@ -21,6 +21,9 @@ public class RRServerConfig {
     public static final ForgeConfigSpec.BooleanValue NOTIFICATIONS_CHAT_MIRROR;
     public static final ForgeConfigSpec.BooleanValue NOTIFICATIONS_LEARNING_MODE;
 
+    // Flight
+    public static final ForgeConfigSpec.BooleanValue FLAP_STAMINA_COST;
+
     // Server-authored VFX
     public static final ForgeConfigSpec.DoubleValue BREATH_PARTICLE_DENSITY;
 
@@ -70,6 +73,13 @@ public class RRServerConfig {
                 .comment("Also banner the informational states (home/hostile biome, night empowered, adaptation) that are normally rune-only.",
                         "Useful while learning a race; noisy for veterans.")
                 .define("learningMode", false);
+        builder.pop();
+
+        builder.comment("Flight tuning").push("flight");
+        FLAP_STAMINA_COST = builder
+                .comment("When Feather's Mod is present, each wing flap costs feathers (1 for small wings, 2 for the",
+                        "Wind Wyrm). Exhausted wings refuse to flap with a red banner. No effect without Feather's.")
+                .define("flapStaminaCost", true);
         builder.pop();
 
         builder.comment("Server-authored VFX tuning").push("vfx");

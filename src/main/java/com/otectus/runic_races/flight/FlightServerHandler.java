@@ -1,11 +1,17 @@
 package com.otectus.runic_races.flight;
 
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.config.RRServerConfig;
 import com.otectus.runic_races.presentation.RunicPresentation;
 import com.otectus.runic_races.presentation.SignatureKey;
+import com.otectus.runic_races.registry.ModSounds;
 import com.otectus.runic_races.util.OriginsPowerHelper;
 import com.otectus.runic_races.util.RaceHelper;
+import com.otectus.runic_races.util.StaminaHelper;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 
 import java.util.Optional;
 import java.util.WeakHashMap;
@@ -38,6 +44,21 @@ public final class FlightServerHandler {
 
         // Check Origins cooldown resource
         if (!OriginsPowerHelper.isResourceReady(player, config.getCooldownResource())) return;
+
+        // Feathers cost — only when Feather's is actually present, so standalone
+        // behavior is unchanged and the fail-closed policy is never consulted here.
+        int featherCost = config.getFlapFeatherCost();
+        if (featherCost > 0 && StaminaHelper.isAvailable() && RRServerConfig.FLAP_STAMINA_COST.get()) {
+            if (!StaminaHelper.hasEnoughStamina(player, featherCost)
+                    || !StaminaHelper.consumePlayerStamina(player, featherCost)) {
+                // Exhausted wings: refuse with feedback, and don't burn the cooldown.
+                player.displayClientMessage(Component.translatable("message.runic_races.ability.no_stamina")
+                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                        ModSounds.ABILITY_DENY.get(), SoundSource.PLAYERS, 0.5f, 1.0f);
+                return;
+            }
+        }
 
         // Apply flap
         player.setDeltaMovement(player.getDeltaMovement().add(0, config.getFlapVelocityY(), 0));
