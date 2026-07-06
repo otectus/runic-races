@@ -71,7 +71,7 @@ public class IronsSpellsIntegration implements ModIntegration {
             case "nymph"     -> 1.05f;  // nature affinity
             case "wraith"    -> 1.05f;  // soul magic
             case "reaper"    -> 1.05f;  // soul magic
-            case "iron_one"  -> 0.85f;  // poor magical aptitude
+            case "iron_one"  -> 0.90f;  // poor magical aptitude
             case "valen"     -> 0.90f;  // warrior, not mage
             default          -> 1.0f;
         };

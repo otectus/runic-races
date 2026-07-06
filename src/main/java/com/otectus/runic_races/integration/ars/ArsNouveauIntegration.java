@@ -104,7 +104,7 @@ public class ArsNouveauIntegration implements ModIntegration {
             case "high_elf"  -> 0.85;  // -15% (overrides elven family default)
             case "magi"      -> 0.85;  // -15%
             case "runic_one" -> 0.90;  // -10%
-            case "iron_one"  -> 1.15;  // +15%
+            case "iron_one"  -> 1.10;  // +10%
             default -> {
                 String family = RaceHelper.getRaceFamily(race);
                 yield switch (family) {

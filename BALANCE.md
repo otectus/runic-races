@@ -77,7 +77,7 @@ This is a design-side reference. The power JSON under
 
 ## Integration Modifiers
 - **Ars Nouveau** mana: best Magi/High Elf/Sprite/Faerie (+20%); worst Iron One (−15%), dwarven/draconic (−10%).
-- **Iron's Spellbooks** spell damage: Magi +15%, casters +5–10%; Iron One −15%, Valen −10%.
+- **Iron's Spellbooks** spell damage: Magi +15%, casters +5–10%; Iron One −10%, Valen −10%.
 - **Apotheosis** luck (in RaceRegistry): best Primian/Faerie (+1.0); worst Wind Wyrm (−2.0); fire/ice/terra drakes, demon, reaper (−1.0); sea serpen/volt drake (−0.5).
 - **Curios** slots: Elven +necklace, Dwarven +belt, Faeborne +ring, Undead +charm.
 - **Pehkui** heights: per-race `scale` in `RaceRegistry`, clustered by family — 0.45 (Sprite) / 0.50 (Faerie) → 1.30 (Terra Drake); dwarves ~0.70, elves ~1.06, drakes 1.10–1.30. Cosmetic + hitbox; jump height is auto-compensated for small races.
