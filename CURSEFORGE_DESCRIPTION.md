@@ -34,4 +34,4 @@ Absent mods are silently skipped — Runic Races runs great standalone.
 
 ---
 
-**Requires Origins Forge.** Minecraft 1.20.1 • Forge • Version **1.5.0**.
+**Requires Origins Forge.** Minecraft 1.20.1 • Forge • Version **1.6.0**.

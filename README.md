@@ -91,7 +91,7 @@ Magi's Arcane Overflow is cooldown-only on a standalone install instead of silen
 ## Installation
 
 1. Requires **Origins Forge** (1.10.0.9+) installed in the modpack
-2. Drop `runic_races-1.5.0.jar` into the `mods/` folder (required on **both** client and server)
+2. Drop `runic_races-1.6.0.jar` into the `mods/` folder (required on **both** client and server)
 3. **Remove** the old KubeJS Runic Races datapack if present (`kubejs/data/runic_races/`)
 4. Existing players with preserved race names will keep their selection
 
@@ -161,7 +161,7 @@ discipline is the counterplay) but never teammates, PvP-protected players, or an
 ```bash
 # Place the compile-only dependency jars in Dependencies/ (gitignored), then:
 ./gradlew build
-# Output: build/libs/runic_races-1.5.0.jar
+# Output: build/libs/runic_races-1.6.0.jar
 ```
 
 **Required:** `origins-forge`, `apoli-forge`, `calio-forge`. Apoli and Calio ship *inside*

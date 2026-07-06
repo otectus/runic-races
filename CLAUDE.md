@@ -3,7 +3,7 @@
 ## Quick Reference
 - **Mod ID**: `runic_races`
 - **Package**: `com.otectus.runic_races`
-- **Version**: 1.5.0
+- **Version**: 1.6.0
 - **MC**: 1.20.1 | **Forge**: 47.2.0 | **Java**: 17
 - **Mappings**: Official
 
@@ -57,19 +57,24 @@ hand-written-equivalent and authoritative):
   (`pixie_wings_base.png`, `wyvern_wings_base.png`, `drake_wings.png` are the hand-made sources)
 - `tools/generate_particles.py` — emits the custom particle sprite frames (`textures/particle/`)
 - `tools/generate_overlays.py` — screen-cue overlay textures (`textures/gui/overlay/`)
-- `tools/generate_state_runes.py` — one 16×16 rune glyph per `RaceStateFlags` (`textures/gui/rune/`)
+- `tools/generate_state_runes.py` — one 16×16 rune glyph per `RaceStateFlags` (`textures/gui/rune/`);
+  `StaleAssetTest` enforces exact flag↔texture parity (bits 6/7 retired — never re-add a flag
+  without a server-side setter and a rune)
 Resource-id rule: cooldown resources are `runic_races:<race>/<powerFile>_cooldown_timer` and
 must match exactly in JSON and any Java that reads them (`FlightConfig`, `AbilityIconRegistry`,
 `RacialEventHandler`).
 
 ## Custom particles & sounds
-- `registry/ModParticles.java` — 13 identity particles (`rune_glyph`, `soul_wisp`, `fae_sparkle`,
+- `registry/ModParticles.java` — 18 identity particles (`rune_glyph`, `soul_wisp`, `fae_sparkle`,
   `ember_scale`, `frost_mote`, `venom_drip`, `web_strand`, `leaf_petal`, `feather_down`,
-  `shadow_wisp`, `foxfire`, `arcane_glint`, `bone_chip`); behaviors in
+  `shadow_wisp`, `foxfire`, `arcane_glint`, `bone_chip`, `mirror_shard`, `moon_sliver`,
+  `rock_chip`, `pollen_mote`, `gale_streak`); behaviors in
   `client/particle/RunicParticle` (registration common-side; providers client-only; physical
-  matter — DRIP/LEAF/SHADE/CHIP — is world-lit, magic is emissive)
-- `registry/ModSounds.java` + `assets/runic_races/sounds.json` — 23 sound events that
-  curate vanilla `.ogg`s via `"type": "event"`; bespoke audio can drop in without code changes
+  matter — DRIP/LEAF/SHADE/CHIP/SHARD — is world-lit, magic is emissive; FOXFIRE flickers
+  and flares before dying, STREAK is a fast short-lived dash)
+- `registry/ModSounds.java` + `assets/runic_races/sounds.json` — 29 sound events that
+  curate vanilla `.ogg`s via `"type": "event"`; bespoke audio can drop in without code changes.
+  Every event needs a `subtitles.runic_races.*` key in `en_us.json` (`ParticleAssetTest` enforces)
 - `SignatureEntry` Sfx/Vfx specs hold `Supplier`s so DeferredRegister objects can be referenced
   before registration resolves
 
@@ -78,9 +83,28 @@ must match exactly in JSON and any Java that reads them (`FlightConfig`, `Abilit
   `runic_races:signature_presentation` action; the recipe — layered sounds, shaped particles,
   banner, screen cue — lives in Java). Keep the family grammar: Human snap / Elven rise-implode /
   Dwarven ground-burst / Bestial lunge / Faeborne swirl-pop / Undead sink-drain / Draconic exhale.
+- **Staging**: Sfx/Vfx specs take `.delayed(n)` withers (anticipation → impact → settle;
+  clamp [1,100], Human family ≤10 ticks total). Delayed beats run via
+  `presentation/PresentationScheduler` (BeatQueue core, unit-tested) and track the caster's
+  LIVE position/look — a blink's settle-beat lands at the destination. Banner + screen cue
+  always fire at t=0. Every entry needs ≥1 zero-delay spec (`SignatureTierTest` enforces,
+  along with the Minor ≤20 / Major 30–60 / Mythic ≥80 per-entry particle-sum bands —
+  one spec per `new VfxSpec(` line, counts as the 2nd argument).
 - `SignatureEntry.VfxSpec` shapes: `POINT` (default), `RING`, `RING_IN`, `RING_ORBIT`, `HELIX`,
-  `DOME`, `LINE` (needs `RunicPresentation.fire(player, key, lineTarget)`), `SPOKES` —
+  `DOME`, `LINE` (needs `RunicPresentation.fire(player, key, lineTarget)`), `SPOKES`,
+  `CONE` (from eyes along live look vector; spreadX = range, spreadY = end radius),
+  `BURST_UP` (fountain column; spreadX = disc radius, spreadY = height) —
   spreadX = radius/length, spreadY = height, speed = directed velocity.
+- **Procs & weakness cues**: `RunicPresentation.fireProc(player, key[, channel], debounceTicks)`
+  (backed by `ProcDebounce`) fires repeatable Minor cues; all fragility procs share the
+  `"fragility"` channel. `WeaknessCueRegistry` maps `RaceStateFlags` 0→1 onsets to cues,
+  fired from `RaceStateTracker.setFlag`. Proc/weakness entries are **bannerless**
+  (`bannerKey == null`) — the notification system owns the words
+  (`WeaknessCueCoverageTest` enforces).
+- Server config `vfx.signatureParticleDensity` (0–2) scales signature particle counts with a
+  per-shape floor (~6 for shaped emission); tier tests assert unscaled authored counts.
+- Draconic breath cue rule: every breath carries an element-matched screen cue
+  (fire HEAT_SHIMMER / ice FROST_RIME / sea+wind WIND_STREAK / terra SHAKE / volt FREEZE_FRAME).
 - `client/ClientRacialAmbienceHandler` — one `AmbienceRoutine` per race (registry map);
   `AmbienceCoverageTest` enforces every race is registered or explicitly quiet.
 

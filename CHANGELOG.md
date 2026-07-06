@@ -3,6 +3,62 @@
 All notable changes to Runic Races are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.6.0] — 2026-07-06 — Every Ability Reads
+
+A full VFX overhaul: every active plays out in staged beats, every passive with a real
+moment shows it, and every severe weakness warns you the instant it starts biting.
+**No network protocol change** — protocol stays 2; 1.6.0 clients and servers pair freely
+with 1.5.0's packets.
+
+### Added
+- **Staged signature presentation.** Sfx/Vfx specs take `.delayed(n)` beats (anticipation →
+  impact → settle), run by a server-side scheduler that tracks the caster's live position —
+  a strafing caster keeps their effect, and Sprite's re-appear pop lands at the blink
+  *destination*. Two new emission shapes: `CONE` (aimed along the live look vector) and
+  `BURST_UP` (fountain column).
+- **Five new identity particles** — `mirror_shard`, `moon_sliver`, `rock_chip`,
+  `pollen_mote`, `gale_streak` — and **six curated sound events** (`pounce.strike`,
+  `mirror.shatter`, `moon.veil`, `breath.inhale`, `sizzle.sunlight`, `warn.kindling`),
+  all vanilla-curated and resource-pack swappable.
+- **Passive proc cues**: Primian's adaptation glint on learning a new place, Valen's
+  shoulder-check thuds with iron dust along the impact line, Zombie's deathless flesh
+  shrugs off poison/hunger in a puff of grave-ash, Arachnid's web trembles when the
+  sense-pulse marks prey, and drake hides shimmer while their element immunity is
+  actively working.
+- **Weakness onset cues** (bannerless — the notification system keeps the words): grave-kin
+  sear when the sun finds them while Deep One/Skeleton get a silent glare instead; Dryad's
+  Kindling flares embers, panicked leaves, and heat-shimmer the moment they ignite; frost-kin
+  thaw hiss; Feline's underwater yowl; Volt Drake's short-circuit; dry-land crack for Sea
+  Serpen/Nymph; cold-iron quench for Faerie.
+- **`vfx.signatureParticleDensity`** server config (0–2) scales signature particles with
+  per-shape floors so a turned-down ring still reads as a ring.
+- **Tests**: `SignatureTierTest` (every recipe in its Minor/Major/Mythic band, delays
+  clamped, instant feedback guaranteed), `BeatQueueTest` (scheduler core), and
+  `WeaknessCueCoverageTest` (cue registry integrity, bannerless enforcement).
+
+### Changed
+- **All 37 actives restaged.** Highlights: Blood Elf's frenzy beats twice (blood drawn in,
+  then erupting); Ice Elf gathers inward before the nova bursts; Deep One's tremor and
+  Canine's howl roll out as expanding wavefronts; Changeling forms an orbiting mirror that
+  shatters on the shift; Feline Pounce is now a bespoke Major with claw streaks raking down
+  the lunge line.
+- **Fire Drake's breath is actual fire** — flame and embers replace the purple vanilla
+  `dragon_breath` in both the signature and the cone; Terra Drake's breath spits real stone
+  chips instead of crit sparks; every breath now opens with an inhale layer and carries an
+  element-matched screen cue (volt gets a white lightning strobe).
+- **Faerie and Sprite wing flaps de-duplicated** — faerie flaps shed fae dust, sprite keeps
+  the end-rod shimmer.
+- **Fragility procs** moved from hand-rolled handler code into bannerless signature-registry
+  entries behind a shared debounce channel (same sounds and sparks, one source of truth).
+
+### Fixed
+- **Kitsune's foxfire renders as actual foxfire** — a dedicated flicker-and-flare behavior
+  replaces the soul-wisp alias that made it look like generic undead ambience.
+- **`venom_drip` and `bone_chip`** identity particles finally appear in signature recipes
+  (Serpen's shed skin, Skeleton's conscription) instead of existing only as proc dust.
+- **Dead state runes removed**: BEAST_SURGE and REGROWTH_SUPPRESSED had textures and HUD
+  definitions but no server-side setter — they could never light.
+
 ## [1.5.0] — 2026-07-05 — Full-Audit Remediation
 
 A deep audit of the codebase, datapack, integrations, balance, docs, and tests — and the
