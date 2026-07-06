@@ -101,7 +101,8 @@ Config files are generated in `config/runic_races/`:
 
 By default Runic Races shows only its two-layer **Family → Race** selection and hides the
 vanilla `origins:origin` layer — which is where most other Origins add-ons register their
-origins, so they don't appear.
+origins, so they don't appear. If that happens, the server log warns at startup with the
+full list of hidden origins and the config remedy, so the overlap is never silent.
 
 ### Let other origin mods coexist
 

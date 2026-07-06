@@ -22,7 +22,8 @@ public class RRCommonConfig {
                 .comment("When true (default), the vanilla origins:origin layer is force-disabled so players only see the",
                         "Runic Races Family and Race screens. Origin add-ons that register into the default layer will be hidden.",
                         "Set false to let other Origins mods coexist — their origins reappear as the standard Origins screen",
-                        "alongside Family/Race. (Built-in datapack toggle; applies to newly created worlds — existing worlds can be",
+                        "alongside Family/Race. A server-start warning names any origin this setting is hiding.",
+                        "(Built-in datapack toggle; applies to newly created worlds — existing worlds can be",
                         "switched with /datapack enable|disable or the runic_races_coexistence example datapack.)")
                 .define("disableDefaultOriginLayer", true);
         builder.pop();
