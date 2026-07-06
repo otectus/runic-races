@@ -26,6 +26,7 @@ public class RRServerConfig {
 
     // Server-authored VFX
     public static final ForgeConfigSpec.DoubleValue BREATH_PARTICLE_DENSITY;
+    public static final ForgeConfigSpec.DoubleValue SIGNATURE_PARTICLE_DENSITY;
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -87,6 +88,10 @@ public class RRServerConfig {
                 .comment("Density multiplier for draconic breath-weapon particles broadcast by the server (0.0 = none, 1.0 = default, 2.0 = double).",
                         "Below 0.5 the secondary accent particles are skipped entirely.")
                 .defineInRange("breathParticleDensity", 1.0, 0.0, 2.0);
+        SIGNATURE_PARTICLE_DENSITY = builder
+                .comment("Density multiplier for signature-ability particles broadcast by the server (0.0 = none, 1.0 = default, 2.0 = double).",
+                        "Shaped emissions (rings, domes, spokes, cones) keep a small floor so they stay readable at low values.")
+                .defineInRange("signatureParticleDensity", 1.0, 0.0, 2.0);
         builder.pop();
 
         SPEC = builder.build();

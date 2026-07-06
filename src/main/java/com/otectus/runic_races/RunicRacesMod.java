@@ -58,6 +58,8 @@ public class RunicRacesMod {
 
         // Register event handlers on the Forge event bus
         MinecraftForge.EVENT_BUS.register(new RacialEventHandler());
+        MinecraftForge.EVENT_BUS.register(new com.otectus.runic_races.presentation.PresentationScheduler());
+        MinecraftForge.EVENT_BUS.register(new com.otectus.runic_races.presentation.ProcDebounce());
         MinecraftForge.EVENT_BUS.addListener(this::onRegisterCommands);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, RRCommonConfig.SPEC, "runic_races/runic_races-common.toml");

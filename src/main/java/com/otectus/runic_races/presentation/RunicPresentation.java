@@ -1,5 +1,6 @@
 package com.otectus.runic_races.presentation;
 
+import com.otectus.runic_races.config.RRServerConfig;
 import com.otectus.runic_races.network.NetworkHandler;
 import com.otectus.runic_races.network.S2CScreenCuePacket;
 import com.otectus.runic_races.presentation.SignatureEntry.SfxSpec;
@@ -15,7 +16,12 @@ import net.minecraft.world.phys.Vec3;
 /**
  * Single entry point for "signature moment" presentation. Callers pick a
  * {@link SignatureKey} and this helper plays the matching sounds, particles,
- * actionbar banner and optional screen cue in one shot.
+ * actionbar banner and optional screen cue.
+ *
+ * Zero-delay specs fire immediately; {@code .delayed(n)} specs are handed to
+ * {@link PresentationScheduler} and follow the caster's live position, letting
+ * recipes play out in beats (anticipation → impact → settle). Banner and screen
+ * cue always fire at t=0 — they acknowledge the input, not the animation.
  *
  * Server-side only. Banners/screen cues are delivered per-player; sfx/vfx are
  * broadcast at the player's position so nearby players see and hear them too.
@@ -37,17 +43,52 @@ public final class RunicPresentation {
         SignatureEntry entry = SignatureRegistry.get(key);
         if (entry == null || !(player.level() instanceof ServerLevel level)) return;
 
-        playSignatureSfx(level, player.position(), entry);
-        spawnSignatureVfx(level, player.position(), entry, lineTarget);
+        Vec3 pos = player.position();
+        Vec3 look = player.getLookAngle();
+        for (SfxSpec spec : entry.sounds()) {
+            if (spec.delayTicks() <= 0) {
+                playOneSfx(level, pos, spec);
+            } else {
+                PresentationScheduler.scheduleSfx(player, spec);
+            }
+        }
+        Vec3 origin = pos.add(0, 0.3, 0);
+        for (VfxSpec spec : entry.particles()) {
+            if (spec.delayTicks() <= 0) {
+                spawnOneVfx(level, origin, look, spec, lineTarget);
+            } else {
+                PresentationScheduler.scheduleVfx(player, spec, lineTarget);
+            }
+        }
         showRunicBanner(player, entry, bannerArgs);
         if (entry.screenCue() != null) {
             showScreenCue(player, entry.screenCue(), entry.screenCueDurationTicks());
         }
     }
 
+    /** Debounced fire for repeatable proc cues; the channel defaults to the key itself. */
+    public static boolean fireProc(ServerPlayer player, SignatureKey key, int debounceTicks) {
+        return fireProc(player, key, key.name(), debounceTicks);
+    }
+
+    /**
+     * Debounced fire on an explicit channel — related procs share a channel
+     * (e.g. all fragility cues use {@code "fragility"}) so a burst of different
+     * triggers still reads as one moment. Returns whether it fired.
+     */
+    public static boolean fireProc(ServerPlayer player, SignatureKey key, String channel, int debounceTicks) {
+        if (!ProcDebounce.tryAcquire(player, channel, debounceTicks)) return false;
+        fire(player, key);
+        return true;
+    }
+
+    /**
+     * Position-based variant with no player to schedule against: every spec fires
+     * immediately, delays ignored. CONE degrades to POINT (no look vector).
+     */
     public static void playSignatureSfx(ServerLevel level, Vec3 pos, SignatureEntry entry) {
         for (SfxSpec spec : entry.sounds()) {
-            level.playSound(null, pos.x, pos.y, pos.z, spec.sound().get(), SoundSource.PLAYERS, spec.volume(), spec.pitch());
+            playOneSfx(level, pos, spec);
         }
     }
 
@@ -55,11 +96,36 @@ public final class RunicPresentation {
         spawnSignatureVfx(level, pos, entry, null);
     }
 
+    /** Position-based variant — see {@link #playSignatureSfx}: immediate, delays ignored. */
     public static void spawnSignatureVfx(ServerLevel level, Vec3 pos, SignatureEntry entry, Vec3 lineTarget) {
         Vec3 origin = pos.add(0, 0.3, 0);
         for (VfxSpec spec : entry.particles()) {
-            spawnShaped(level, origin, spec, lineTarget);
+            spawnOneVfx(level, origin, Vec3.ZERO, spec, lineTarget);
         }
+    }
+
+    static void playOneSfx(ServerLevel level, Vec3 pos, SfxSpec spec) {
+        level.playSound(null, pos.x, pos.y, pos.z, spec.sound().get(), SoundSource.PLAYERS, spec.volume(), spec.pitch());
+    }
+
+    static void spawnOneVfx(ServerLevel level, Vec3 origin, Vec3 look, VfxSpec spec, Vec3 lineTarget) {
+        spawnShaped(level, origin, look, spec, lineTarget);
+    }
+
+    /**
+     * Scales an authored count by {@code vfx.signatureParticleDensity}. Shaped
+     * emissions keep a small floor so a turned-down ring still reads as a ring
+     * rather than a bug; 0.0 disables signature particles outright.
+     */
+    private static int scaledCount(VfxSpec spec) {
+        double density = RRServerConfig.SIGNATURE_PARTICLE_DENSITY.get();
+        if (density <= 0.0) return 0;
+        if (Math.abs(density - 1.0) < 1.0e-3) return spec.count();
+        int floor = switch (spec.shape()) {
+            case POINT, LINE -> 1;
+            default -> Math.min(spec.count(), 6);
+        };
+        return Math.max(floor, (int) Math.round(spec.count() * density));
     }
 
     /**
@@ -67,9 +133,10 @@ public final class RunicPresentation {
      * vanilla count-0 trick: {@code sendParticles(p, x, y, z, 0, dx, dy, dz, speed)}
      * gives the single particle velocity {@code (dx, dy, dz) * speed}.
      */
-    private static void spawnShaped(ServerLevel level, Vec3 origin, VfxSpec spec, Vec3 lineTarget) {
+    private static void spawnShaped(ServerLevel level, Vec3 origin, Vec3 look, VfxSpec spec, Vec3 lineTarget) {
         var particle = spec.particle().get();
-        int count = spec.count();
+        int count = scaledCount(spec);
+        if (count <= 0) return;
         double radius = spec.spreadX();
         double height = spec.spreadY();
         switch (spec.shape()) {
@@ -150,10 +217,53 @@ public final class RunicPresentation {
                     }
                 }
             }
+            case CONE -> {
+                if (look == null || look.lengthSqr() < 1.0e-4) {
+                    // No aim available (position-based entry point) — degrade to a small cloud.
+                    level.sendParticles(particle, origin.x, origin.y, origin.z, count,
+                            0.4, 0.4, 0.4, spec.speed());
+                    return;
+                }
+                Vec3 dir = look.normalize();
+                // Raise from the feet-anchored origin toward the eyes so the jet leaves the face.
+                Vec3 eye = origin.add(0, 1.2, 0);
+                double range = Math.max(1.0, radius);
+                double endRadius = Math.max(0.15, height);
+                // Start the visual cone out from the face so first person isn't blinded
+                // (same trick as ConeBreathAction).
+                double startDist = Math.min(1.5, range * 0.25);
+                for (int i = 0; i < count; i++) {
+                    double t = (i + 0.5) / count;
+                    Vec3 axis = eye.add(dir.scale(startDist + (range - startDist) * t));
+                    double spread = endRadius * t;
+                    double ox = (level.random.nextDouble() * 2 - 1) * spread;
+                    double oy = (level.random.nextDouble() * 2 - 1) * spread;
+                    double oz = (level.random.nextDouble() * 2 - 1) * spread;
+                    level.sendParticles(particle,
+                            axis.x + ox, axis.y + oy, axis.z + oz,
+                            0, dir.x, dir.y, dir.z, spec.speed());
+                }
+            }
+            case BURST_UP -> {
+                // Fountain column: golden-angle azimuths in a spreadX disc, staggered up
+                // the spreadY height, all velocity straight up.
+                for (int i = 0; i < count; i++) {
+                    double azimuth = Math.PI * (1 + Math.sqrt(5)) * i;
+                    double r = radius * Math.sqrt((i + 0.5) / count);
+                    double y = Math.max(0.5, height) * i / Math.max(1, count - 1);
+                    level.sendParticles(particle,
+                            origin.x + Math.cos(azimuth) * r,
+                            origin.y + y,
+                            origin.z + Math.sin(azimuth) * r,
+                            0, 0, 1, 0, spec.speed());
+                }
+            }
         }
     }
 
     public static void showRunicBanner(ServerPlayer player, SignatureEntry entry, Object... args) {
+        // Bannerless entries (weakness onset cues) leave the words to the notification system.
+        if (entry.bannerKey() == null || entry.bannerKey().isEmpty()) return;
         // bannerKey is a translation key; runtime substitutions (e.g. an enchantment name) pass
         // straight through as Component.translatable args, mapping to %s in the localized value.
         MutableComponent component = (args.length == 0

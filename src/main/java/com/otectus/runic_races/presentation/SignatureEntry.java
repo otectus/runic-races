@@ -11,7 +11,13 @@ import java.util.List;
  * banner translation key + color, sounds, particles, optional client screen cue.
  *
  * {@code bannerKey} is a translation key (resolved client-side via {@code Component.translatable});
- * lang values may contain {@code %s} placeholders for runtime substitution args.
+ * lang values may contain {@code %s} placeholders for runtime substitution args. It may be
+ * {@code null} for bannerless entries (e.g. weakness onset cues whose copy is owned by the
+ * notification system).
+ *
+ * Specs carry an optional {@code delayTicks}: zero-delay specs fire the instant the signature
+ * does; delayed specs are run by {@link PresentationScheduler} against the caster's live
+ * position. Author multi-beat recipes with {@code .delayed(n)} withers.
  *
  * Stored in {@link SignatureRegistry} and fired through {@link RunicPresentation#fire}.
  */
@@ -25,10 +31,19 @@ public record SignatureEntry(
         int screenCueDurationTicks,
         Intensity intensity
 ) {
-    public record SfxSpec(java.util.function.Supplier<SoundEvent> sound, float volume, float pitch) {
+    public record SfxSpec(java.util.function.Supplier<SoundEvent> sound, float volume, float pitch, int delayTicks) {
+        public SfxSpec(java.util.function.Supplier<SoundEvent> sound, float volume, float pitch) {
+            this(sound, volume, pitch, 0);
+        }
+
         /** Convenience for already-constructed vanilla sounds ({@code SoundEvents.*}). */
         public SfxSpec(SoundEvent sound, float volume, float pitch) {
-            this(() -> sound, volume, pitch);
+            this(() -> sound, volume, pitch, 0);
+        }
+
+        /** Copy of this spec that fires {@code ticks} after the signature moment. */
+        public SfxSpec delayed(int ticks) {
+            return new SfxSpec(sound, volume, pitch, ticks);
         }
     }
 
@@ -55,7 +70,15 @@ public record SignatureEntry(
         /** Evenly spaced along origin→target; needs the target-position fire overload. */
         LINE,
         /** Radial ground lines (8 spokes) out to spreadX blocks. */
-        SPOKES
+        SPOKES,
+        /**
+         * Forward cone from eye height along the caster's look vector;
+         * spreadX = range (blocks), spreadY = end radius, velocity = look * speed.
+         * Degrades to POINT when fired through a position-only entry point.
+         */
+        CONE,
+        /** Feet-anchored fountain column: spreadX = disc radius, spreadY = column height, velocity straight up. */
+        BURST_UP
     }
 
     public record VfxSpec(
@@ -65,24 +88,36 @@ public record SignatureEntry(
             double spreadY,
             double spreadZ,
             double speed,
-            Shape shape
+            Shape shape,
+            int delayTicks
     ) {
+        /** Shaped emission with a supplier-based particle, firing immediately. */
+        public VfxSpec(java.util.function.Supplier<? extends ParticleOptions> particle, int count,
+                       double spreadX, double spreadY, double spreadZ, double speed, Shape shape) {
+            this(particle, count, spreadX, spreadY, spreadZ, speed, shape, 0);
+        }
+
         /** Convenience for already-constructed particles ({@code ParticleTypes.*}, {@code RaceColors.*}). */
         public VfxSpec(ParticleOptions particle, int count,
                        double spreadX, double spreadY, double spreadZ, double speed) {
-            this(() -> particle, count, spreadX, spreadY, spreadZ, speed, Shape.POINT);
+            this(() -> particle, count, spreadX, spreadY, spreadZ, speed, Shape.POINT, 0);
         }
 
         /** Convenience for supplier-based particles keeping the classic point-cloud shape. */
         public VfxSpec(java.util.function.Supplier<? extends ParticleOptions> particle, int count,
                        double spreadX, double spreadY, double spreadZ, double speed) {
-            this(particle, count, spreadX, spreadY, spreadZ, speed, Shape.POINT);
+            this(particle, count, spreadX, spreadY, spreadZ, speed, Shape.POINT, 0);
         }
 
         /** Shaped emission with an already-constructed particle. */
         public VfxSpec(ParticleOptions particle, int count,
                        double spreadX, double spreadY, double spreadZ, double speed, Shape shape) {
-            this(() -> particle, count, spreadX, spreadY, spreadZ, speed, shape);
+            this(() -> particle, count, spreadX, spreadY, spreadZ, speed, shape, 0);
+        }
+
+        /** Copy of this spec that fires {@code ticks} after the signature moment. */
+        public VfxSpec delayed(int ticks) {
+            return new VfxSpec(particle, count, spreadX, spreadY, spreadZ, speed, shape, ticks);
         }
     }
 }
