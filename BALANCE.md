@@ -72,7 +72,7 @@ This is a design-side reference. The power JSON under
 | Ice Drake | Frost Breath | freeze immune, +3 armor, wings, cold | +30% fire, +hunger |
 | Sea Serpen | Tidal Breath | water breathing, +3 armor, ocean | +20% fire, dry-weak, −1♥ |
 | Terra Drake | Seismic Breath | +4 armor, KB immune, mining, wings | −10% spd/atk, +hunger |
-| Volt Drake | Lightning Breath | lightning immune, +15% spd, wings | −1.5♥, +25% wet, sky-dependent |
+| Volt Drake | Lightning Breath | lightning immune, storm-charged (+10% atk spd in rain), +15% spd, wings | −1.5♥, +25% wet, sky-dependent |
 | Wind Wyrm | Galeforce Breath | best wings, slow-fall drift, +15% spd, no fall | −2♥, cave-crippled |
 
 ## Integration Modifiers

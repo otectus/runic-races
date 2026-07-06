@@ -439,7 +439,7 @@
   "power.runic_races.volt_drake.grounded.name": "Grounded",
   "power.runic_races.volt_drake.lightning_breath.description": "Loose a bolt of stormfire that stuns and dazzles. 40-second cooldown.",
   "power.runic_races.volt_drake.lightning_breath.name": "Lightning Breath",
-  "power.runic_races.volt_drake.stormscale_hide.description": "Immune to lightning, +2 armor, +15% speed, +10% attack speed, and gliding wings.",
+  "power.runic_races.volt_drake.stormscale_hide.description": "Immune to lightning, +2 armor, +15% speed, +10% attack speed (doubled in the rain), and gliding wings.",
   "power.runic_races.volt_drake.stormscale_hide.name": "Stormscale Hide",
   "power.runic_races.wind_wyrm.galeforce_breath.description": "Summon a roaring gale that launches foes skyward as you ride the updraft. 45-second cooldown.",
   "power.runic_races.wind_wyrm.galeforce_breath.name": "Galeforce Breath",

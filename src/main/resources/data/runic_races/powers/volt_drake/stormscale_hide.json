@@ -7,7 +7,8 @@
     "lightning_imm",
     "armor",
     "speed",
-    "attack_speed"
+    "attack_speed",
+    "storm_charged"
   ],
   "elytra_flight": {
     "type": "origins:elytra_flight",
@@ -49,6 +50,18 @@
       "operation": "multiply_total",
       "value": 0.1,
       "name": "Storm Flurry"
+    }
+  },
+  "storm_charged": {
+    "type": "origins:conditioned_attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_speed",
+      "operation": "multiply_total",
+      "value": 0.1,
+      "name": "Storm Charged"
+    },
+    "condition": {
+      "type": "origins:in_rain"
     }
   }
 }
