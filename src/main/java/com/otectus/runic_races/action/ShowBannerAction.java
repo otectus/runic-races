@@ -2,15 +2,19 @@ package com.otectus.runic_races.action;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.otectus.runic_races.config.RRServerConfig;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Custom Apoli entity action: show a localized actionbar banner using Runic Races'
@@ -33,17 +37,23 @@ import java.util.List;
  * </pre>
  * <p>
  * Color names match {@link ChatFormatting} (lowercase). Unknown colors fall back to white.
+ * <p>
+ * Optional {@code learning_hint}: a second translation key sent once per player as a
+ * chat line when learning mode ({@code notifications.learningMode}) is enabled — used
+ * to explain a mechanic the first time a banner fires (e.g. why a cast was refused).
  */
 public class ShowBannerAction extends EntityAction<ShowBannerAction.Configuration> {
 
-    public record Configuration(String translationKey, List<String> args, String color, boolean bold)
+    public record Configuration(String translationKey, List<String> args, String color, boolean bold,
+                                Optional<String> learningHint)
             implements IDynamicFeatureConfiguration {
         public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
                         Codec.STRING.fieldOf("translation_key").forGetter(Configuration::translationKey),
                         Codec.STRING.listOf().optionalFieldOf("args", List.of()).forGetter(Configuration::args),
                         Codec.STRING.optionalFieldOf("color", "white").forGetter(Configuration::color),
-                        Codec.BOOL.optionalFieldOf("bold", false).forGetter(Configuration::bold)
+                        Codec.BOOL.optionalFieldOf("bold", false).forGetter(Configuration::bold),
+                        Codec.STRING.optionalFieldOf("learning_hint").forGetter(Configuration::learningHint)
                 ).apply(instance, Configuration::new)
         );
     }
@@ -66,5 +76,17 @@ public class ShowBannerAction extends EntityAction<ShowBannerAction.Configuratio
             component = component.withStyle(ChatFormatting.BOLD);
         }
         player.displayClientMessage(component, true);
+        config.learningHint().ifPresent(hint -> sendLearningHintOnce(player, hint));
+    }
+
+    /** One chat line per player per hint key, only while learning mode is on. */
+    private static void sendLearningHintOnce(ServerPlayer player, String hintKey) {
+        if (!RRServerConfig.NOTIFICATIONS_LEARNING_MODE.get()) return;
+        CompoundTag persisted = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
+        String seenKey = "runic_races:hint_seen/" + hintKey;
+        if (persisted.getBoolean(seenKey)) return;
+        persisted.putBoolean(seenKey, true);
+        player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
+        player.sendSystemMessage(Component.translatable(hintKey).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
     }
 }

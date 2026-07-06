@@ -117,7 +117,8 @@
         "type": "runic_races:show_banner",
         "translation_key": "message.runic_races.ability.no_mana",
         "color": "red",
-        "bold": true
+        "bold": true,
+        "learning_hint": "message.runic_races.learning.arcane_overflow_mana"
       }
     }
   }

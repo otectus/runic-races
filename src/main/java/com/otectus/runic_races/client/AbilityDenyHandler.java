@@ -19,8 +19,10 @@ import org.lwjgl.glfw.GLFW;
  * keypress while the cooldown resource is nonzero; this handler watches the same key
  * and, on a blocked press, pulses the HUD icon red and plays a soft deny sound.
  *
- * Known limitation: only cooldown gating is detected — mana/stamina-gated failures
- * (Iron's Spellbooks / Feathers) are not visible client-side and stay silent.
+ * Only cooldown gating is detected here — resource denials are server-side and
+ * arrive as their own feedback: the mana gate answers with a red banner from
+ * arcane_overflow's else-branch, and exhausted-wings flaps are refused with a
+ * banner + deny sound in FlightServerHandler. No denial path is silent.
  */
 @Mod.EventBusSubscriber(modid = RunicRacesMod.MOD_ID, value = Dist.CLIENT)
 public final class AbilityDenyHandler {

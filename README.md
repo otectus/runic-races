@@ -77,10 +77,16 @@ All integrations are optional and config-toggleable. If a mod is absent, its fea
 
 | Mod | Integration |
 |-----|-------------|
-| **Ars Nouveau** | Casters: −15% Source cost, +20% max mana. Iron One: +15% cost |
-| **Iron's Spellbooks** | Per-race spell damage modifiers (Magi +15%) |
+| **Ars Nouveau** | Casters: −15% Source cost, +20% max mana. Iron One: +10% cost |
+| **Iron's Spellbooks** | Per-race spell damage modifiers (Magi +15%, Iron One −10%); powers the Magi's 30-mana cast cost |
 | **Curios** | Elven +necklace, Dwarven +belt, Faeborne +ring, Undead +charm |
 | **Apotheosis** | Luck modifiers (Primian/Faerie +1, Wind Wyrm −2) |
+| **Pehkui** | Per-race height/scale, 0.45 (Sprite) → 1.30 (Terra Drake) |
+| **Feather's** | Racial max-feather pools; wing flaps cost feathers (1, Wind Wyrm 2 — `flight.flapStaminaCost`) |
+
+Abilities that *cost* an optional mod's resource degrade gracefully when that mod is absent —
+the shipped powers wrap their gates with `runic_races:resource_available`, so (for example) the
+Magi's Arcane Overflow is cooldown-only on a standalone install instead of silently dead.
 
 ## Installation
 
@@ -127,6 +133,12 @@ Runic Races adds a **Runic Races** category to the vanilla Controls screen:
 - **Fold Wings** *(unbound by default)* — while gliding, press to cancel the glide.
 
 If you leave both unbound, the legacy fallback stays active: while gliding, press **Jump** to flap and **double-tap Jump** within 4 ticks to fold your wings.
+
+Flaps only work mid-glide (the server rejects anything else), and with Feather's Mod installed each
+flap spends feathers — exhausted wings refuse with a red banner until you recover.
+
+**Breath weapons** are physical cones: they deliberately hit neutral and passive mobs (aim
+discipline is the counterplay) but never teammates, PvP-protected players, or anyone's pets.
 
 ## Commands
 

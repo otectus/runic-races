@@ -90,6 +90,7 @@
   "message.runic_races.iron_one.submerged.stop": "Solid ground bears you up again.",
   "message.runic_races.kitsune.foxfire_illusion": "Foxfire wreathes you!",
   "message.runic_races.learning.adaptation_active.start": "You begin adapting to your surroundings.",
+  "message.runic_races.learning.arcane_overflow_mana": "Arcane Overflow draws 30 mana from Iron's Spellbooks — wait for your mana to regenerate or deepen your pool.",
   "message.runic_races.learning.adaptation_active.stop": "Your adaptation fades.",
   "message.runic_races.learning.biome_home.start": "You feel at home in this land.",
   "message.runic_races.learning.biome_home.stop": "You leave your home ground.",
