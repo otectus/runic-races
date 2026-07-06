@@ -4,7 +4,7 @@
   "description": "power.runic_races.kitsune.untamed_spirit.description",
   "subpowers": [
     "health",
-    "phys"
+    "daylight"
   ],
   "health": {
     "type": "origins:attribute",
@@ -15,44 +15,22 @@
       "name": "Spirit Frailty"
     }
   },
-  "phys": {
+  "daylight": {
     "type": "origins:modify_damage_taken",
-    "damage_condition": {
-      "type": "origins:or",
+    "condition": {
+      "type": "origins:and",
       "conditions": [
         {
-          "type": "origins:name",
-          "name": "player"
+          "type": "origins:exposed_to_sun"
         },
         {
-          "type": "origins:name",
-          "name": "mob"
-        },
-        {
-          "type": "origins:name",
-          "name": "arrow"
-        },
-        {
-          "type": "origins:name",
-          "name": "trident"
-        },
-        {
-          "type": "origins:name",
-          "name": "thrown"
-        },
-        {
-          "type": "origins:name",
-          "name": "sting"
-        },
-        {
-          "type": "origins:name",
-          "name": "mob_projectile"
+          "type": "origins:daytime"
         }
       ]
     },
     "modifier": {
       "operation": "multiply_total_multiplicative",
-      "value": 0.15
+      "value": 0.2
     }
   }
 }
