@@ -13,7 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 /**
- * DeferredRegister for Runic Races blocks. Currently just the Kobold trap marker;
+ * DeferredRegister for Runic Races blocks. Currently just the web-snare trap marker;
  * future blocks (rune altars, etc.) should register here.
  */
 public class ModBlocks {

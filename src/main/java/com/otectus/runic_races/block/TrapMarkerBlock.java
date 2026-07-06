@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * Low-profile "trap marker" block placed by Kobold Improvised Trap. Has an
+ * Low-profile "trap marker" block placed by the Arachnid's Web Snare. Has an
  * extremely thin collision / visual shape so it can be dropped onto any floor
  * without being obtrusive. When a non-owner {@link LivingEntity} steps on it,
  * the trap triggers: damage + slowness, sfx, particles, then self-destructs.

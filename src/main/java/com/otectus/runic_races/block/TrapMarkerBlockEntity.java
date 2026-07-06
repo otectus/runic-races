@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * Persistent state for a placed Kobold trap: the owner UUID (trap ignores its
+ * Persistent state for a placed web-snare trap: the owner UUID (trap ignores its
  * own caster) and an absolute {@code expiresAt} game-time after which the trap
  * auto-removes itself — prevents abandoned traps from accumulating forever.
  *
