@@ -10,7 +10,9 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class NetworkHandler {
 
-    private static final String PROTOCOL_VERSION = "1";
+    // Bump whenever the message list changes — mismatched jars must fail the
+    // handshake cleanly instead of silently misrouting packet ids.
+    private static final String PROTOCOL_VERSION = "2";
     private static SimpleChannel channel;
 
     private NetworkHandler() {}
@@ -48,6 +50,13 @@ public final class NetworkHandler {
                 .encoder(S2CAdaptationStacksPacket::encode)
                 .decoder(S2CAdaptationStacksPacket::decode)
                 .consumerMainThread(S2CAdaptationStacksPacket::handle)
+                .add();
+        // APPEND ONLY: register new packets below existing ones so ids stay stable,
+        // and bump PROTOCOL_VERSION with every addition.
+        channel.messageBuilder(C2SBackToFamilyPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(C2SBackToFamilyPacket::encode)
+                .decoder(C2SBackToFamilyPacket::decode)
+                .consumerMainThread(C2SBackToFamilyPacket::handle)
                 .add();
 
         RunicRacesMod.LOGGER.info("[RunicRaces] Network channel registered ({} packets)", id);
