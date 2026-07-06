@@ -2,6 +2,7 @@ package com.otectus.runic_races.action;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.otectus.runic_races.util.Hostility;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -12,8 +13,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
@@ -63,7 +62,7 @@ public class TremorPingAction extends EntityAction<TremorPingAction.Configuratio
 
         AABB box = caster.getBoundingBox().inflate(config.radius());
         List<LivingEntity> nearby = level.getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != caster && e.isAlive() && isHostile(e));
+                e -> e != caster && e.isAlive() && Hostility.isThreatTo(caster, e));
 
         for (LivingEntity target : nearby) {
             target.addEffect(new MobEffectInstance(MobEffects.GLOWING, config.durationTicks(), 0, false, false));
@@ -85,9 +84,4 @@ public class TremorPingAction extends EntityAction<TremorPingAction.Configuratio
                 SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 0.6f, 0.5f);
     }
 
-    private static boolean isHostile(LivingEntity entity) {
-        if (entity instanceof Enemy) return true;
-        if (entity instanceof Mob mob && mob.getTarget() != null) return true;
-        return false;
-    }
 }

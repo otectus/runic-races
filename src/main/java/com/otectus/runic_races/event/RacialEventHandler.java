@@ -11,6 +11,7 @@ import com.otectus.runic_races.presentation.CueType;
 import com.otectus.runic_races.presentation.RunicPresentation;
 import com.otectus.runic_races.presentation.SignatureKey;
 import com.otectus.runic_races.race.RaceRegistry;
+import com.otectus.runic_races.util.Hostility;
 import com.otectus.runic_races.util.RaceHelper;
 import com.otectus.runic_races.util.OriginsPowerHelper;
 import net.minecraft.ChatFormatting;
@@ -25,8 +26,6 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -738,7 +737,7 @@ public class RacialEventHandler {
         if (event.getSource().getDirectEntity() != attacker) return; // melee only, no arrows/tridents
         if (!attacker.isSprinting()) return;
         LivingEntity target = event.getEntity();
-        if (target == attacker || !isHostile(target)) return;
+        if (target == attacker || !Hostility.isThreatTo(attacker, target)) return;
         if (!RaceHelper.isRace(attacker, "valen")) return;
 
         CompoundTag data = attacker.getPersistentData();
@@ -755,12 +754,6 @@ public class RacialEventHandler {
                     net.minecraft.sounds.SoundEvents.IRON_GOLEM_ATTACK,
                     net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, 0.7f);
         }
-    }
-
-    /** Hostility heuristic shared with tremor/glow actions: monsters, or mobs mid-aggro. */
-    private static boolean isHostile(LivingEntity entity) {
-        if (entity instanceof Enemy) return true;
-        return entity instanceof Mob mob && mob.getTarget() != null;
     }
 
     /** Faerie cold-iron heuristic: any item whose registry path names iron (sword, tools, armor, ingot). */

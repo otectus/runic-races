@@ -2,14 +2,13 @@ package com.otectus.runic_races.action;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.otectus.runic_races.util.Hostility;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * Custom Apoli entity action: apply {@code minecraft:glowing} to hostile mobs
  * within {@code radius} blocks of the caster for {@code duration_ticks}. Hostility
- * is determined by the {@link Enemy} interface (or any {@link Mob} currently
+ * is determined by {@link Hostility#isThreatTo} (monsters, or mobs currently
  * targeting something), which correctly excludes players, passive animals, and
  * villagers without needing datapack tag plumbing.
  * <p>
@@ -55,15 +54,11 @@ public class GlowHostilesAction extends EntityAction<GlowHostilesAction.Configur
 
         AABB box = caster.getBoundingBox().inflate(config.radius());
         List<LivingEntity> nearby = caster.level().getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != caster && e.isAlive() && isHostile(e));
+                e -> e != caster && e.isAlive() && Hostility.isThreatTo(caster, e));
 
         for (LivingEntity target : nearby) {
             target.addEffect(new MobEffectInstance(MobEffects.GLOWING, config.durationTicks(), 0, false, false));
         }
     }
 
-    private static boolean isHostile(LivingEntity entity) {
-        if (entity instanceof Enemy) return true;
-        return entity instanceof Mob mob && mob.getTarget() != null;
-    }
 }

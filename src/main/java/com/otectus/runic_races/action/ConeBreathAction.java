@@ -3,6 +3,7 @@ package com.otectus.runic_races.action;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.otectus.runic_races.config.RRServerConfig;
+import com.otectus.runic_races.util.Hostility;
 import com.otectus.runic_races.registry.ModParticles;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
@@ -137,8 +138,10 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
         // Gather candidate living entities in a bounding box that contains the cone.
         AABB box = new AABB(origin, origin.add(look.scale(range)))
                 .inflate(range * Math.sin(Math.toRadians(config.halfAngleDegrees())) + 1.0);
+        // Breath is a physical cone: it deliberately hits neutral and passive mobs
+        // (aim discipline is the counterplay), but never teammates or owned pets.
         List<LivingEntity> candidates = level.getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != caster && e.isAlive());
+                e -> e != caster && e.isAlive() && !Hostility.isProtectedAlly(caster, e));
 
         DamageSource source = level.damageSources().mobAttack(caster);
         int impactBursts = 0;

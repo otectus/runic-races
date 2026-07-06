@@ -3,6 +3,7 @@ package com.otectus.runic_races.action;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.util.Hostility;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.resources.ResourceLocation;
@@ -11,8 +12,6 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -22,9 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Custom Apoli entity action: apply a list of status effects (and optionally fire)
- * to hostile mobs within {@code radius} blocks of the caster. Hostility uses the
- * same heuristic as {@link GlowHostilesAction} — the {@link Enemy} interface, or a
- * {@link Mob} that is currently targeting something — so party members, pets,
+ * to hostile mobs within {@code radius} blocks of the caster. Hostility is decided
+ * by {@link Hostility#isThreatTo} (shared with {@link GlowHostilesAction} and the
+ * tremor ping) — monsters, or mobs aggroed at the caster — so party members, pets,
  * villagers, and passive animals are never afflicted.
  * <p>
  * This replaces {@code origins:area_of_effect} for the mod's offensive AoE actives,
@@ -81,7 +80,7 @@ public class AfflictHostilesAction extends EntityAction<AfflictHostilesAction.Co
 
         AABB box = caster.getBoundingBox().inflate(config.radius());
         List<LivingEntity> nearby = level.getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != caster && e.isAlive() && isHostile(e));
+                e -> e != caster && e.isAlive() && Hostility.isThreatTo(caster, e));
 
         for (LivingEntity target : nearby) {
             for (EffectSpec spec : config.effects()) {
@@ -94,11 +93,6 @@ public class AfflictHostilesAction extends EntityAction<AfflictHostilesAction.Co
                 target.setSecondsOnFire(config.setOnFireSeconds());
             }
         }
-    }
-
-    private static boolean isHostile(LivingEntity entity) {
-        if (entity instanceof Enemy) return true;
-        return entity instanceof Mob mob && mob.getTarget() != null;
     }
 
     private static MobEffect resolveEffect(String id) {
