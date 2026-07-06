@@ -212,6 +212,18 @@ public class RRCommands {
                 .append(failed).append(" failed, ")
                 .append(RaceRegistry.raceCount()).append(" races checked.");
 
+        // Resource-gating posture: fail-open with the backing mod absent means every
+        // mana/stamina gate reads infinite — costs are free. Ops should see that here,
+        // not discover it from players.
+        if (!com.otectus.runic_races.config.RRServerConfig.FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING.get()) {
+            if (!com.otectus.runic_races.util.ManaHelper.isAvailable()) {
+                report.append("\n§e⚠ fail-open + Iron's Spellbooks absent: mana-gated costs are FREE.§r");
+            }
+            if (!com.otectus.runic_races.util.StaminaHelper.isAvailable()) {
+                report.append("\n§e⚠ fail-open + Feather's absent: stamina-gated costs are FREE.§r");
+            }
+        }
+
         String message = report.toString();
         if (failed > 0) {
             context.getSource().sendFailure(Component.literal(message));
