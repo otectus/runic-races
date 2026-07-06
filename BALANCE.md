@@ -50,7 +50,7 @@ This is a design-side reference. The power JSON under
 ### Faeborne — teal · magic + illusion, fragile, often winged
 | Race | Active | Passive | Weakness |
 |------|--------|---------|----------|
-| Changeling | Mirror Shift | +10% spd, +1 luck | −1♥, −10% attack damage |
+| Changeling | Mirror Shift (25s) | +10% spd, +1 luck | −1♥, −5% attack damage |
 | Dryad | Verdant Bloom (heal/root) | poison immune, forest, sun-heal | 3× fire damage |
 | Sprite | Phase Shift (blink) | wings, +20% spd, +10% atk spd | −3♥, 1.5× knockback taken |
 | Nymph | Siren's Charm (pacify) | water breathing, +10% magic, water-biome home | −1.5♥, +20% fire, hot-biome slow |

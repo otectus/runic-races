@@ -10,7 +10,7 @@
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,
-    "max": 800,
+    "max": 500,
     "start_value": 0,
     "hud_render": {
       "should_render": false,
@@ -82,7 +82,7 @@
         {
           "type": "origins:change_resource",
           "resource": "runic_races:changeling/mirror_shift_cooldown_timer",
-          "change": 800
+          "change": 500
         }
       ]
     }

@@ -20,7 +20,7 @@
     "modifier": {
       "attribute": "minecraft:generic.attack_damage",
       "operation": "multiply_total",
-      "value": -0.1,
+      "value": -0.05,
       "name": "No True Self"
     }
   }
