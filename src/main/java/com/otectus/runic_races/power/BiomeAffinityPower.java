@@ -39,10 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configuration> {
 
-    private static final UUID HOME_SPEED_UUID = UUID.fromString("a7b3c8d1-1234-4567-89ab-cdef01234567");
-    private static final UUID HOME_DAMAGE_UUID = UUID.fromString("a7b3c8d2-1234-4567-89ab-cdef01234567");
-    private static final UUID HOSTILE_SPEED_UUID = UUID.fromString("a7b3c8d3-1234-4567-89ab-cdef01234567");
-    private static final UUID HOSTILE_DAMAGE_UUID = UUID.fromString("a7b3c8d4-1234-4567-89ab-cdef01234567");
     private static final ConcurrentHashMap<String, TagKey<Biome>> TAG_CACHE = new ConcurrentHashMap<>();
 
     public record Configuration(
@@ -66,6 +62,18 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
                         Codec.INT.optionalFieldOf("check_interval", 20).forGetter(Configuration::checkInterval)
                 ).apply(instance, Configuration::new)
         );
+
+        /**
+         * Per-role modifier UUID derived from the config so two biome_affinity powers
+         * on one entity (with different tags/values) no longer silently overwrite
+         * each other. Identical configs share modifiers — intended idempotency.
+         */
+        public UUID modifierUuid(String role) {
+            String key = "runic_races:biome_affinity:" + role
+                    + ":" + homeBiomeTag.orElse("") + ":" + hostileBiomeTag.orElse("")
+                    + ":" + speedBonus + ":" + damageBonus + ":" + speedPenalty + ":" + damagePenalty;
+            return UUID.nameUUIDFromBytes(key.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        }
     }
 
     public BiomeAffinityPower() {
@@ -92,13 +100,13 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
         boolean inHostile = config.hostileBiomeTag().isPresent() &&
                 biomeHolder.is(resolveTag(config.hostileBiomeTag().get(), player));
 
-        applyModifier(player, Attributes.MOVEMENT_SPEED, HOME_SPEED_UUID,
+        applyModifier(player, Attributes.MOVEMENT_SPEED, config.modifierUuid("home_speed"),
                 "Runic Races Home Speed", inHome ? config.speedBonus() : 0.0, inHome);
-        applyModifier(player, Attributes.ATTACK_DAMAGE, HOME_DAMAGE_UUID,
+        applyModifier(player, Attributes.ATTACK_DAMAGE, config.modifierUuid("home_damage"),
                 "Runic Races Home Damage", inHome ? config.damageBonus() : 0.0, inHome);
-        applyModifier(player, Attributes.MOVEMENT_SPEED, HOSTILE_SPEED_UUID,
+        applyModifier(player, Attributes.MOVEMENT_SPEED, config.modifierUuid("hostile_speed"),
                 "Runic Races Hostile Speed", inHostile ? config.speedPenalty() : 0.0, inHostile);
-        applyModifier(player, Attributes.ATTACK_DAMAGE, HOSTILE_DAMAGE_UUID,
+        applyModifier(player, Attributes.ATTACK_DAMAGE, config.modifierUuid("hostile_damage"),
                 "Runic Races Hostile Damage", inHostile ? config.damagePenalty() : 0.0, inHostile);
 
         // Mirror state to the HUD via the race-state tracker (server-side only).
@@ -111,10 +119,11 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
     @Override
     public void onRemoved(ConfiguredPower<Configuration, ?> power, Entity entity) {
         if (entity instanceof Player player) {
-            removeModifier(player, Attributes.MOVEMENT_SPEED, HOME_SPEED_UUID);
-            removeModifier(player, Attributes.ATTACK_DAMAGE, HOME_DAMAGE_UUID);
-            removeModifier(player, Attributes.MOVEMENT_SPEED, HOSTILE_SPEED_UUID);
-            removeModifier(player, Attributes.ATTACK_DAMAGE, HOSTILE_DAMAGE_UUID);
+            Configuration config = power.getConfiguration();
+            removeModifier(player, Attributes.MOVEMENT_SPEED, config.modifierUuid("home_speed"));
+            removeModifier(player, Attributes.ATTACK_DAMAGE, config.modifierUuid("home_damage"));
+            removeModifier(player, Attributes.MOVEMENT_SPEED, config.modifierUuid("hostile_speed"));
+            removeModifier(player, Attributes.ATTACK_DAMAGE, config.modifierUuid("hostile_damage"));
             if (player instanceof ServerPlayer serverPlayer) {
                 RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.BIOME_HOME, false);
                 RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.BIOME_HOSTILE, false);

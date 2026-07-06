@@ -34,8 +34,6 @@ import java.util.UUID;
  */
 public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Configuration> {
 
-    private static final UUID SCALING_UUID = UUID.fromString("b8c4d9e2-2345-5678-9abc-def012345678");
-
     public record Configuration(
             String attribute,
             double dayValue,
@@ -55,6 +53,17 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
                         Codec.BOOL.optionalFieldOf("require_sky_exposure", false).forGetter(Configuration::requireSkyExposure)
                 ).apply(instance, Configuration::new)
         );
+
+        /**
+         * Modifier UUID derived from the config so two scaling powers on the same
+         * attribute (with different values) no longer silently overwrite each other.
+         * Identical configs still share one modifier — intended idempotency.
+         */
+        public UUID modifierUuid() {
+            String key = "runic_races:scaling:" + attribute + ":" + operation
+                    + ":" + dayValue + ":" + nightValue;
+            return UUID.nameUUIDFromBytes(key.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        }
     }
 
     public ScalingAttributePower() {
@@ -92,15 +101,16 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
         AttributeInstance instance = player.getAttribute(attr);
         if (instance == null) return;
 
-        AttributeModifier existing = instance.getModifier(SCALING_UUID);
+        UUID uuid = config.modifierUuid();
+        AttributeModifier existing = instance.getModifier(uuid);
         if (value != 0.0) {
             if (existing == null || existing.getAmount() != value) {
-                if (existing != null) instance.removeModifier(SCALING_UUID);
+                if (existing != null) instance.removeModifier(uuid);
                 instance.addTransientModifier(new AttributeModifier(
-                        SCALING_UUID, "Runic Races Scaling", value, op));
+                        uuid, "Runic Races Scaling", value, op));
             }
         } else if (existing != null) {
-            instance.removeModifier(SCALING_UUID);
+            instance.removeModifier(uuid);
         }
 
         // "Night empowered" = not daytime AND the night value is the stronger (non-zero) side.
@@ -118,7 +128,7 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
         Attribute attr = resolveAttribute(config.attribute());
         if (attr == null) return;
         AttributeInstance instance = player.getAttribute(attr);
-        if (instance != null) instance.removeModifier(SCALING_UUID);
+        if (instance != null) instance.removeModifier(config.modifierUuid());
         if (player instanceof ServerPlayer serverPlayer) {
             RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.NIGHT_EMPOWERED, false);
         }
