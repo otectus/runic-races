@@ -59,6 +59,15 @@ class PowerJsonLintTest {
                     problems.add(relative + ": check_interval " + obj.get("check_interval") + " < 1");
                 }
 
+                // Rule: no explicit zero-valued bonus/penalty fields — the codec treats
+                // them as optional and skips 0.0, so they are dead weight that reads as
+                // a real effect to anyone skimming the JSON.
+                for (String key : List.of("speed_bonus", "damage_bonus", "speed_penalty", "damage_penalty")) {
+                    if (obj.has(key) && obj.get(key).getAsDouble() == 0.0) {
+                        problems.add(relative + ": " + key + " is an explicit 0.0 — delete the line (no-op)");
+                    }
+                }
+
                 // Rule: biome tags in allowlist
                 for (String key : List.of("home_biome_tag", "hostile_biome_tag")) {
                     if (obj.has(key) && !BIOME_TAG_ALLOWLIST.contains(obj.get(key).getAsString())) {

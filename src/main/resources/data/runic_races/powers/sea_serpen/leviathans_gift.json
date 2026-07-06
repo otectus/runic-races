@@ -28,7 +28,6 @@
     "damage_bonus": 0.1,
     "hostile_biome_tag": "forge:is_hot",
     "speed_penalty": -0.05,
-    "damage_penalty": 0.0,
     "check_interval": 40
   }
 }
