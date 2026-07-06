@@ -52,7 +52,7 @@ This is a design-side reference. The power JSON under
 |------|--------|---------|----------|
 | Changeling | Mirror Shift | +10% spd, +1 luck | −1♥, −10% attack damage |
 | Dryad | Verdant Bloom (heal/root) | poison immune, forest, sun-heal | 3× fire damage |
-| Sprite | Phase Shift (blink) | wings, +30% spd, +15% atk spd | −3♥, 1.5× knockback taken |
+| Sprite | Phase Shift (blink) | wings, +20% spd, +10% atk spd | −3♥, 1.5× knockback taken |
 | Nymph | Siren's Charm (pacify) | water breathing, +10% magic, water-biome home | −1.5♥, +20% fire, hot-biome slow |
 | Faerie | Faerie Bargain (glamour) | wings, +15% magic, +20% spd, night vision | −2.5♥, +20% physical, 1.4× knockback taken |
 
