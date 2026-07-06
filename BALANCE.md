@@ -59,7 +59,7 @@ This is a design-side reference. The power JSON under
 ### Undead — purple · undeath immunities, night power
 | Race | Active | Passive | Weakness |
 |------|--------|---------|----------|
-| Zombie | Undying Hunger | +3♥, poison/hunger immune, KB resist | sun decay, −10% spd, −25% heal |
+| Zombie | Undying Hunger | +3♥, poison/hunger immune, KB resist | sun decay, −10% spd, −15% heal |
 | Skeleton | Conscript the Dead (2 Grave Servants) | +10% atk spd, poison/hunger immune, water breathing | −2♥, +sun/fall damage |
 | Wraith | Spectral Phase (phase + drain heal) | +night dmg, no fall, night vision | −2.5♥, sun-weak, +holy |
 | Demon | Infernal Wrath (hellfire) | fire immune, +15% melee, hot-biome home | +25% holy, +20% water, −25% heal |

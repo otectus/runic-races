@@ -455,7 +455,7 @@
   "power.runic_races.wraith.spectral_phase.name": "Spectral Phase",
   "power.runic_races.zombie.deathless_flesh.description": "+3 hearts, +1 armor, immune to Poison and Hunger, and hard to knock down.",
   "power.runic_races.zombie.deathless_flesh.name": "Deathless Flesh",
-  "power.runic_races.zombie.sunlight_decay.description": "-10% speed and your flesh decays in direct sunlight; you heal slowly.",
+  "power.runic_races.zombie.sunlight_decay.description": "-10% speed, -15% healing, and your flesh decays in direct sunlight.",
   "power.runic_races.zombie.sunlight_decay.name": "Sunlight Decay",
   "power.runic_races.zombie.undying_hunger.description": "Refuse to die: Resistance II, Regeneration, and Strength for 8s. 90-second cooldown.",
   "power.runic_races.zombie.undying_hunger.name": "Undying Hunger",

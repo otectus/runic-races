@@ -30,7 +30,7 @@
     "type": "origins:modify_healing",
     "modifier": {
       "operation": "multiply_total_multiplicative",
-      "value": -0.25
+      "value": -0.15
     }
   }
 }
