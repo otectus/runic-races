@@ -18,7 +18,7 @@ Theatrical, never spammy. A Feline cheats death with **Nine Lives**. A Reaper ri
 
 ## Strengths *and* Weaknesses
 
-Balance is zero-sum. The Sprite is a +30%-speed glass cannon. The Wind Wyrm is the freest flyer alive — and a wretched, weakened thing the moment it's caged underground. Drakes are immune to their element and burned by its opposite. The Undead shrug off poison and hunger but **decay in sunlight**. Counterplay always exists: gear, helmets, the right terrain.
+Balance is zero-sum. The Sprite is a +20%-speed glass cannon. The Wind Wyrm is the freest flyer alive — and a wretched, weakened thing the moment it's caged underground. Drakes are immune to their element and burned by its opposite. The Undead shrug off poison and hunger but **decay in sunlight**. Counterplay always exists: gear, helmets, the right terrain.
 
 ## Look the Part *(with Pehkui)*
 
@@ -34,4 +34,4 @@ Absent mods are silently skipped — Runic Races runs great standalone.
 
 ---
 
-**Requires Origins Forge.** Minecraft 1.20.1 • Forge • Version **1.2.0**.
+**Requires Origins Forge.** Minecraft 1.20.1 • Forge • Version **1.5.0**.

@@ -7,7 +7,7 @@ icon textures/models are cleared first. Run from repo root.
 import json, os, glob
 from PIL import Image
 
-NOTES = os.path.expanduser("~/Notes/Runic Races")
+NOTES = os.environ.get("RR_ART_DIR", os.path.expanduser("~/Notes/Runic Races"))
 TEX = "src/main/resources/assets/runic_races/textures/item"
 MODELS = "src/main/resources/assets/runic_races/models/item"
 

@@ -3,14 +3,13 @@
 ## Quick Reference
 - **Mod ID**: `runic_races`
 - **Package**: `com.otectus.runic_races`
-- **Version**: 1.4.0
+- **Version**: 1.5.0
 - **MC**: 1.20.1 | **Forge**: 47.2.0 | **Java**: 17
 - **Mappings**: Official
 
 ## Build
 - `./gradlew build` — full build
 - `./gradlew compileJava` — compile-only
-- `./gradlew runData` — run data generators
 - `./gradlew test` — run JUnit tests
 
 ## Project Structure
@@ -26,7 +25,6 @@
 - `power/` — Origins power definitions
 - `registry/` — DeferredRegister registrations
 - `util/` — utility classes
-- `src/generated/resources/` — datagen output
 - `Dependencies/` — local dependency JARs
 
 ## Key Dependencies
@@ -52,7 +50,7 @@ are emitted by static generator scripts (NOT wired into Gradle — the committed
 hand-written-equivalent and authoritative):
 - `tools/generate_races.py` — origins/powers/layers + `tools/race_lang.json`; its `PRESENT_SIG`
   map swaps banner/sound/particle actions for `signature_presentation` on converted actives
-- `tools/generate_icons.py` — downscales per-race art from `~/Notes/Runic Races/` to `textures/item/`
+- `tools/generate_icons.py` — downscales per-race art (path via `RR_ART_DIR`, default `~/Notes/Runic Races/`) to `textures/item/`
 - `tools/generate_ability_icons.py` — hand-typed 16×16 grids, Scale2x+shaded to 32×32 HUD icons
 - `tools/build_lang.py` — merges race_lang + notification copy into `en_us.json`
 - `tools/generate_wings.py` — paints the 64×64 articulated wing sheets from the base art
@@ -102,7 +100,7 @@ must match exactly in JSON and any Java that reads them (`FlightConfig`, `Abilit
   `StaleAssetTest`), family-accent frames, fade-in labels on first light
 - Ability deny cue: `client/AbilityDenyHandler` watches the Origins primary-active key and
   pulses the HUD red via `RacialCooldownOverlay.triggerDenyPulse` (cooldown-only; mana/stamina
-  failures are not client-visible)
+  denials get server-side banners: arcane_overflow's else-branch, FlightServerHandler)
 - Badge pilot: `fire_drake/dragonfire_breath.json` carries an `origins:badge` keybind hint —
   verify in a launcher before batching badges to all actives via `generate_races.py`
 

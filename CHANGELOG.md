@@ -3,7 +3,10 @@
 All notable changes to Runic Races are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [1.5.0] — 2026-07-05 — Full-Audit Remediation
+
+A deep audit of the codebase, datapack, integrations, balance, docs, and tests — and the
+fixes that came out of it. **Network protocol bumps to 2**: update client and server together.
 
 ### Fixed
 - **Wings render again for all winged races** (Avian, Sprite, Faerie, Wind Wyrm, and the
@@ -12,12 +15,70 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   undefined — which silently disabled everything race-keyed: wings, Pehkui scale, ambience,
   HUD icons, and integrations. Race resolution now reads the `runic_races:race` layer
   explicitly.
+- **Magi's Arcane Overflow works on standalone installs.** Under the default fail-closed
+  resource gating, the 30-mana activation gate read 0 mana without Iron's Spellbooks —
+  the signature active was permanently dead, silently. A new
+  `runic_races:resource_available` condition lets the shipped powers apply resource gates
+  only when the backing mod is actually present; a refused cast now shows a red banner and
+  no longer consumes the cooldown.
+- **Flap packets are rejected unless actually gliding.** The old guard accepted flaps from
+  any airborne moment, letting a modified client chain free vertical boosts without wings
+  deployed. The legit client only flaps mid-glide; the server now enforces it.
+- **Breath weapons and offensive AoE spare allies and pets.** A drake's cone hit teammates
+  and owned wolves; the shared hostility heuristic also debuffed *your own pet* while it
+  defended you. New `util/Hostility` is the single source of truth: teams, PvP-protected
+  players, and owned/ally-owned tamed animals are never hit; the aggro clause narrows to
+  mobs targeting the caster. Breath still hits neutral and passive mobs — aim is the
+  counterplay.
+- **Feather's max-stamina resets when a player no longer has a race** (all other
+  integrations already restored their baselines). Guarded by a persisted marker so packs
+  that customize feather maxima are never stomped.
+- **Datapack-stacked powers no longer overwrite each other's attribute modifiers** —
+  `scaling_attribute` and `biome_affinity` derive modifier UUIDs from their config instead
+  of sharing fixed constants.
 
 ### Added
 - **"< Back" button on the race selection screen** (top-left). Players who confirmed a
   heritage can return to the family screen and pick a different one; the server un-chooses
   the family layer and Origins re-prompts from the top. Guarded server-side so a finished
   character can't replay it to reset.
+- **Wing flaps cost feathers when Feather's Mod is present** (1 for small wings, 2 for the
+  Wind Wyrm; `flight.flapStaminaCost` to disable). Exhausted wings refuse with a red banner
+  and the deny sound — never a burned cooldown. Standalone flight is unchanged.
+- **Foreign-origins warning**: when clean two-layer mode hides origins registered by other
+  Origins add-ons or datapacks, the server log now names every hidden origin and the exact
+  config remedy at startup.
+- **Learning-mode hints**: `show_banner` gains an optional `learning_hint` — one
+  explanatory chat line per player (e.g. the first time a Magi is mana-blocked), gated by
+  `notifications.learningMode`.
+- **CI**: GitHub Actions workflow compiles and runs the full test suite on every push;
+  `ci/fetch-deps.sh` bootstraps the compile-only jars from Modrinth (Apoli/Calio extracted
+  from the Origins all-jar).
+
+### Balance
+- **Sprite**: speed +30% → +20%, attack speed +15% → +10% (flight, tiny hitbox, and Phase
+  Shift untouched).
+- **Faerie**: ground speed +20% → +15%.
+- **Feline**: Nine Lives cadence 10 → 15 minutes, and a spent life leaves 5s of Weakness II.
+- **Fire Drake**: breath 7 → 6 damage; cold/wet vulnerability +30% → +35% (fire immunity
+  stays — the sharpened opposite element is the counterplay).
+- **Changeling**: Mirror Shift 40s → 25s; attack penalty −10% → −5%.
+- **Canine**: hunger drain +40% → +25%; taigas now count as pack home ground.
+- **Zombie**: healing penalty −25% → −15% (sun decay unchanged — it's the identity).
+- **Valen**: the twin slow softens to −8% speed / −8% attack speed.
+- **Iron One**: integration penalties only — Iron's spell power −15% → −10%, Ars cost
+  +15% → +10%; the standalone kit is untouched.
+- **Kitsune**: weakness re-shaped from a High Elf twin (flat physical vulnerability) to
+  **+20% damage taken under the open daytime sky** — a night-predator pattern.
+- **Volt Drake**: new storm-charged rider — an extra +10% attack speed while in the rain,
+  so the lightning identity has a moment.
+- Dead `damage_penalty: 0.0` no-op fields removed from seven biome-affinity powers.
+
+### Diagnostics & tests
+- Five new regression suites: resource-gate lint (no active may dead-gate on an
+  integration-backed condition), network append-only + protocol fixture, flap-guard scan,
+  hostility-heuristic consolidation, version-consistency (docs must name the built
+  version), plus a zero-value no-op lint in the power JSON linter.
 
 ## [1.4.0] — 2026-07-02 — Immersion & Visual Identity Overhaul
 
