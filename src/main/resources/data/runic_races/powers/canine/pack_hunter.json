@@ -6,7 +6,8 @@
     "speed",
     "night_vision",
     "melee",
-    "forest_home"
+    "forest_home",
+    "taiga_home"
   ],
   "speed": {
     "type": "origins:attribute",
@@ -35,6 +36,15 @@
     "name": "power.runic_races.canine.pack_hunter.name",
     "description": "power.runic_races.canine.pack_hunter.description",
     "home_biome_tag": "minecraft:is_forest",
+    "speed_bonus": 0.06,
+    "damage_bonus": 0.05,
+    "check_interval": 40
+  },
+  "taiga_home": {
+    "type": "runic_races:biome_affinity",
+    "name": "power.runic_races.canine.pack_hunter.name",
+    "description": "power.runic_races.canine.pack_hunter.description",
+    "home_biome_tag": "minecraft:is_taiga",
     "speed_bonus": 0.06,
     "damage_bonus": 0.05,
     "check_interval": 40

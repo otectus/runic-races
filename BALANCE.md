@@ -42,7 +42,7 @@ This is a design-side reference. The power JSON under
 |------|--------|---------|----------|
 | Arachnid | Web Snare (trap + AoE slow) | poison immune, venomous melee (Poison I), no fall, sense | −1.5♥, +20% fire |
 | Avian | Wind Burst | wings/glide, no fall, +10% spd, night vision | −2♥, 1.4× knockback taken, −10% melee |
-| Canine | Howl of the Pack | scent, +12% spd, +10% melee, forest-home | +40% hunger, −2 armor |
+| Canine | Howl of the Pack | scent, +12% spd, +10% melee, forest/taiga-home | +25% hunger, −2 armor |
 | Feline | Pounce | Nine Lives (15 min, 5s Weakness on proc), night vision, +15% atk spd, no fall | −1.5♥, +30% damage while submerged |
 | Kitsune | Foxfire Illusion | +15% magic, night vision, +10% spd | −2♥, +15% physical |
 | Serpen | Shed Skin (cleanse, 45s CD) | venomous melee (Poison I), poison immune, hot-home | −1.5♥, +25% freeze |
