@@ -27,7 +27,9 @@ public final class FlightServerHandler {
         FlightConfig config = FlightConfig.forRace(race).orElse(null);
         if (config == null) return;
 
-        if (!player.isFallFlying() && player.onGround()) return;
+        // The legit client only sends flap packets mid-glide (FlightInputHandler);
+        // anything else is a forged packet angling for free vertical thrust.
+        if (!player.isFallFlying()) return;
 
         // Rate-limit: reject packets that arrive too quickly
         long now = player.level().getGameTime();
