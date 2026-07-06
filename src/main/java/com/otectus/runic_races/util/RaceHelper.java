@@ -5,6 +5,7 @@ import com.otectus.runic_races.race.RaceRegistry;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
 import io.github.edwinmindcraft.origins.api.origin.Origin;
 import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
+import io.github.edwinmindcraft.origins.api.registry.OriginsDynamicRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -34,6 +35,12 @@ public class RaceHelper {
     private record RaceMemo(long tick, boolean client, ResourceLocation raceId) {}
 
     private static final Map<UUID, RaceMemo> RACE_MEMO = new ConcurrentHashMap<>();
+
+    /** The two selection layers this mod registers (family heritage, then race). */
+    public static final ResourceKey<OriginLayer> FAMILY_LAYER = ResourceKey.create(
+            OriginsDynamicRegistries.LAYERS_REGISTRY, new ResourceLocation(RunicRacesMod.MOD_ID, "family"));
+    public static final ResourceKey<OriginLayer> RACE_LAYER = ResourceKey.create(
+            OriginsDynamicRegistries.LAYERS_REGISTRY, new ResourceLocation(RunicRacesMod.MOD_ID, "race"));
 
     /**
      * Get the configured Pehkui scale for a race. Returns 1.0 for unknown/null races.
@@ -67,9 +74,19 @@ public class RaceHelper {
             IOriginContainer container = IOriginContainer.get(player).orElse(null);
             if (container == null) return null;
 
+            // The player holds TWO runic_races origins (family_* on the family layer, the
+            // race on the race layer) and getOrigins() has no defined iteration order, so
+            // the race layer must be read explicitly — never "first runic_races origin".
+            ResourceKey<Origin> raceOrigin = container.getOrigin(RACE_LAYER);
+            if (raceOrigin != null && raceOrigin.location().getNamespace().equals(RunicRacesMod.MOD_ID)) {
+                return raceOrigin.location();
+            }
+
+            // Fallback for datapacks that move the races onto another layer.
             Map<ResourceKey<OriginLayer>, ResourceKey<Origin>> origins = container.getOrigins();
             for (ResourceKey<Origin> origin : origins.values()) {
-                if (origin.location().getNamespace().equals(RunicRacesMod.MOD_ID)) {
+                if (origin.location().getNamespace().equals(RunicRacesMod.MOD_ID)
+                        && !origin.location().getPath().startsWith("family_")) {
                     return origin.location();
                 }
             }
