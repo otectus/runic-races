@@ -45,64 +45,80 @@
       "continuous": false
     },
     "condition": {
-      "type": "origins:and",
-      "conditions": [
-        {
-          "type": "origins:resource",
-          "resource": "runic_races:magi/arcane_overflow_cooldown_timer",
-          "comparison": "==",
-          "compare_to": 0
-        },
-        {
-          "type": "runic_races:has_mana",
-          "amount": 30
-        }
-      ]
+      "type": "origins:resource",
+      "resource": "runic_races:magi/arcane_overflow_cooldown_timer",
+      "comparison": "==",
+      "compare_to": 0
     },
     "entity_action": {
-      "type": "origins:and",
-      "actions": [
-        {
-          "type": "runic_races:consume_mana",
-          "amount": 30
-        },
-        {
-          "type": "origins:apply_effect",
-          "effect": {
-            "effect": "minecraft:strength",
-            "duration": 160,
-            "amplifier": 1,
-            "is_ambient": false,
-            "show_particles": true,
-            "show_icon": true
-          }
-        },
-        {
-          "type": "runic_races:afflict_hostiles",
-          "radius": 6,
-          "effects": [
-            {
-              "effect": "minecraft:weakness",
-              "duration_ticks": 120,
-              "amplifier": 1
-            },
-            {
-              "effect": "minecraft:glowing",
-              "duration_ticks": 120,
-              "amplifier": 0
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:or",
+        "conditions": [
+          {
+            "type": "origins:not",
+            "condition": {
+              "type": "runic_races:resource_available",
+              "resource": "mana"
             }
-          ]
-        },
-        {
-          "type": "runic_races:signature_presentation",
-          "key": "MAGI_OVERFLOW"
-        },
-        {
-          "type": "origins:change_resource",
-          "resource": "runic_races:magi/arcane_overflow_cooldown_timer",
-          "change": 900
-        }
-      ]
+          },
+          {
+            "type": "runic_races:has_mana",
+            "amount": 30
+          }
+        ]
+      },
+      "if_action": {
+        "type": "origins:and",
+        "actions": [
+          {
+            "type": "runic_races:consume_mana",
+            "amount": 30
+          },
+          {
+            "type": "origins:apply_effect",
+            "effect": {
+              "effect": "minecraft:strength",
+              "duration": 160,
+              "amplifier": 1,
+              "is_ambient": false,
+              "show_particles": true,
+              "show_icon": true
+            }
+          },
+          {
+            "type": "runic_races:afflict_hostiles",
+            "radius": 6,
+            "effects": [
+              {
+                "effect": "minecraft:weakness",
+                "duration_ticks": 120,
+                "amplifier": 1
+              },
+              {
+                "effect": "minecraft:glowing",
+                "duration_ticks": 120,
+                "amplifier": 0
+              }
+            ]
+          },
+          {
+            "type": "runic_races:signature_presentation",
+            "key": "MAGI_OVERFLOW"
+          },
+          {
+            "type": "origins:change_resource",
+            "resource": "runic_races:magi/arcane_overflow_cooldown_timer",
+            "change": 900
+          }
+        ]
+      },
+      "else_action": {
+        "type": "runic_races:show_banner",
+        "translation_key": "message.runic_races.ability.no_mana",
+        "color": "red",
+        "bold": true
+      }
     }
   }
 }

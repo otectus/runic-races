@@ -50,8 +50,10 @@ public class RRServerConfig {
 
         builder.comment("Resource gating — controls behavior when optional resource mods are absent").push("resourceGating");
         FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING = builder
-                .comment("When true (default), mana/stamina-gated powers are disabled when Iron's Spellbooks or Feather's is absent — predictable, fair standalone behavior.",
-                        "When false, those powers become free to use (in-pack mode: assumes the gating mod will be re-added later).",
+                .comment("Governs raw runic_races:has_mana / has_stamina conditions (and reflection-failure fallback) when the backing mod is absent:",
+                        "true (default) = those conditions read 0, disabling anything gated on them; false = they read infinite, making gates free (in-pack mode).",
+                        "The powers shipped with this mod wrap their gates with runic_races:resource_available so they degrade gracefully either way —",
+                        "datapack authors should copy that pattern (see powers/magi/arcane_overflow.json).",
                         "A startup warning is logged either way when a known gating mod is missing.")
                 .define("failClosedWhenResourceModMissing", true);
         builder.pop();

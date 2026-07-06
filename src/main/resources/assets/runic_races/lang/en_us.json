@@ -52,6 +52,7 @@
   "layer.runic_races.race.missing_origin.name": "No Race",
   "layer.runic_races.race.name": "Race",
   "layer.runic_races.race.view": "View Race",
+  "message.runic_races.ability.no_mana": "Not enough mana!",
   "message.runic_races.arachnid.fire.start": "Fire! Your carapace blisters.",
   "message.runic_races.arachnid.fire.stop": "The flames are out.",
   "message.runic_races.arachnid.web_snare": "You cast a snaring web!",

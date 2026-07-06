@@ -3,6 +3,7 @@ package com.otectus.runic_races.registry;
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.condition.HasManaCondition;
 import com.otectus.runic_races.condition.HasStaminaCondition;
+import com.otectus.runic_races.condition.ResourceAvailableCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -22,6 +23,9 @@ public class ModEntityConditions {
 
     public static final RegistryObject<HasStaminaCondition> HAS_STAMINA =
             ENTITY_CONDITIONS.register("has_stamina", HasStaminaCondition::new);
+
+    public static final RegistryObject<ResourceAvailableCondition> RESOURCE_AVAILABLE =
+            ENTITY_CONDITIONS.register("resource_available", ResourceAvailableCondition::new);
 
     public static void register(IEventBus modBus) {
         ENTITY_CONDITIONS.register(modBus);
