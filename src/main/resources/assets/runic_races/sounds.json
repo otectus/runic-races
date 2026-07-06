@@ -383,5 +383,107 @@
         "pitch": 0.6
       }
     ]
+  },
+  "pounce.strike": {
+    "subtitle": "subtitles.runic_races.pounce.strike",
+    "sounds": [
+      {
+        "name": "minecraft:entity.player.attack.strong",
+        "type": "event",
+        "volume": 0.7,
+        "pitch": 1.15
+      },
+      {
+        "name": "minecraft:entity.fox.bite",
+        "type": "event",
+        "volume": 0.8,
+        "pitch": 0.9
+      }
+    ]
+  },
+  "mirror.shatter": {
+    "subtitle": "subtitles.runic_races.mirror.shatter",
+    "sounds": [
+      {
+        "name": "minecraft:block.glass.break",
+        "type": "event",
+        "volume": 0.7,
+        "pitch": 1.4
+      },
+      {
+        "name": "minecraft:block.amethyst_block.chime",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 1.2
+      }
+    ]
+  },
+  "moon.veil": {
+    "subtitle": "subtitles.runic_races.moon.veil",
+    "sounds": [
+      {
+        "name": "minecraft:block.amethyst_block.resonate",
+        "type": "event",
+        "volume": 0.8,
+        "pitch": 0.8
+      },
+      {
+        "name": "minecraft:block.bell.resonate",
+        "type": "event",
+        "volume": 0.4,
+        "pitch": 1.3
+      }
+    ]
+  },
+  "breath.inhale": {
+    "subtitle": "subtitles.runic_races.breath.inhale",
+    "sounds": [
+      {
+        "name": "minecraft:entity.horse.breathe",
+        "type": "event",
+        "volume": 1.0,
+        "pitch": 0.5
+      },
+      {
+        "name": "minecraft:entity.horse.breathe",
+        "type": "event",
+        "volume": 0.6,
+        "pitch": 0.7
+      }
+    ]
+  },
+  "sizzle.sunlight": {
+    "subtitle": "subtitles.runic_races.sizzle.sunlight",
+    "sounds": [
+      {
+        "name": "minecraft:block.fire.extinguish",
+        "type": "event",
+        "volume": 0.8,
+        "pitch": 1.1
+      },
+      {
+        "name": "minecraft:block.campfire.crackle",
+        "type": "event",
+        "volume": 0.6,
+        "pitch": 1.4
+      }
+    ]
+  },
+  "warn.kindling": {
+    "subtitle": "subtitles.runic_races.warn.kindling",
+    "sounds": [
+      {
+        "name": "minecraft:entity.blaze.ambient",
+        "type": "event",
+        "volume": 0.7,
+        "pitch": 1.3
+      },
+      {
+        "name": "minecraft:block.fire.ambient",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 1.1
+      }
+    ]
   }
 }

@@ -52,6 +52,16 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> BLOOM_VERDANT = register("bloom.verdant");
     public static final RegistryObject<SoundEvent> HARVEST_SOUL = register("harvest.soul");
 
+    // v1.6.0 staged-presentation pass
+    public static final RegistryObject<SoundEvent> POUNCE_STRIKE = register("pounce.strike");
+    public static final RegistryObject<SoundEvent> MIRROR_SHATTER = register("mirror.shatter");
+    public static final RegistryObject<SoundEvent> MOON_VEIL = register("moon.veil");
+    public static final RegistryObject<SoundEvent> BREATH_INHALE = register("breath.inhale");
+
+    // Weakness onset cues (bannerless — the notification system owns the words)
+    public static final RegistryObject<SoundEvent> SIZZLE_SUNLIGHT = register("sizzle.sunlight");
+    public static final RegistryObject<SoundEvent> WARN_KINDLING = register("warn.kindling");
+
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(RunicRacesMod.MOD_ID, name)));

@@ -39,7 +39,13 @@ public class RunicParticle extends TextureSheetParticle {
         /** Shadow wisp: soul-wisp sway but sinking instead of rising, world-lit. */
         SHADE,
         /** Bone chip: sharp physical shard, heavy fall with physics, world-lit. */
-        CHIP
+        CHIP,
+        /** Mirror shard: glassy fragment, tumbles fast under gravity with physics, world-lit. */
+        SHARD,
+        /** Gale streak: fast elongated dash that brakes and fades quickly, emissive. */
+        STREAK,
+        /** Foxfire: spirit flame with a nervous flicker and lateral wander, flares before dying, emissive. */
+        FOXFIRE
     }
 
     private final SpriteSet sprites;
@@ -128,6 +134,27 @@ public class RunicParticle extends TextureSheetParticle {
                 this.quadSize = 0.07f;
                 this.hasPhysics = true;
             }
+            case SHARD -> {
+                this.lifetime = 22 + this.random.nextInt(8);
+                this.gravity = 0.18f;
+                this.friction = 0.98f;
+                this.quadSize = 0.08f;
+                this.hasPhysics = true;
+            }
+            case STREAK -> {
+                this.lifetime = 8 + this.random.nextInt(5);
+                this.gravity = 0.0f;
+                this.friction = 0.88f;
+                this.quadSize = 0.16f;
+                this.hasPhysics = false;
+            }
+            case FOXFIRE -> {
+                this.lifetime = 24 + this.random.nextInt(8);
+                this.gravity = -0.004f;
+                this.friction = 0.93f;
+                this.quadSize = 0.11f;
+                this.hasPhysics = false;
+            }
         }
         this.baseQuadSize = this.quadSize;
         setSpriteFromAge(sprites);
@@ -158,6 +185,19 @@ public class RunicParticle extends TextureSheetParticle {
                     xd += Math.sin((age + 7) * 0.35) * 0.0015;
                     zd += Math.cos((age + 3) * 0.30) * 0.0015;
                 }
+                case SHARD -> {
+                    // Fast tumble so the glass catches light at changing angles.
+                    oRoll = roll;
+                    roll += 0.45f;
+                }
+                case FOXFIRE -> {
+                    // Nervous spirit-flame flicker plus a wide lateral wander; the flame
+                    // flares up just before it gutters out.
+                    xd += Math.sin((age + 13) * 0.55) * 0.0035;
+                    zd += Math.cos((age + 2) * 0.50) * 0.0035;
+                    float flicker = 0.85f + 0.25f * Mth.sin(age * 1.7f) * Mth.cos(age * 0.9f);
+                    quadSize = baseQuadSize * (life > 0.8f ? flicker * 1.6f : flicker);
+                }
                 default -> { }
             }
             // Universal fade-out over the last third of the lifetime.
@@ -177,7 +217,7 @@ public class RunicParticle extends TextureSheetParticle {
         // Magical particles are emissive; physical matter (drips, leaves, shadows,
         // bone chips) uses world lighting so it sits naturally in the scene.
         return switch (behavior) {
-            case DRIP, LEAF, SHADE, CHIP -> super.getLightColor(partialTick);
+            case DRIP, LEAF, SHADE, CHIP, SHARD -> super.getLightColor(partialTick);
             default -> 0xF000F0;
         };
     }

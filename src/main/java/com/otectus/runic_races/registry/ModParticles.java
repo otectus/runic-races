@@ -46,6 +46,16 @@ public class ModParticles {
     public static final RegistryObject<SimpleParticleType> ARCANE_GLINT = register("arcane_glint");
     /** Bone shard — Skeleton brittle-bones and Avian hollow-bones procs. */
     public static final RegistryObject<SimpleParticleType> BONE_CHIP = register("bone_chip");
+    /** Glassy mirror fragment — Changeling Mirror Shift shatter. */
+    public static final RegistryObject<SimpleParticleType> MIRROR_SHARD = register("mirror_shard");
+    /** Silver crescent mote — Moon Elf veil and night-grace accents. */
+    public static final RegistryObject<SimpleParticleType> MOON_SLIVER = register("moon_sliver");
+    /** Stone shard — Terra Drake breath, Valen stand, dwarven ground-cracks. */
+    public static final RegistryObject<SimpleParticleType> ROCK_CHIP = register("rock_chip");
+    /** Golden pollen fleck — Dryad bloom and sun-heal accents. */
+    public static final RegistryObject<SimpleParticleType> POLLEN_MOTE = register("pollen_mote");
+    /** White wind dash — Wind Wyrm galeforce, Feline claw streaks. */
+    public static final RegistryObject<SimpleParticleType> GALE_STREAK = register("gale_streak");
 
     private static RegistryObject<SimpleParticleType> register(String name) {
         return PARTICLES.register(name, () -> new SimpleParticleType(false));

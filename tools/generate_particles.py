@@ -255,6 +255,96 @@ def bone_chip(frame):
     return img
 
 
+def mirror_shard(frame):
+    """Pale glassy fragment with a bright reflective diagonal, rotating per frame."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    rng = random.Random(5100 + frame)
+    cx, cy = 8, 8
+    rot = [0.0, math.pi / 5, math.pi / 2.5][frame]
+    pts = []
+    for k in range(4):
+        a = rot + 2 * math.pi * k / 4 + rng.uniform(-0.4, 0.4)
+        r = 4.2 + rng.uniform(-1.2, 1.2)
+        pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    d.polygon(pts, fill=(205, 225, 240, 200), outline=(150, 180, 205, 255))
+    # reflective streak across the glass
+    d.line([pts[0], pts[2]], fill=(255, 255, 255, 230), width=1)
+    d.point((int((pts[0][0] + pts[2][0]) / 2), int((pts[0][1] + pts[2][1]) / 2)),
+            fill=(255, 255, 255, 255))
+    return img
+
+
+def moon_sliver(frame):
+    """Silver crescent mote with a soft halo, waxing slightly per frame."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    cx, cy = 8, 8
+    outer = 5.0
+    inner_off = [2.4, 2.0, 2.8][frame]
+    # crescent polygon: outer arc out, inner (offset) arc back
+    pts = []
+    steps = 14
+    for k in range(steps + 1):
+        a = math.pi * (-0.5 + k / steps)  # right-side arc, top to bottom
+        pts.append((cx + outer * math.cos(a), cy + outer * math.sin(a)))
+    for k in range(steps + 1):
+        a = math.pi * (0.5 - k / steps)
+        pts.append((cx - inner_off + (outer - 0.9) * math.cos(a),
+                    cy + (outer - 0.9) * math.sin(a)))
+    d.polygon(pts, fill=(215, 225, 245, 235), outline=(240, 245, 255, 255))
+    soft_dot(d, cx + 2, cy - 2, 1.4, (255, 255, 255, 220), layers=2)
+    return img
+
+
+def rock_chip(frame):
+    """Grey stone shard with a darker fracture line — bone_chip's mineral cousin."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    rng = random.Random(5300 + frame)
+    cx, cy = 8, 8
+    pts = []
+    for k in range(5):
+        a = 2 * math.pi * k / 5 + rng.uniform(-0.35, 0.35)
+        r = 3.5 + rng.uniform(-1.0, 1.0)
+        pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    d.polygon(pts, fill=(135, 130, 122, 245), outline=(80, 76, 70, 255))
+    d.line([pts[1], pts[3]], fill=(95, 90, 84, 220), width=1)
+    d.point((cx - 1, cy - 1), fill=(180, 176, 168, 255))
+    return img
+
+
+def pollen_mote(frame):
+    """Golden pollen fleck: warm core with drifting satellite specks."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    rng = random.Random(5500 + frame)
+    soft_dot(d, 8, 8, 2.8, (240, 200, 80, 230), layers=3)
+    for _ in range(3):
+        ox = rng.randint(-4, 4)
+        oy = rng.randint(-4, 4)
+        d.point((8 + ox, 8 + oy), fill=(255, 225, 130, 200))
+    d.point((8, 8), fill=(255, 245, 190, 255))
+    return img
+
+
+def gale_streak(frame):
+    """White wind dash: a tapering horizontal streak with a trailing curl."""
+    img = canvas()
+    d = ImageDraw.Draw(img)
+    length = [10, 12, 9][frame]
+    lift = [0, -1, 1][frame]
+    x0 = 8 - length // 2
+    core = (245, 250, 255, 235)
+    fade = (225, 235, 245, 120)
+    d.line([(x0, 8 + lift), (x0 + length, 8)], fill=core, width=1)
+    d.line([(x0 + 2, 9 + lift), (x0 + length - 3, 9)], fill=fade, width=1)
+    # trailing curl
+    d.line([(x0, 8 + lift), (x0 + 2, 6 + lift)], fill=fade, width=1)
+    d.point((x0 + length, 8), fill=(255, 255, 255, 255))
+    return img
+
+
 GENERATORS = {
     "rune_glyph": rune_glyph,
     "soul_wisp": soul_wisp,
@@ -269,6 +359,11 @@ GENERATORS = {
     "foxfire": foxfire,
     "arcane_glint": arcane_glint,
     "bone_chip": bone_chip,
+    "mirror_shard": mirror_shard,
+    "moon_sliver": moon_sliver,
+    "rock_chip": rock_chip,
+    "pollen_mote": pollen_mote,
+    "gale_streak": gale_streak,
 }
 
 
