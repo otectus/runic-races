@@ -88,3 +88,6 @@ This is a design-side reference. The power JSON under
 3. **Diminishing racial advantage**: race matters most early; Skills/Gods/Gear dominate endgame.
 4. **Counterplay for all drawbacks**: fire weakness → fire-res gear; sun weakness → helmets/underground; cave weakness → fight in the open.
 5. **Multiplayer complementarity**: parties benefit from family diversity.
+6. **Intentional cross-family echoes**: Ice Elf and Frost One share the freeze-immune/fire-vulnerable
+   pairing on purpose — the same element expressed as an offense mage vs. an armored tank. Echoes are
+   fine across families when the play pattern differs; twins within a niche are not.
