@@ -2,6 +2,7 @@ package com.otectus.runic_races.flight;
 
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.config.RRServerConfig;
+import com.otectus.runic_races.presentation.ProcDebounce;
 import com.otectus.runic_races.presentation.RunicPresentation;
 import com.otectus.runic_races.presentation.SignatureKey;
 import com.otectus.runic_races.registry.ModSounds;
@@ -13,15 +14,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-import java.util.WeakHashMap;
+import java.util.UUID;
 
 /**
  * Server-side handler for flight flap and glide cancel packets.
  */
 public final class FlightServerHandler {
 
-    private static final WeakHashMap<ServerPlayer, Long> lastFlapTick = new WeakHashMap<>();
+    private static final Map<UUID, Long> lastFlapTick = new HashMap<>();
     private static final int MIN_FLAP_INTERVAL_TICKS = 2;
 
     private FlightServerHandler() {}
@@ -39,8 +42,10 @@ public final class FlightServerHandler {
 
         // Rate-limit: reject packets that arrive too quickly
         long now = player.level().getGameTime();
-        Long last = lastFlapTick.get(player);
+        Long last = lastFlapTick.get(player.getUUID());
         if (last != null && now - last < MIN_FLAP_INTERVAL_TICKS) return;
+        // Stamp before the gating checks so denied flaps are rate-limited too.
+        lastFlapTick.put(player.getUUID(), now);
 
         // Check Origins cooldown resource
         if (!OriginsPowerHelper.isResourceReady(player, config.getCooldownResource())) return;
@@ -54,8 +59,10 @@ public final class FlightServerHandler {
                 // Exhausted wings: refuse with feedback, and don't burn the cooldown.
                 player.displayClientMessage(Component.translatable("message.runic_races.ability.no_stamina")
                         .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
-                player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                        ModSounds.ABILITY_DENY.get(), SoundSource.PLAYERS, 0.5f, 1.0f);
+                if (ProcDebounce.tryAcquire(player, "flap_deny", 20)) {
+                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                            ModSounds.ABILITY_DENY.get(), SoundSource.PLAYERS, 0.5f, 1.0f);
+                }
                 return;
             }
         }
@@ -66,13 +73,16 @@ public final class FlightServerHandler {
 
         // Set cooldown
         OriginsPowerHelper.setResourceValue(player, config.getCooldownResource(), config.getCooldownTicks());
-        lastFlapTick.put(player, now);
 
         // Fire unified presentation (sfx + vfx + actionbar banner)
         signatureKeyFor(config).ifPresent(key -> RunicPresentation.fire(player, key));
 
         RunicRacesMod.debug("[RunicRaces] {} flapped (race: {}, vel: +{})",
                 player.getName().getString(), race, config.getFlapVelocityY());
+    }
+
+    public static void onLogout(UUID id) {
+        lastFlapTick.remove(id);
     }
 
     public static void handleCancel(ServerPlayer player) {

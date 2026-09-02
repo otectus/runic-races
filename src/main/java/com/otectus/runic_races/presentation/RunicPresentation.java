@@ -125,7 +125,7 @@ public final class RunicPresentation {
             case POINT, LINE -> 1;
             default -> Math.min(spec.count(), 6);
         };
-        return Math.max(floor, (int) Math.round(spec.count() * density));
+        return Math.max(floor, Math.min(spec.count(), (int) Math.round(spec.count() * density)));
     }
 
     /**

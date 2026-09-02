@@ -1,6 +1,7 @@
 package com.otectus.runic_races.block;
 
 import com.otectus.runic_races.registry.ModBlockEntities;
+import com.otectus.runic_races.util.Hostility;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -76,9 +77,15 @@ public class TrapMarkerBlock extends BaseEntityBlock {
         if (owner != null && victim.getUUID().equals(owner)) return;
         if (victim instanceof Player player && player.isCreative()) return;
 
+        // Same ally/PvP rules as every other offensive racial effect.
+        Player ownerPlayer = owner == null ? null : level.getPlayerByUUID(owner);
+        if (ownerPlayer != null && Hostility.isProtectedAlly(ownerPlayer, victim)) return;
+
         // Trigger.
         victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 2));
-        victim.hurt(level.damageSources().generic(), 4.0f);
+        victim.hurt(ownerPlayer != null
+                ? level.damageSources().playerAttack(ownerPlayer)
+                : level.damageSources().generic(), 4.0f);
 
         server.playSound(null, pos, SoundEvents.TRIPWIRE_CLICK_ON, SoundSource.BLOCKS, 0.8f, 1.6f);
         server.playSound(null, pos, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 0.4f, 1.8f);

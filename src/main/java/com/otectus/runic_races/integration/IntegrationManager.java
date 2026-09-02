@@ -1,6 +1,7 @@
 package com.otectus.runic_races.integration;
 
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.common.state.RaceStateTracker;
 import com.otectus.runic_races.config.RRServerConfig;
 import com.otectus.runic_races.util.RaceHelper;
 import net.minecraft.server.level.ServerPlayer;
@@ -183,6 +184,9 @@ public class IntegrationManager {
             String currentRace = raceId == null ? "" : raceId.toString();
             String lastSyncedRace = player.getPersistentData().getString(LAST_SYNCED_RACE);
             if (!currentRace.equals(lastSyncedRace)) {
+                // The race changed under the player — stale state flags belong to the old
+                // race, so drop them before the integrations re-apply.
+                RaceStateTracker.clear(player);
                 syncPlayer(player);
             }
         }

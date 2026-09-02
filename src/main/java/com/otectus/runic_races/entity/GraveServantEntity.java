@@ -106,16 +106,20 @@ public class GraveServantEntity extends Zombie {
         }
 
         CompoundTag data = getPersistentData();
-        if (data.contains(SummonMinionAction.EXPIRY_TAG)) {
-            long expiresAt = data.getLong(SummonMinionAction.EXPIRY_TAG);
-            if (level().getGameTime() >= expiresAt) {
-                if (level() instanceof ServerLevel server) {
-                    server.sendParticles(ParticleTypes.SOUL,
-                            getX(), getY() + 0.6, getZ(),
-                            20, 0.4, 0.6, 0.4, 0.05);
-                }
-                discard();
+        // No expiry tag means the servant was never claimed by a summon (or lost its
+        // data) — treat that as already expired rather than leaving it persistent forever.
+        if (!data.contains(SummonMinionAction.EXPIRY_TAG)) {
+            discard();
+            return;
+        }
+        long expiresAt = data.getLong(SummonMinionAction.EXPIRY_TAG);
+        if (level().getGameTime() >= expiresAt) {
+            if (level() instanceof ServerLevel server) {
+                server.sendParticles(ParticleTypes.SOUL,
+                        getX(), getY() + 0.6, getZ(),
+                        20, 0.4, 0.6, 0.4, 0.05);
             }
+            discard();
         }
     }
 

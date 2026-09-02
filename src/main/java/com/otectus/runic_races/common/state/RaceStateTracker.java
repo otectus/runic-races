@@ -1,9 +1,12 @@
 package com.otectus.runic_races.common.state;
 
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.flight.FlightServerHandler;
 import com.otectus.runic_races.network.NetworkHandler;
+import com.otectus.runic_races.network.S2CAdaptationStacksPacket;
 import com.otectus.runic_races.network.S2CRaceStatePacket;
 import com.otectus.runic_races.notification.RaceNotificationService;
+import com.otectus.runic_races.presentation.ProcDebounce;
 import com.otectus.runic_races.presentation.RunicPresentation;
 import com.otectus.runic_races.presentation.SignatureKey;
 import com.otectus.runic_races.presentation.WeaknessCueRegistry;
@@ -64,6 +67,13 @@ public final class RaceStateTracker {
         }
     }
 
+    /** Drops all flags (race change); resyncs so the client mirror clears too. */
+    public static void clear(ServerPlayer player) {
+        if (FLAGS.remove(player.getUUID()) != null) {
+            resync(player);
+        }
+    }
+
     /** Force a full resync to the client regardless of diff (login, dimension change). */
     public static void resync(ServerPlayer player) {
         NetworkHandler.sendToPlayer(player, new S2CRaceStatePacket(get(player)));
@@ -74,12 +84,26 @@ public final class RaceStateTracker {
         UUID id = event.getEntity().getUUID();
         FLAGS.remove(id);
         RaceHelper.invalidate(id);
+        FlightServerHandler.onLogout(id);
     }
 
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             resync(player);
+            // The adaptation stack mirror is client-side; drop the "already synced"
+            // marker and push the live count so a relog starts from the truth.
+            var data = player.getPersistentData();
+            data.remove("runic_races:human_adapt_synced_stacks");
+            NetworkHandler.sendToPlayer(player,
+                    new S2CAdaptationStacksPacket(data.getInt("runic_races:human_adapt_stacks")));
         }
+    }
+
+    @SubscribeEvent
+    public static void onServerStopping(net.minecraftforge.event.server.ServerStoppingEvent event) {
+        FLAGS.clear();
+        ProcDebounce.clearAll();
+        RaceHelper.clearAll();
     }
 }

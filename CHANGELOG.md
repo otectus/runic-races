@@ -3,6 +3,67 @@
 All notable changes to Runic Races are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.6.3] — 2026-09-02 — The server stops paying for every cooldown tick
+
+Server-side performance and correctness pass. No origin id, power id, or balance change, and
+existing saves are untouched. The network protocol version is unchanged; cooldown resources now
+step in 10-tick (flap timers: 5-tick) increments, so a 1.6.3 server paired with an older client
+shows the same bars draining in slightly coarser steps.
+
+### Performance
+
+- **Every cooldown forced a full power-container sync every tick.** All 42 cooldown timers decayed
+  through `origins:action_over_time` at `interval 1` → `origins:change_resource -1`, and Apoli's
+  `change_resource` re-sends the player's entire power container to them and to every player
+  tracking them on each call. While any cooldown was above zero that was one full serialization and
+  one packet per tracker per tick — for Nine Lives, 18,000 ticks in a row; for the four flap timers,
+  continuously while gliding. The decay now steps by 10 (flap timers by 5) with identical total
+  duration; every timer's maximum divides evenly by its step, and `tools/generate_races.py` emits
+  the same values. `OriginsPowerHelper` only tests for zero and `hud_render` was already off on all
+  of them, so nothing read the finer resolution.
+- **Race lookups were never memoized in single-player.** `RaceHelper` kept one memo per player UUID
+  with a client/server discriminator; on an integrated server the two sides share the UUID and
+  evicted each other on every call, so every wing render frame and every server tick paid a full
+  Origins capability resolve. The memo is now one map per side.
+- Shaped signature VFX can no longer emit more particles than authored — `vfx.signatureParticleDensity`
+  above 1.0 now clamps to the entry's count instead of doubling the per-particle packet burst.
+- The two custom power types no longer recompute their modifier UUID (an MD5 digest) and attribute
+  registry lookup on every check interval; both are memoized from the immutable config.
+
+### Fixed
+
+- **Server config toggles for integrations were ignored.** `IntegrationManager.init` ran during common
+  setup and read `runic_races-server.toml` before Forge had loaded it, so every `*Integration` toggle
+  evaluated to its default and a disabled integration loaded anyway. Initialization now runs at
+  `ServerAboutToStartEvent`, after the server config exists.
+- **A forged flap packet with no stamina was never rate-limited.** The flap rate limit was only stamped
+  on a successful flap, so a client with empty feathers could send unlimited packets, each costing a
+  power-container resolve, a reflective stamina call, an action-bar message, and a world-audible deny
+  sound. The stamp now lands before the cost checks, the map is keyed by UUID (it was keyed by the
+  `ServerPlayer` instance, which changes on respawn and dimension travel) and evicted on logout, and
+  the deny sound is debounced to once per second.
+- **Human Adaptation stacks vanished from the HUD after a relog.** The "already synced" marker lived in
+  persistent data, so the server never re-sent the count. Login now clears the marker and pushes the
+  live value.
+- **State runes outlived a race change.** The nine tick-driven weakness flags (sunlight, tight space,
+  open sky, fire, submerged, dry, ravenous, cold iron, adaptation) were only ever set by the current
+  race's branch and only cleared on logout, so switching race mid-swim left the water rune lit. The
+  20-tick race-change detector now clears all flags and resyncs.
+- **The Adaptation speed modifier stayed on after leaving Primian.** It is transient, so it never
+  stacked across relogs, but it persisted until the next login. Non-Primian ticks now remove it.
+- **Web-snare traps ignored ally, PvP, and claim rules.** The trap was the one offensive path that did
+  not route through `Hostility`, and its damage carried no attacker, so `canHarmPlayer` never ran.
+  The trigger now skips protected allies of the owner and attributes damage to the owner when they
+  are online; placement is refused where `Level.mayInteract` says the caster may not build.
+- Grave servants spawned without an expiry tag (a raw `/summon`, an NBT edit) were persistence-required
+  and immortal; a missing tag now despawns them, and a datapack `count` is capped at 8. A trap block
+  with no expiry (a raw `/setblock`) was permanent; it now self-heals to the default 5-minute lifetime.
+- Static per-player maps (`RaceStateTracker`, `ProcDebounce`, `RaceHelper`) are cleared on
+  `ServerStoppingEvent`, and the client clears its race memo on disconnect, so nothing carries over
+  between worlds in one session.
+- `S2CScreenCuePacket` bounds-checks the cue ordinal and clamps the duration on decode; only a
+  mismatched server could have sent bad values, but the client no longer throws on them.
+
 ## [1.6.2] — 2026-09-02 — Every power loads whole again, and 1.6.1's client fixes come back
 
 No protocol, origin id, power id, or balance change; 1.6.x clients and servers pair freely and

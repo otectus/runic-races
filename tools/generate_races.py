@@ -88,17 +88,19 @@ def afflict(radius, target_effects=(), set_fire=None):
         o["set_on_fire_seconds"] = set_fire
     return o
 
-def cooldown_subpowers(resource_id, cd):
+def cooldown_subpowers(resource_id, cd, step=10):
+    # step: ticks per decay beat. Apoli re-syncs the whole power container on every resource
+    # change, so decay coarsely (same total duration, 1/step the packets). Flap timers use 5.
     timer = {"type": "origins:resource", "min": 0, "max": cd, "start_value": 0,
              "hud_render": {"should_render": False,
                             "sprite_location": "origins:textures/gui/community/spade.png", "bar_index": 2},
              "min_action": None, "max_action": None}
-    decay = {"type": "origins:action_over_time", "interval": 1,
+    decay = {"type": "origins:action_over_time", "interval": step,
              "entity_action": {"type": "origins:if_else",
                                "condition": {"type": "origins:resource", "resource": resource_id,
                                              "comparison": ">", "compare_to": 0},
                                "if_action": {"type": "origins:change_resource", "resource": resource_id,
-                                             "change": -1}}}
+                                             "change": -step}}}
     return timer, decay
 
 def active_power(race, file, cd, actions, name, desc, extra_conditions=None):
@@ -312,7 +314,7 @@ def wings_specs(race, file, flap_cd=None):
     specs = [("elytra_flight", elytra())]
     if flap_cd:
         rid = "%s:%s/%s_flap_cooldown_timer" % (NS, race, file)
-        t, d = cooldown_subpowers(rid, flap_cd)
+        t, d = cooldown_subpowers(rid, flap_cd, step=5)
         specs += [("flap_cooldown_timer", t), ("flap_cooldown_decay", d)]
     return specs
 

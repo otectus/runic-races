@@ -79,7 +79,7 @@ public class SummonMinionAction extends EntityAction<SummonMinionAction.Configur
         }
 
         long expiresAt = level.getGameTime() + Math.max(1, config.durationTicks());
-        int count = Math.max(1, config.count());
+        int count = Math.min(8, Math.max(1, config.count()));
         double radius = Math.max(0.5, config.radius());
 
         for (int i = 0; i < count; i++) {

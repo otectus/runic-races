@@ -21,7 +21,7 @@
   },
   "flap_cooldown_decay": {
     "type": "origins:action_over_time",
-    "interval": 1,
+    "interval": 5,
     "entity_action": {
       "type": "origins:if_else",
       "condition": {
@@ -33,7 +33,7 @@
       "if_action": {
         "type": "origins:change_resource",
         "resource": "runic_races:avian/skyborne_flap_cooldown_timer",
-        "change": -1
+        "change": -5
       }
     }
   },

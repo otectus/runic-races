@@ -19,6 +19,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.Biome;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +41,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configuration> {
 
     private static final ConcurrentHashMap<String, TagKey<Biome>> TAG_CACHE = new ConcurrentHashMap<>();
+    // The config is immutable, so the derived modifier UUID is too — hash it once per key
+    // instead of on every tick invocation.
+    private static final Map<String, UUID> UUID_CACHE = new ConcurrentHashMap<>();
 
     public record Configuration(
             Optional<String> homeBiomeTag,
@@ -72,7 +76,8 @@ public class BiomeAffinityPower extends PowerFactory<BiomeAffinityPower.Configur
             String key = "runic_races:biome_affinity:" + role
                     + ":" + homeBiomeTag.orElse("") + ":" + hostileBiomeTag.orElse("")
                     + ":" + speedBonus + ":" + damageBonus + ":" + speedPenalty + ":" + damagePenalty;
-            return UUID.nameUUIDFromBytes(key.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            return UUID_CACHE.computeIfAbsent(key,
+                    k -> UUID.nameUUIDFromBytes(k.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
         }
     }
 

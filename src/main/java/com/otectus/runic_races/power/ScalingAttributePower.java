@@ -17,7 +17,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Custom Apoli power: applies different attribute modifiers based on time of day.
@@ -33,6 +35,11 @@ import java.util.UUID;
  * }
  */
 public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Configuration> {
+
+    // Both derivations read immutable config, so they are hashed/resolved once per key
+    // instead of on every tick invocation.
+    private static final Map<String, UUID> UUID_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, Attribute> ATTR_CACHE = new ConcurrentHashMap<>();
 
     public record Configuration(
             String attribute,
@@ -62,7 +69,8 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
         public UUID modifierUuid() {
             String key = "runic_races:scaling:" + attribute + ":" + operation
                     + ":" + dayValue + ":" + nightValue;
-            return UUID.nameUUIDFromBytes(key.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            return UUID_CACHE.computeIfAbsent(key,
+                    k -> UUID.nameUUIDFromBytes(k.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
         }
     }
 
@@ -135,6 +143,12 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
     }
 
     private Attribute resolveAttribute(String name) {
+        // computeIfAbsent does not store a null result, so unknown names keep warning
+        // on their own cadence rather than being memoized as "missing".
+        return ATTR_CACHE.computeIfAbsent(name, ScalingAttributePower::lookupAttribute);
+    }
+
+    private static Attribute lookupAttribute(String name) {
         ResourceLocation rl = ResourceLocation.tryParse(name);
         if (rl == null) {
             RunicRacesMod.LOGGER.warn("[RunicRaces] Invalid attribute name '{}' in ScalingAttributePower config", name);

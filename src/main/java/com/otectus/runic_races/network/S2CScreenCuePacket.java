@@ -2,6 +2,7 @@ package com.otectus.runic_races.network;
 
 import com.otectus.runic_races.presentation.CueType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
@@ -34,7 +35,12 @@ public class S2CScreenCuePacket {
     }
 
     public static S2CScreenCuePacket decode(FriendlyByteBuf buf) {
-        return new S2CScreenCuePacket(buf.readEnum(CueType.class), buf.readVarInt());
+        // writeEnum writes the ordinal as a varint; read it back defensively so a
+        // malformed/stale packet can't blow up with an out-of-bounds enum index.
+        int ordinal = buf.readVarInt();
+        CueType[] cues = CueType.values();
+        CueType cue = (ordinal < 0 || ordinal >= cues.length) ? cues[0] : cues[ordinal];
+        return new S2CScreenCuePacket(cue, Mth.clamp(buf.readVarInt(), 1, 200));
     }
 
     public static void handle(S2CScreenCuePacket msg, Supplier<NetworkEvent.Context> ctx) {

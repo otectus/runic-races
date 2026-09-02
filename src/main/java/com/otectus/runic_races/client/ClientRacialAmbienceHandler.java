@@ -366,6 +366,7 @@ public final class ClientRacialAmbienceHandler {
         lastScentQueryTick = Long.MIN_VALUE;
         lastWetTick = Long.MIN_VALUE;
         LAST_FIRED.clear();
+        RaceHelper.clearAll();
     }
 
     // ============================================================

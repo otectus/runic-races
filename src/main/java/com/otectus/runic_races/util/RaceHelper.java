@@ -28,13 +28,14 @@ public class RaceHelper {
      * per player per game-tick. It deliberately never caches across ticks, so an origin
      * change is reflected on the very next tick — there is no stale-race window.
      *
-     * Keyed by UUID; the {@code client} flag disambiguates the integrated client/server
-     * sharing one JVM (a mismatch simply recomputes). Concurrent because both logical
+     * Keyed by UUID, with one map per logical side so an integrated client and server
+     * sharing a JVM never evict each other. Concurrent because both logical
      * sides may query on their own threads. Cleared on logout via {@link #invalidate(UUID)}.
      */
     private record RaceMemo(long tick, boolean client, ResourceLocation raceId) {}
 
-    private static final Map<UUID, RaceMemo> RACE_MEMO = new ConcurrentHashMap<>();
+    private static final Map<UUID, RaceMemo> SERVER_MEMO = new ConcurrentHashMap<>();
+    private static final Map<UUID, RaceMemo> CLIENT_MEMO = new ConcurrentHashMap<>();
 
     /** The two selection layers this mod registers (family heritage, then race). */
     public static final ResourceKey<OriginLayer> FAMILY_LAYER = ResourceKey.create(
@@ -58,13 +59,14 @@ public class RaceHelper {
         boolean client = player.level().isClientSide();
         UUID id = player.getUUID();
 
-        RaceMemo memo = RACE_MEMO.get(id);
-        if (memo != null && memo.tick() == tick && memo.client() == client) {
+        Map<UUID, RaceMemo> memos = client ? CLIENT_MEMO : SERVER_MEMO;
+        RaceMemo memo = memos.get(id);
+        if (memo != null && memo.tick() == tick) {
             return Optional.ofNullable(memo.raceId());
         }
 
         ResourceLocation resolved = resolveRaceId(player);
-        RACE_MEMO.put(id, new RaceMemo(tick, client, resolved));
+        memos.put(id, new RaceMemo(tick, client, resolved));
         return Optional.ofNullable(resolved);
     }
 
@@ -98,7 +100,14 @@ public class RaceHelper {
 
     /** Drop any memoized race for a player (call on logout to avoid UUID accumulation). */
     public static void invalidate(UUID playerId) {
-        RACE_MEMO.remove(playerId);
+        SERVER_MEMO.remove(playerId);
+        CLIENT_MEMO.remove(playerId);
+    }
+
+    /** Drop every memoized race (server shutdown, client disconnect). */
+    public static void clearAll() {
+        SERVER_MEMO.clear();
+        CLIENT_MEMO.clear();
     }
 
     /**

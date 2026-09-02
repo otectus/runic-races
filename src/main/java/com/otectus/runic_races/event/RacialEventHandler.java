@@ -538,6 +538,9 @@ public class RacialEventHandler {
         // --- Primian Adaptation stacks: biome change bump + timed decay ---
         if ("primian".equals(race)) {
             tickHumanAdaptation(player, now);
+        } else {
+            // No longer Primian — drop the transient speed modifier it left behind.
+            applyAdaptationModifier(player, 0);
         }
 
         // --- Wind Wyrm ancient presence at low HP (server-side sound emission) ---

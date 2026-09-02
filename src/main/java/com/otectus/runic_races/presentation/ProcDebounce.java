@@ -37,6 +37,11 @@ public final class ProcDebounce {
         return true;
     }
 
+    /** Drops every stamp (server shutdown). */
+    public static void clearAll() {
+        LAST_FIRED.clear();
+    }
+
     @SubscribeEvent
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         LAST_FIRED.remove(event.getEntity().getUUID());

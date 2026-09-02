@@ -61,6 +61,8 @@ public class RunicRacesMod {
         MinecraftForge.EVENT_BUS.register(new com.otectus.runic_races.presentation.PresentationScheduler());
         MinecraftForge.EVENT_BUS.register(new com.otectus.runic_races.presentation.ProcDebounce());
         MinecraftForge.EVENT_BUS.addListener(this::onRegisterCommands);
+        // Integrations read SERVER config, which Forge only loads at server-about-to-start.
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerAboutToStartEvent e) -> IntegrationManager.init());
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, RRCommonConfig.SPEC, "runic_races/runic_races-common.toml");
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, RRServerConfig.SPEC, "runic_races/runic_races-server.toml");
@@ -76,7 +78,6 @@ public class RunicRacesMod {
 
         // Initialize network and optional mod integrations
         event.enqueueWork(NetworkHandler::init);
-        event.enqueueWork(IntegrationManager::init);
     }
 
     private void onConfigReloading(final net.minecraftforge.fml.event.config.ModConfigEvent.Reloading event) {

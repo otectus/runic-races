@@ -55,6 +55,9 @@ public class PlaceTrapAction extends EntityAction<PlaceTrapAction.Configuration>
         // Don't overwrite non-replaceable blocks at the player's feet.
         if (!existing.canBeReplaced()) return;
 
+        // Respect claims / spawn protection — no trapping where you can't build.
+        if (!level.mayInteract(player, pos)) return;
+
         BlockState trap = ModBlocks.TRAP_MARKER.get().defaultBlockState();
         if (!level.setBlock(pos, trap, Block.UPDATE_ALL)) return;
 
