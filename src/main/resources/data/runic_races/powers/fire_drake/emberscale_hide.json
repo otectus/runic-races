@@ -2,13 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.fire_drake.emberscale_hide.name",
   "description": "power.runic_races.fire_drake.emberscale_hide.description",
-  "subpowers": [
-    "elytra_flight",
-    "fire_imm",
-    "armor",
-    "melee",
-    "hot_home"
-  ],
   "elytra_flight": {
     "type": "origins:elytra_flight",
     "render_elytra": false

@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.canine.ravenous.name",
   "description": "power.runic_races.canine.ravenous.description",
-  "subpowers": [
-    "hunger",
-    "armor"
-  ],
   "hunger": {
     "type": "origins:modify_exhaustion",
     "modifier": {

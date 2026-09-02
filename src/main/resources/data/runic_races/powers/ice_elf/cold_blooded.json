@@ -2,9 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.ice_elf.cold_blooded.name",
   "description": "power.runic_races.ice_elf.cold_blooded.description",
-  "subpowers": [
-    "fire"
-  ],
   "fire": {
     "type": "origins:modify_damage_taken",
     "damage_condition": {

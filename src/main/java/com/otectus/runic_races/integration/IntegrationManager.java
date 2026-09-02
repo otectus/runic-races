@@ -117,6 +117,20 @@ public class IntegrationManager {
         return loadedIntegrations;
     }
 
+    /**
+     * Whether the integration with this display name is loaded. "Present on the classpath" is not
+     * the same question: {@code tryLoad} also honours the per-integration config toggle and can
+     * fail on construction, and callers that change gameplay need to know what actually loaded.
+     */
+    public static boolean isIntegrationActive(String name) {
+        for (ModIntegration integration : loadedIntegrations) {
+            if (integration.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void syncPlayer(ServerPlayer player) {
         for (ModIntegration integration : loadedIntegrations) {
             try {

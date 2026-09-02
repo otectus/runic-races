@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.terra_drake.ponderous.name",
   "description": "power.runic_races.terra_drake.ponderous.description",
-  "subpowers": [
-    "speed",
-    "attack_speed",
-    "hunger"
-  ],
   "speed": {
     "type": "origins:attribute",
     "modifier": {

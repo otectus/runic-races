@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.blood_elf.bloodcraft.name",
   "description": "power.runic_races.blood_elf.bloodcraft.description",
-  "subpowers": [
-    "melee",
-    "magic"
-  ],
   "melee": {
     "type": "origins:attribute",
     "modifier": {

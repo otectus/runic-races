@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -40,14 +41,10 @@ class VfxBudgetTest {
         for (Path powerFile : listPowerFiles()) {
             String relative = POWERS.relativize(powerFile).toString();
             JsonObject root = JsonParser.parseString(Files.readString(powerFile)).getAsJsonObject();
-            if (!root.has("subpowers")) {
-                continue;
-            }
 
-            for (JsonElement key : root.getAsJsonArray("subpowers")) {
-                JsonElement sub = root.get(key.getAsString());
-                if (sub == null || !sub.isJsonObject()
-                        || !"origins:active_self".equals(typeOf(sub.getAsJsonObject()))) {
+            for (Map.Entry<String, JsonObject> entry : MultiplePowers.of(root).entrySet()) {
+                JsonObject sub = entry.getValue();
+                if (!"origins:active_self".equals(typeOf(sub))) {
                     continue;
                 }
 
@@ -61,7 +58,7 @@ class VfxBudgetTest {
                 int sum = total[0];
                 boolean ok = sum == 0 || (sum >= MAJOR_MIN && sum <= MAJOR_MAX);
                 if (!ok && !KNOWN_EXCEPTIONS.contains(relative)) {
-                    problems.add(relative + " (" + key.getAsString() + "): spawn_particles sum " + sum
+                    problems.add(relative + " (" + entry.getKey() + "): spawn_particles sum " + sum
                             + " — expected 0 (Java-delegated) or " + MAJOR_MIN + "-" + MAJOR_MAX);
                 }
             }

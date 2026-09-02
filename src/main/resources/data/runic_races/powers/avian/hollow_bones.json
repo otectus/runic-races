@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.avian.hollow_bones.name",
   "description": "power.runic_races.avian.hollow_bones.description",
-  "subpowers": [
-    "health",
-    "melee"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

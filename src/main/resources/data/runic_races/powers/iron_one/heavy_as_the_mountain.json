@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.iron_one.heavy_as_the_mountain.name",
   "description": "power.runic_races.iron_one.heavy_as_the_mountain.description",
-  "subpowers": [
-    "speed",
-    "attack_speed",
-    "magic"
-  ],
   "speed": {
     "type": "origins:attribute",
     "modifier": {

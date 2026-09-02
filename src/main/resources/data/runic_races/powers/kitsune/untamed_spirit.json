@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.kitsune.untamed_spirit.name",
   "description": "power.runic_races.kitsune.untamed_spirit.description",
-  "subpowers": [
-    "health",
-    "daylight"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

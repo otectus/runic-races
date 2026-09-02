@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.blood_elf.price_of_power.name",
   "description": "power.runic_races.blood_elf.price_of_power.description",
-  "subpowers": [
-    "health",
-    "healing"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

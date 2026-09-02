@@ -2,13 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.zombie.deathless_flesh.name",
   "description": "power.runic_races.zombie.deathless_flesh.description",
-  "subpowers": [
-    "health",
-    "armor",
-    "poison_imm",
-    "hunger_imm",
-    "kb"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

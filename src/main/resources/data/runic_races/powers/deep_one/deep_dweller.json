@@ -2,12 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.deep_one.deep_dweller.name",
   "description": "power.runic_races.deep_one.deep_dweller.description",
-  "subpowers": [
-    "night_vision",
-    "armor",
-    "mining_fatigue_imm",
-    "mining"
-  ],
   "night_vision": {
     "type": "origins:night_vision",
     "strength": 1.0

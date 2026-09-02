@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.kitsune.spirit_of_the_fox.name",
   "description": "power.runic_races.kitsune.spirit_of_the_fox.description",
-  "subpowers": [
-    "magic",
-    "night_vision",
-    "speed"
-  ],
   "magic": {
     "type": "origins:modify_damage_dealt",
     "damage_condition": {

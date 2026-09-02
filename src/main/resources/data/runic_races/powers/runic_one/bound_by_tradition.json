@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.runic_one.bound_by_tradition.name",
   "description": "power.runic_races.runic_one.bound_by_tradition.description",
-  "subpowers": [
-    "health",
-    "speed"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

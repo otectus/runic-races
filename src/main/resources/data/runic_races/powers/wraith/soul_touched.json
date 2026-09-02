@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.wraith.soul_touched.name",
   "description": "power.runic_races.wraith.soul_touched.description",
-  "subpowers": [
-    "night_vision",
-    "no_fall",
-    "night_power"
-  ],
   "night_vision": {
     "type": "origins:night_vision",
     "strength": 1.0

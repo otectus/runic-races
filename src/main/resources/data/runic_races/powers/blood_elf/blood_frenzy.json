@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.blood_elf.blood_frenzy.name",
   "description": "power.runic_races.blood_elf.blood_frenzy.description",
-  "subpowers": [
-    "cooldown_timer",
-    "cooldown_decay",
-    "active_ability"
-  ],
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,

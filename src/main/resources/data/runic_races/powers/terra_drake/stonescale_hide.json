@@ -2,15 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.terra_drake.stonescale_hide.name",
   "description": "power.runic_races.terra_drake.stonescale_hide.description",
-  "subpowers": [
-    "elytra_flight",
-    "armor",
-    "kb",
-    "mining_fatigue_imm",
-    "mining",
-    "no_fall",
-    "mountain_home"
-  ],
   "elytra_flight": {
     "type": "origins:elytra_flight",
     "render_elytra": false

@@ -2,12 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.skeleton.marrow_deep_aim.name",
   "description": "power.runic_races.skeleton.marrow_deep_aim.description",
-  "subpowers": [
-    "attack_speed",
-    "poison_imm",
-    "hunger_imm",
-    "water_breathing"
-  ],
   "attack_speed": {
     "type": "origins:attribute",
     "modifier": {

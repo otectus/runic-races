@@ -2,12 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.frost_one.frostborn.name",
   "description": "power.runic_races.frost_one.frostborn.description",
-  "subpowers": [
-    "freeze_imm",
-    "health",
-    "armor",
-    "cold_home"
-  ],
   "freeze_imm": {
     "type": "origins:modify_damage_taken",
     "damage_condition": {

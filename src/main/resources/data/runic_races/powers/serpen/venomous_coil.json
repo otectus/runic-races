@@ -2,12 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.serpen.venomous_coil.name",
   "description": "power.runic_races.serpen.venomous_coil.description",
-  "subpowers": [
-    "poison_imm",
-    "speed",
-    "night_vision",
-    "hot_home"
-  ],
   "poison_imm": {
     "type": "origins:effect_immunity",
     "effect": "minecraft:poison"

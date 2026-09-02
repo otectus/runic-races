@@ -3,6 +3,61 @@
 All notable changes to Runic Races are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.6.2] — 2026-09-02 — Every power loads whole again, and 1.6.1's client fixes come back
+
+No protocol, origin id, power id, or balance change; 1.6.x clients and servers pair freely and
+existing saves are untouched.
+
+### Note on 1.6.1
+
+1.6.1 was built and shipped from a working copy that never reached this repository, so its source
+was lost while its jar stayed in use. Its five changes were recovered by disassembling that jar and
+re-implemented here; they are listed below under *Recovered from 1.6.1* and are behaviourally
+equivalent to what that build did. There is no separate 1.6.1 tag, and 1.6.2 supersedes it.
+
+### Fixed
+
+- **All 111 power files loaded only partially.** Every one of them carried a `"subpowers"` array
+  listing its own subpower keys. Apoli's `origins:multiple` has no such field: it decodes *every*
+  key it does not reserve (`type`, `name`, `description`, `hidden`, `condition`, `conditions`,
+  `loading_priority`, and the two loader-condition keys) as a nested power. The index array was
+  therefore handed to the subpower codec, failed it, and Apoli fell back to the partial result —
+  logging, once per file per world load:
+  `Power "runic_races:avian/hollow_bones" will only be partially loaded: Failed to read fields: Not
+  a JSON object: ["health","melee"]`. That is 111 warnings on every load and one failed decode per
+  power standing between the file and the game. The key is gone from all 111 files and from
+  `tools/generate_races.py`, which emitted it; nothing else in any file changed.
+- **Nothing in the build could see it.** `PowerJsonLintTest` now fails on any non-object,
+  non-reserved key of an `origins:multiple` power, so the shape cannot come back. `VfxBudgetTest`
+  and `CooldownResourceIdTest` had been reading the index to find subpowers, which is how it came
+  to look load-bearing; both now enumerate subpowers through the new `MultiplePowers` test helper,
+  a mirror of Apoli's own rule, so the tests and the game agree on what a subpower is.
+
+### Recovered from 1.6.1
+
+- **`screenCuesEnabled` did nothing.** The config option was declared and documented but never
+  read; `ScreenCueRenderer.onRenderGui` now returns early when it is off.
+- **Ready-flash and deny pulses were measured in frames, not ticks.** Both counters were
+  decremented once per render, so a "6 tick" flash lasted six *frames* — a tenth of a second at
+  60fps, and proportionally longer on a client that was struggling. They are game-time deadlines
+  now (`flashUntil` / `denyUntil`), which also means `renderSlot` no longer mutates state while
+  drawing.
+- **Canine's scent-trail cache outlived the race.** The 24-block entity scan caches strong
+  references to every wounded entity it found, and only Canine's routine ever cleared it, so
+  changing away from Canine pinned the last scan for the rest of the session. The client tick now
+  releases it as soon as the player is not Canine.
+- **Ambience state survived a disconnect.** `cachedWounded`, `lastScentQueryTick`, `lastWetTick`
+  and the `LAST_FIRED` routine table are static and keyed to one world's game time; carrying them
+  into the next world suppressed every routine until its clock passed the old one's. A
+  `ClientPlayerNetworkEvent.LoggingOut` handler resets all four.
+- **Pehkui jump compensation ignored its own config toggle.** The handler that boosts a
+  small-scale player's jump ran whenever Pehkui was *installed*, but the scaling it compensates
+  for is only applied when the integration actually loaded — which `pehkuiIntegration = false`
+  vetoes. Turning the integration off therefore left the compensation behind as a flat jump buff.
+  It now also requires the config flag and a live integration, via the new
+  `IntegrationManager.isIntegrationActive(String)`.
+- **Removed the unused `RaceStateTracker.setAll`.** Nothing called it.
+
 ## [1.6.0] — 2026-07-06 — Every Ability Reads
 
 A full VFX overhaul: every active plays out in staged beats, every passive with a real

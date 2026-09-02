@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.sky_one.sure_footed_sentinel.name",
   "description": "power.runic_races.sky_one.sure_footed_sentinel.description",
-  "subpowers": [
-    "no_fall",
-    "armor",
-    "mountain_home"
-  ],
   "no_fall": {
     "type": "origins:modify_damage_taken",
     "damage_condition": {

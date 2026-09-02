@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.valen.stalwart_not_swift.name",
   "description": "power.runic_races.valen.stalwart_not_swift.description",
-  "subpowers": [
-    "speed",
-    "attack_speed"
-  ],
   "speed": {
     "type": "origins:attribute",
     "modifier": {

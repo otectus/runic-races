@@ -2,14 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.avian.skyborne.name",
   "description": "power.runic_races.avian.skyborne.description",
-  "subpowers": [
-    "elytra_flight",
-    "flap_cooldown_timer",
-    "flap_cooldown_decay",
-    "no_fall",
-    "speed",
-    "night_vision"
-  ],
   "elytra_flight": {
     "type": "origins:elytra_flight",
     "render_elytra": false

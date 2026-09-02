@@ -2,12 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.ice_drake.rimescale_hide.name",
   "description": "power.runic_races.ice_drake.rimescale_hide.description",
-  "subpowers": [
-    "elytra_flight",
-    "freeze_imm",
-    "armor",
-    "cold_home"
-  ],
   "elytra_flight": {
     "type": "origins:elytra_flight",
     "render_elytra": false

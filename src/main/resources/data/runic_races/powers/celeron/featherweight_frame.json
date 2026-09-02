@@ -2,9 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.celeron.featherweight_frame.name",
   "description": "power.runic_races.celeron.featherweight_frame.description",
-  "subpowers": [
-    "health"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

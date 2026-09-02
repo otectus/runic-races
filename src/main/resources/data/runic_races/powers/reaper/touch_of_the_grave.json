@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.reaper.touch_of_the_grave.name",
   "description": "power.runic_races.reaper.touch_of_the_grave.description",
-  "subpowers": [
-    "health",
-    "healing",
-    "sun_weak"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

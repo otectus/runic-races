@@ -2,9 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.sprite.fragile_essence.name",
   "description": "power.runic_races.sprite.fragile_essence.description",
-  "subpowers": [
-    "health"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

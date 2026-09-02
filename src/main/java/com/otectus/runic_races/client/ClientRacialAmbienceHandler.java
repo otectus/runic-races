@@ -338,12 +338,34 @@ public final class ClientRacialAmbienceHandler {
         if (player == null || level == null) return;
 
         String race = RaceHelper.getRaceName(player).orElse(null);
+
+        // Only Canine's scent trail fills this cache, and it holds strong references to up to
+        // every wounded entity within 24 blocks. Drop it as soon as the player is not Canine —
+        // otherwise a race change leaves the last scan pinned for the rest of the session.
+        if (!"canine".equals(race) && !cachedWounded.isEmpty()) {
+            cachedWounded = java.util.Collections.emptyList();
+        }
+
         if (race == null) return;
 
         AmbienceRoutine routine = ROUTINES.get(race);
         if (routine != null) {
             routine.tick(player, level, level.getGameTime());
         }
+    }
+
+    /**
+     * Ambience state is all static and all keyed to one world's game time, so it has to be dropped
+     * when the client leaves. Carrying {@code lastScentQueryTick} / {@code lastWetTick} into the
+     * next world compares them against a game time that may be far lower, and {@code LAST_FIRED}
+     * would suppress every routine until the new world's clock passed the old one's.
+     */
+    @SubscribeEvent
+    public static void onLoggingOut(net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
+        cachedWounded = java.util.Collections.emptyList();
+        lastScentQueryTick = Long.MIN_VALUE;
+        lastWetTick = Long.MIN_VALUE;
+        LAST_FIRED.clear();
     }
 
     // ============================================================

@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.moon_elf.tidecallers_grace.name",
   "description": "power.runic_races.moon_elf.tidecallers_grace.description",
-  "subpowers": [
-    "water_breathing",
-    "night_vision",
-    "night_regen"
-  ],
   "water_breathing": {
     "type": "origins:water_breathing"
   },

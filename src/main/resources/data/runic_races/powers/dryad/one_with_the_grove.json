@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.dryad.one_with_the_grove.name",
   "description": "power.runic_races.dryad.one_with_the_grove.description",
-  "subpowers": [
-    "poison_imm",
-    "forest_home",
-    "sun_heal"
-  ],
   "poison_imm": {
     "type": "origins:effect_immunity",
     "effect": "minecraft:poison"

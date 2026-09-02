@@ -4,6 +4,8 @@ import com.mojang.datafixers.util.Pair;
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.common.state.RaceStateFlags;
 import com.otectus.runic_races.common.state.RaceStateTracker;
+import com.otectus.runic_races.config.RRServerConfig;
+import com.otectus.runic_races.integration.IntegrationManager;
 import com.otectus.runic_races.network.NetworkHandler;
 import com.otectus.runic_races.network.S2CAdaptationStacksPacket;
 import com.otectus.runic_races.network.S2CScreenCuePacket;
@@ -807,7 +809,14 @@ public class RacialEventHandler {
     @SubscribeEvent
     public void onLivingJump(LivingEvent.LivingJumpEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (!PEHKUI_LOADED) return;
+        // Pehkui being installed is not enough: the scaling this compensates for is only applied
+        // when the integration actually loaded, which the config toggle can veto. Boosting jump
+        // height against a scale nobody applied is a straight buff.
+        if (!PEHKUI_LOADED
+                || !RRServerConfig.PEHKUI_INTEGRATION.get()
+                || !IntegrationManager.isIntegrationActive("Pehkui")) {
+            return;
+        }
 
         String race = RaceHelper.getRaceName(player).orElse(null);
         if (race == null) return;

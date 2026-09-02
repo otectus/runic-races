@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.sea_serpen.leviathans_gift.name",
   "description": "power.runic_races.sea_serpen.leviathans_gift.description",
-  "subpowers": [
-    "water_breathing",
-    "armor",
-    "ocean_home"
-  ],
   "water_breathing": {
     "type": "origins:water_breathing"
   },

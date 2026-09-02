@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.sea_serpen.landbound_coils.name",
   "description": "power.runic_races.sea_serpen.landbound_coils.description",
-  "subpowers": [
-    "health",
-    "fire",
-    "dry_slow"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

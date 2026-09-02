@@ -40,13 +40,17 @@ public class RacialCooldownOverlay implements IGuiOverlay {
 
     private static boolean debugLogged = false;
 
-    // Deny pulses are triggered from AbilityDenyHandler (a different class), so this
-    // map is static; decremented per render frame like the ready flashes.
-    private static final Map<ResourceLocation, Integer> denyRemaining = new HashMap<>();
+    // Deny pulses are triggered from AbilityDenyHandler (a different class), so this map is
+    // static. Values are game-time deadlines, not frame counters: the overlay renders once per
+    // frame, so counting down per render made a "12 tick" pulse last 12 frames — a fifth of a
+    // second at 60fps and barely visible above that, while a stuttering client stretched it out.
+    private static final Map<ResourceLocation, Long> denyUntil = new HashMap<>();
 
-    /** Pulse the given ability slot red for a few frames (pressed while on cooldown). */
+    /** Pulse the given ability slot red for {@link #DENY_TICKS} ticks (pressed while on cooldown). */
     public static void triggerDenyPulse(ResourceLocation resourceId) {
-        denyRemaining.put(resourceId, DENY_TICKS);
+        net.minecraft.client.multiplayer.ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+        denyUntil.put(resourceId, level.getGameTime() + DENY_TICKS);
     }
 
     // Cached race + resource state
@@ -54,7 +58,8 @@ public class RacialCooldownOverlay implements IGuiOverlay {
     private long lastRaceCheck = -1;
     private final Map<ResourceLocation, ResourceState> resourceCache = new HashMap<>();
     private final Map<ResourceLocation, Boolean> wasReady = new HashMap<>();
-    private final Map<ResourceLocation, Integer> flashRemaining = new HashMap<>();
+    /** Game-time deadlines, for the same reason as {@link #denyUntil}. */
+    private final Map<ResourceLocation, Long> flashUntil = new HashMap<>();
     // Whether each ability's custom HUD texture is present in the loaded resource packs.
     // Resolved once per texture (lookups are cheap but we avoid hitting the manager per frame).
     private final Map<ResourceLocation, Boolean> textureExists = new HashMap<>();
@@ -84,7 +89,7 @@ public class RacialCooldownOverlay implements IGuiOverlay {
             cachedRace = null;
             resourceCache.clear();
             wasReady.clear();
-            flashRemaining.clear();
+            flashUntil.clear();
             lastRaceCheck = -1;
             lastResourceCheck = -1;
             debugLogged = false;
@@ -95,7 +100,7 @@ public class RacialCooldownOverlay implements IGuiOverlay {
             if (newRace != null && !newRace.equals(cachedRace)) {
                 resourceCache.clear();
                 wasReady.clear();
-                flashRemaining.clear();
+                flashUntil.clear();
             }
             cachedRace = newRace;
             lastRaceCheck = gameTime;
@@ -120,7 +125,7 @@ public class RacialCooldownOverlay implements IGuiOverlay {
             lastResourceCheck = gameTime;
         }
 
-        updateReadyFlashes(abilities);
+        updateReadyFlashes(abilities, gameTime);
 
         float scale = (float) (double) RRClientConfig.HUD_SCALE.get();
         float opacity = (float) (double) RRClientConfig.HUD_OPACITY.get();
@@ -211,18 +216,21 @@ public class RacialCooldownOverlay implements IGuiOverlay {
         }
 
         // --- Ready transition flash (white overlay fading out) ---
-        Integer flash = flashRemaining.get(ability.resourceId());
-        if (flash != null && flash > 0) {
-            float flashAlpha = (flash / (float) FLASH_TICKS) * 0.7f;
+        Long flashEnd = flashUntil.get(ability.resourceId());
+        long flashLeft = flashEnd == null ? 0L : flashEnd - gameTime;
+        if (flashLeft > 0) {
+            float flashAlpha = (flashLeft / (float) FLASH_TICKS) * 0.7f;
             int flashColor = ((int) (flashAlpha * 255) << 24) | 0xFFFFFF;
             graphics.fill(ix, iy, ix + ICON, iy + ICON, flashColor);
         }
 
         // --- Deny pulse (red overlay: pressed while on cooldown) ---
-        Integer deny = denyRemaining.get(ability.resourceId());
-        if (deny != null && deny > 0) {
-            denyRemaining.put(ability.resourceId(), deny - 1);
-            float denyAlpha = (deny / (float) DENY_TICKS) * 0.6f;
+        // Read-only: a deadline needs no decrement, so the pulse no longer depends on how many
+        // frames the HUD happens to draw, and a stale entry simply stops matching.
+        Long denyEnd = denyUntil.get(ability.resourceId());
+        long denyLeft = denyEnd == null ? 0L : denyEnd - gameTime;
+        if (denyLeft > 0) {
+            float denyAlpha = (denyLeft / (float) DENY_TICKS) * 0.6f;
             int denyColor = ((int) (denyAlpha * 255) << 24) | 0xFF3333;
             graphics.fill(ix, iy, ix + ICON, iy + ICON, denyColor);
         }
@@ -286,24 +294,19 @@ public class RacialCooldownOverlay implements IGuiOverlay {
         return null;
     }
 
-    private void updateReadyFlashes(List<AbilityIconRegistry.AbilityIcon> abilities) {
+    private void updateReadyFlashes(List<AbilityIconRegistry.AbilityIcon> abilities, long gameTime) {
         for (AbilityIconRegistry.AbilityIcon ability : abilities) {
             ResourceLocation id = ability.resourceId();
             ResourceState state = resourceCache.get(id);
             boolean nowReady = state == null || state.isReady();
             boolean prevReady = wasReady.getOrDefault(id, nowReady);
             if (nowReady && !prevReady) {
-                flashRemaining.put(id, FLASH_TICKS);
+                flashUntil.put(id, gameTime + FLASH_TICKS);
                 if (RRClientConfig.HUD_READY_GLOW.get()) {
                     // forUI(sound, pitch, volume) — pitch varies per family for identity
                     Minecraft.getInstance().getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
                             com.otectus.runic_races.registry.ModSounds.ABILITY_READY.get(),
                             ability.accent().readyPitch(), 0.6f));
-                }
-            } else {
-                Integer remaining = flashRemaining.get(id);
-                if (remaining != null && remaining > 0) {
-                    flashRemaining.put(id, remaining - 1);
                 }
             }
             wasReady.put(id, nowReady);

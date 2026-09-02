@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.forge_one.ironhand_smith.name",
   "description": "power.runic_races.forge_one.ironhand_smith.description",
-  "subpowers": [
-    "fire_resist",
-    "armor",
-    "melee"
-  ],
   "fire_resist": {
     "type": "origins:modify_damage_taken",
     "damage_condition": {

@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.dark_elf.sunlight_sensitivity.name",
   "description": "power.runic_races.dark_elf.sunlight_sensitivity.description",
-  "subpowers": [
-    "health",
-    "sun_slow",
-    "sun_weak"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

@@ -114,10 +114,12 @@ def active_power(race, file, cd, actions, name, desc, extra_conditions=None):
               "entity_action": {"type": "origins:and", "actions": full}}
     LANG["power.%s.%s.%s.name" % (NS, race, file)] = name
     LANG["power.%s.%s.%s.description" % (NS, race, file)] = desc
+    # No "subpowers" index key: Apoli's origins:multiple treats EVERY key it does not reserve
+    # (type/name/description/hidden/condition(s)/loading_priority/*:conditions) as a subpower to
+    # decode, so an index array is not merely redundant, it is a decode failure -- see `bundle`.
     return {"type": "origins:multiple",
             "name": "power.%s.%s.%s.name" % (NS, race, file),
             "description": "power.%s.%s.%s.description" % (NS, race, file),
-            "subpowers": ["cooldown_timer", "cooldown_decay", "active_ability"],
             "cooldown_timer": timer, "cooldown_decay": decay, "active_ability": active}
 
 # ---- passive / weakness subpower helpers
@@ -220,11 +222,18 @@ def exhaustion(value):
             "modifier": {"operation": "multiply_total_multiplicative", "value": value}}
 
 def bundle(race, file, name, desc, specs):
-    """specs: list of (subpower_key, dict)."""
+    """specs: list of (subpower_key, dict).
+
+    Deliberately emits no "subpowers" index. Apoli's origins:multiple decodes every non-reserved
+    key of the object as a subpower, so an index array of strings is handed to the subpower codec
+    and fails it -- the whole power then loads only partially, logged once per file per world load
+    as `Power "runic_races:<race>/<file>" will only be partially loaded: Failed to read fields: Not
+    a JSON object: [...]`. The subpowers are the object-valued keys; there is nowhere to declare
+    them and nothing that wants them declared.
+    """
     out = {"type": "origins:multiple",
            "name": "power.%s.%s.%s.name" % (NS, race, file),
-           "description": "power.%s.%s.%s.description" % (NS, race, file),
-           "subpowers": [k for k, _ in specs]}
+           "description": "power.%s.%s.%s.description" % (NS, race, file)}
     for k, v in specs:
         out[k] = v
     LANG["power.%s.%s.%s.name" % (NS, race, file)] = name

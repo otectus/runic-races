@@ -2,13 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.feline.nine_lives.name",
   "description": "power.runic_races.feline.nine_lives.description",
-  "subpowers": [
-    "cooldown_timer",
-    "cooldown_decay",
-    "night_vision",
-    "attack_speed",
-    "no_fall"
-  ],
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,

@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.dark_elf.children_of_darkness.name",
   "description": "power.runic_races.dark_elf.children_of_darkness.description",
-  "subpowers": [
-    "night_vision",
-    "speed",
-    "night_power"
-  ],
   "night_vision": {
     "type": "origins:night_vision",
     "strength": 1.0

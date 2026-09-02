@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.ice_elf.winters_child.name",
   "description": "power.runic_races.ice_elf.winters_child.description",
-  "subpowers": [
-    "freeze_imm",
-    "magic",
-    "cold_home"
-  ],
   "freeze_imm": {
     "type": "origins:modify_damage_taken",
     "damage_condition": {

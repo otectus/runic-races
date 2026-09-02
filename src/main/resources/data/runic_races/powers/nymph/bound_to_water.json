@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.nymph.bound_to_water.name",
   "description": "power.runic_races.nymph.bound_to_water.description",
-  "subpowers": [
-    "health",
-    "fire"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

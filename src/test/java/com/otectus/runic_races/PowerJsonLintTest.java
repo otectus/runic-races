@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
@@ -52,6 +53,23 @@ class PowerJsonLintTest {
         for (Path powerFile : listPowerFiles()) {
             String relative = POWERS.relativize(powerFile).toString();
             JsonElement root = JsonParser.parseString(Files.readString(powerFile));
+
+            // Rule: an origins:multiple power carries no scalar keys beyond the ones Apoli reserves.
+            // Apoli decodes every other key as a nested power, so a string, number, or array there
+            // fails the subpower codec and the whole power then loads only partially — which is
+            // exactly what a "subpowers" index array did to all 111 files through 1.6.1, once per
+            // file per world load. See MultiplePowers for the reserved set.
+            if (root.isJsonObject() && "origins:multiple".equals(typeOf(root.getAsJsonObject()))) {
+                for (Map.Entry<String, JsonElement> entry : root.getAsJsonObject().entrySet()) {
+                    if (MultiplePowers.isReserved(entry.getKey())
+                            || entry.getValue().isJsonObject()) {
+                        continue;
+                    }
+                    problems.add(relative + ": origins:multiple key \"" + entry.getKey()
+                            + "\" is not an object — Apoli decodes it as a subpower and fails,"
+                            + " loading the power only partially. Delete it.");
+                }
+            }
 
             walk(root, (obj, path) -> {
                 // Rule: check_interval >= 1

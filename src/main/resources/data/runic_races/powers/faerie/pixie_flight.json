@@ -2,14 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.faerie.pixie_flight.name",
   "description": "power.runic_races.faerie.pixie_flight.description",
-  "subpowers": [
-    "elytra_flight",
-    "flap_cooldown_timer",
-    "flap_cooldown_decay",
-    "magic",
-    "speed",
-    "night_vision"
-  ],
   "elytra_flight": {
     "type": "origins:elytra_flight",
     "render_elytra": false

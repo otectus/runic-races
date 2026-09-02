@@ -2,13 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.canine.pack_hunter.name",
   "description": "power.runic_races.canine.pack_hunter.description",
-  "subpowers": [
-    "speed",
-    "night_vision",
-    "melee",
-    "forest_home",
-    "taiga_home"
-  ],
   "speed": {
     "type": "origins:attribute",
     "modifier": {

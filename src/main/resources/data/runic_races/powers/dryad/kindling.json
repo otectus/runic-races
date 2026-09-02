@@ -2,9 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.dryad.kindling.name",
   "description": "power.runic_races.dryad.kindling.description",
-  "subpowers": [
-    "fire"
-  ],
   "fire": {
     "type": "origins:modify_damage_taken",
     "damage_condition": {

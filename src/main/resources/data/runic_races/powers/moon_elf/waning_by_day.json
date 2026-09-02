@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.moon_elf.waning_by_day.name",
   "description": "power.runic_races.moon_elf.waning_by_day.description",
-  "subpowers": [
-    "health",
-    "magic",
-    "day_weak"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

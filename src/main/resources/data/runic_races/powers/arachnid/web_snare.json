@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.arachnid.web_snare.name",
   "description": "power.runic_races.arachnid.web_snare.description",
-  "subpowers": [
-    "cooldown_timer",
-    "cooldown_decay",
-    "active_ability"
-  ],
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,

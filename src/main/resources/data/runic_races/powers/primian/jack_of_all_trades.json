@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.primian.jack_of_all_trades.name",
   "description": "power.runic_races.primian.jack_of_all_trades.description",
-  "subpowers": [
-    "magic_penalty",
-    "melee_penalty"
-  ],
   "magic_penalty": {
     "type": "origins:modify_damage_dealt",
     "damage_condition": {

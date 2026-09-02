@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.reaper.harbinger_of_death.name",
   "description": "power.runic_races.reaper.harbinger_of_death.description",
-  "subpowers": [
-    "wither_imm",
-    "night_vision",
-    "melee"
-  ],
   "wither_imm": {
     "type": "origins:effect_immunity",
     "effect": "minecraft:wither"

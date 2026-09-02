@@ -135,15 +135,11 @@ class CooldownResourceIdTest {
         JsonObject root = JsonParser.parseString(Files.readString(powerFile)).getAsJsonObject();
 
         Set<String> defined = new HashSet<>();
-        if (root.has("subpowers")) {
-            for (JsonElement key : root.getAsJsonArray("subpowers")) {
-                JsonElement sub = root.get(key.getAsString());
-                if (sub != null && sub.isJsonObject()
-                        && "origins:resource".equals(typeOf(sub.getAsJsonObject()))) {
-                    defined.add(race + "/" + stem + "_" + key.getAsString());
-                }
+        MultiplePowers.of(root).forEach((key, sub) -> {
+            if ("origins:resource".equals(typeOf(sub))) {
+                defined.add(race + "/" + stem + "_" + key);
             }
-        }
+        });
         return defined;
     }
 

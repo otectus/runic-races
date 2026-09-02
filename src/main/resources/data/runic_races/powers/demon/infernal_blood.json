@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.demon.infernal_blood.name",
   "description": "power.runic_races.demon.infernal_blood.description",
-  "subpowers": [
-    "fire_imm",
-    "melee",
-    "hot_home"
-  ],
   "fire_imm": {
     "type": "origins:modify_damage_taken",
     "damage_condition": {

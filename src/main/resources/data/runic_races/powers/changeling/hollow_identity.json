@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.changeling.hollow_identity.name",
   "description": "power.runic_races.changeling.hollow_identity.description",
-  "subpowers": [
-    "health",
-    "attack"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

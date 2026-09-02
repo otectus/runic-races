@@ -2,6 +2,7 @@ package com.otectus.runic_races.client.presentation;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.config.RRClientConfig;
 import com.otectus.runic_races.presentation.CueType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -81,6 +82,8 @@ public final class ScreenCueRenderer {
     @SubscribeEvent
     public static void onRenderGui(RenderGuiEvent.Post event) {
         if (ACTIVE.isEmpty() || Minecraft.getInstance().level == null) return;
+        // screenCuesEnabled was declared but never read: the option did nothing.
+        if (!RRClientConfig.SCREEN_CUES_ENABLED.get()) return;
         GuiGraphics graphics = event.getGuiGraphics();
         int w = graphics.guiWidth();
         int h = graphics.guiHeight();

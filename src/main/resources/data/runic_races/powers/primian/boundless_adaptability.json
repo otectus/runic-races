@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.primian.boundless_adaptability.name",
   "description": "power.runic_races.primian.boundless_adaptability.description",
-  "subpowers": [
-    "health",
-    "luck",
-    "speed"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

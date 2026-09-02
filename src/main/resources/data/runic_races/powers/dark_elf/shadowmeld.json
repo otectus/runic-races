@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.dark_elf.shadowmeld.name",
   "description": "power.runic_races.dark_elf.shadowmeld.description",
-  "subpowers": [
-    "cooldown_timer",
-    "cooldown_decay",
-    "active_ability"
-  ],
   "cooldown_timer": {
     "type": "origins:resource",
     "min": 0,

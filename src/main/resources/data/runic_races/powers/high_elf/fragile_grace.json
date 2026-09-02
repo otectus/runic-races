@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.high_elf.fragile_grace.name",
   "description": "power.runic_races.high_elf.fragile_grace.description",
-  "subpowers": [
-    "health",
-    "phys"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

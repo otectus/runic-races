@@ -2,9 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.magi.woven_of_magic.name",
   "description": "power.runic_races.magi.woven_of_magic.description",
-  "subpowers": [
-    "magic"
-  ],
   "magic": {
     "type": "origins:modify_damage_dealt",
     "damage_condition": {

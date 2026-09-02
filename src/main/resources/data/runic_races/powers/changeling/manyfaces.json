@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.changeling.manyfaces.name",
   "description": "power.runic_races.changeling.manyfaces.description",
-  "subpowers": [
-    "speed",
-    "luck"
-  ],
   "speed": {
     "type": "origins:attribute",
     "modifier": {

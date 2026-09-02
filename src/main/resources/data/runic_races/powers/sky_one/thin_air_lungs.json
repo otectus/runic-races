@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.sky_one.thin_air_lungs.name",
   "description": "power.runic_races.sky_one.thin_air_lungs.description",
-  "subpowers": [
-    "health",
-    "cave_slow",
-    "cave_weak"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

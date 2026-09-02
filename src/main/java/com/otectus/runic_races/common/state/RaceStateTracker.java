@@ -64,17 +64,6 @@ public final class RaceStateTracker {
         }
     }
 
-    /** Bulk-replace flags (diffs internally; only syncs on change). */
-    public static void setAll(ServerPlayer player, int newFlags) {
-        UUID id = player.getUUID();
-        Integer prev = FLAGS.get(id);
-        int current = prev == null ? 0 : prev;
-        if (newFlags != current) {
-            FLAGS.put(id, newFlags);
-            NetworkHandler.sendToPlayer(player, new S2CRaceStatePacket(newFlags));
-        }
-    }
-
     /** Force a full resync to the client regardless of diff (login, dimension change). */
     public static void resync(ServerPlayer player) {
         NetworkHandler.sendToPlayer(player, new S2CRaceStatePacket(get(player)));

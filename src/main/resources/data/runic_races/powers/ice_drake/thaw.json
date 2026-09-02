@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.ice_drake.thaw.name",
   "description": "power.runic_races.ice_drake.thaw.description",
-  "subpowers": [
-    "fire",
-    "hunger"
-  ],
   "fire": {
     "type": "origins:modify_damage_taken",
     "damage_condition": {

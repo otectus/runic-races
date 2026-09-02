@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.deep_one.sunlight_blindness.name",
   "description": "power.runic_races.deep_one.sunlight_blindness.description",
-  "subpowers": [
-    "slow",
-    "sun_slow",
-    "sun_weak"
-  ],
   "slow": {
     "type": "origins:attribute",
     "modifier": {

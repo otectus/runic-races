@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.fire_drake.cold_quenches_fire.name",
   "description": "power.runic_races.fire_drake.cold_quenches_fire.description",
-  "subpowers": [
-    "cold",
-    "water",
-    "hunger"
-  ],
   "cold": {
     "type": "origins:modify_damage_taken",
     "damage_condition": {

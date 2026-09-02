@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.forge_one.stone_heavy.name",
   "description": "power.runic_races.forge_one.stone_heavy.description",
-  "subpowers": [
-    "speed",
-    "attack_speed",
-    "water_slow"
-  ],
   "speed": {
     "type": "origins:attribute",
     "modifier": {

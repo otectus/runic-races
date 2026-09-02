@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.nymph.spirit_of_spring.name",
   "description": "power.runic_races.nymph.spirit_of_spring.description",
-  "subpowers": [
-    "water_breathing",
-    "magic",
-    "water_home"
-  ],
   "water_breathing": {
     "type": "origins:water_breathing"
   },

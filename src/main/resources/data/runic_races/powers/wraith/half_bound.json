@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.wraith.half_bound.name",
   "description": "power.runic_races.wraith.half_bound.description",
-  "subpowers": [
-    "health",
-    "sun_weak",
-    "holy"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

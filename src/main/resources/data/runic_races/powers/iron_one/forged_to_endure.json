@@ -2,11 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.iron_one.forged_to_endure.name",
   "description": "power.runic_races.iron_one.forged_to_endure.description",
-  "subpowers": [
-    "health",
-    "armor",
-    "kb"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

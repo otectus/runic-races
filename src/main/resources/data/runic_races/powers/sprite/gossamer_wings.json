@@ -2,14 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.sprite.gossamer_wings.name",
   "description": "power.runic_races.sprite.gossamer_wings.description",
-  "subpowers": [
-    "elytra_flight",
-    "flap_cooldown_timer",
-    "flap_cooldown_decay",
-    "slow_fall",
-    "speed",
-    "attack_speed"
-  ],
   "elytra_flight": {
     "type": "origins:elytra_flight",
     "render_elytra": false

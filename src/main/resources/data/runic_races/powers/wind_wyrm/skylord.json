@@ -2,14 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.wind_wyrm.skylord.name",
   "description": "power.runic_races.wind_wyrm.skylord.description",
-  "subpowers": [
-    "elytra_flight",
-    "flap_cooldown_timer",
-    "flap_cooldown_decay",
-    "no_fall",
-    "speed",
-    "soft_wings"
-  ],
   "elytra_flight": {
     "type": "origins:elytra_flight",
     "render_elytra": false

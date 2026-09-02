@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.celeron.fleet_and_sure.name",
   "description": "power.runic_races.celeron.fleet_and_sure.description",
-  "subpowers": [
-    "speed",
-    "attack_speed"
-  ],
   "speed": {
     "type": "origins:attribute",
     "modifier": {

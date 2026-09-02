@@ -2,12 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.arachnid.weavers_senses.name",
   "description": "power.runic_races.arachnid.weavers_senses.description",
-  "subpowers": [
-    "poison_imm",
-    "attack_speed",
-    "no_fall",
-    "vibration"
-  ],
   "poison_imm": {
     "type": "origins:effect_immunity",
     "effect": "minecraft:poison"

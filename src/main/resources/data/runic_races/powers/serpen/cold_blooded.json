@@ -2,10 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.serpen.cold_blooded.name",
   "description": "power.runic_races.serpen.cold_blooded.description",
-  "subpowers": [
-    "health",
-    "cold"
-  ],
   "health": {
     "type": "origins:attribute",
     "modifier": {

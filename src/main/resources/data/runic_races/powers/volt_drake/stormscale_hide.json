@@ -2,14 +2,6 @@
   "type": "origins:multiple",
   "name": "power.runic_races.volt_drake.stormscale_hide.name",
   "description": "power.runic_races.volt_drake.stormscale_hide.description",
-  "subpowers": [
-    "elytra_flight",
-    "lightning_imm",
-    "armor",
-    "speed",
-    "attack_speed",
-    "storm_charged"
-  ],
   "elytra_flight": {
     "type": "origins:elytra_flight",
     "render_elytra": false
