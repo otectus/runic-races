@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:bovine_icon"
+  },
+  "order": 4058,
+  "impact": 2,
+  "name": "origin.runic_races.bovine.name",
+  "description": "origin.runic_races.bovine.description",
+  "powers": [
+    "runic_races:bovine/hornrush",
+    "runic_races:bovine/herd_strength",
+    "runic_races:bovine/heavy_appetite"
+  ]
+}

@@ -3,6 +3,106 @@
 All notable changes to Runic Races are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.7.2] — 2026-09-23 — Lighter on the server
+
+Server performance and stability pass. No race, power, balance, save-format or resource-id change.
+**Client and server must both update:** network protocol is now **5**.
+
+### Performance
+
+- **Cooldown countdowns no longer re-send the whole power container.** Each 10-tick decay step
+  (5 for flap timers) used `origins:change_resource`. In the shipped Apoli 2.9.0.8, every step
+  serializes the owner's entire power container and sends it to the owner and every player
+  tracking them. The 43 decaying cooldown timers now step through `runic_races:cooldown_decay`,
+  the same mutation on the same ticks. At the end of the tick, the owner and trackers receive only
+  the changed value, read at send time so a same-tick activation is never overwritten. A GameTest
+  with Fire Drake and three observers measured 44,200 bytes of full syncs against 3,800 bytes of
+  updates over ten steps (91% less), with the same number of messages. Activation, login,
+  respawn, dimension changes and new trackers still receive Apoli's full sync.
+- **Shaped particles arrive as one packet per nearby player.** Every shaped signature emission
+  (rings, helices, domes, lines, spokes, cones, fountains, shields, waves, arcs and sigils) sent
+  one vanilla packet per particle. So did the Tremor ring, the Blood Elf siphon and the new
+  races' rings, trails and cry fronts. The server still computes
+  every position, random draw and block clip. The client replays the identical particles, and
+  vanilla's 32-block per-particle visibility decides which points each player receives. Across all
+  82 signature recipes and three observers (one on the 32-block edge), delivery was identical;
+  packets fell from 2,656 to 231 and bytes from 137,184 to 57,519.
+- Race-state changes reach the client in at most one packet per player per tick. Biome-affinity
+  and night-scaling powers derive their modifier UUIDs, tags, roles and operations once per
+  configuration instead of building strings and doing lookups every check. Hostile afflictions resolve
+  their effects once per cast instead of once per target. Apotheosis luck and Feathers capacity
+  are only rewritten when they actually change. The delayed-presentation queue drains a burst in
+  one pass.
+
+### Fixed
+
+- **State runes and notifications flickered for Canine.** Its forest and taiga affinities both
+  wrote the same "home biome" flag, so in a forest that is not a taiga one power turned it on and
+  the other off every two seconds. Flags that several powers report are now combined, and
+  removing or reloading one power only removes its own contribution.
+- **Integration toggles were read only by the first world of a session.** A second singleplayer
+  world, or a config edit on a running server, kept the first activation. Toggles now apply live.
+  A config reload re-syncs players only for integrations whose toggle changed.
+- The Primian adaptation speed bonus stayed on a player whose race was cleared entirely.
+- The race memo is dropped on login, respawn, dimension change and player clone. The client
+  forgets the previous server's state runes on disconnect. The flap rate-limit map is cleared
+  when the server stops.
+- The "no stamina" flap banner now shares the deny sound's one-second debounce instead of
+  repeating on every denied packet.
+- The Iron's and Feather's adapters only report available when every member they call resolved.
+  An incompatible API version falls back to the configured fail-open/fail-closed answer instead
+  of throwing on every check.
+- Malformed biome tags or attribute ids and non-finite values in `biome_affinity` /
+  `scaling_attribute` powers are rejected when the data loads, instead of failing on every tick.
+- The cooldown HUD shows a cooldown the server has not sent yet as pending instead of ready, and
+  no longer flashes "ready" when the real value arrives.
+
+### Server operators
+
+- `/runicraces diagnostics [reset]` (permission 2): counters for cooldown updates, particle
+  packets, state packets, delayed beats, integration syncs and modifier writes, plus the size of
+  every per-player map Runic Races keeps (each is emptied when its player logs out).
+- `network.cooldownDeltaSync` and `network.batchedParticles` in `runic_races-server.toml` restore
+  the previous transport if a modpack interaction is suspected. Both default to on.
+- ForgeGradle (6.0.54) and MixinGradle (0.7.38) are pinned to the versions the build already
+  resolved.
+
+### Tests
+
+- Added unit tests for flag aggregation, the batch encoder, the power-update packet bounds and
+  burst queue compaction. Added GameTests for cooldown and particle equivalence and traffic,
+  Canine affinity sources and modifier-id stability, adaptation cleanup, and integration activation.
+  See [the validation record](docs/VALIDATION_1.7.2.md).
+
+## [1.7.1] — 2026-09-20 — Collision and ability fixes
+
+### Fixed
+
+- Registered racial Pehkui scales on remote clients and refreshed dependent hitbox caches when scales change, correcting client/server collision mismatches near walls.
+- Check available space before growing. Blocked growth now waits without resizing, teleporting, or interrupting movement; retries preserve unrelated race-state flags and no longer repeat state-entry cues. Stale resize requests are cleared when Pehkui is absent.
+- Keep the Pehkui adapter available to remove owned racial scaling when the integration is disabled, while preserving external scale contributions.
+- Removed Apoli's redundant hidden one-tick cooldown from all 37 legacy actives, fixing silent activation rejection immediately after gaining a power. Authored ability cooldowns remain unchanged.
+- Fixed timestamp overflow that suppressed cooldown-denial feedback, delayed the first Canine scent query, and made Sea Serpen drip before entering water.
+- Corrected hostile area effects to respect their advertised spherical radius and reject invalid or excessive radius values.
+
+### Tests
+
+- Added runtime coverage for every legacy active, Demon buffs and hostile effects, cooldown rejection and recovery, cached Pehkui dimensions, wall sliding, and automatic resize retries.
+
+## [1.7.0] — 2026-09-09 — Seventeen new ways to play
+
+- Expanded the roster to **54 races across seven families**, retaining all existing race and power identities. Added Colossan, Auroran, Grove Elf, Tide Elf, Astral Elf, Mountain One, Moss One, Crystal One, Bovine, Saurian, Chelon, Zephyr, Nightborn, Returned, Wailer, Scaleheir and Wyvernkin.
+- Added deliberate melee/ranged preparations, finite party wards and recovery patches, collision-checked charges and currents, a visible anchored recall, quarry rhythm, bounded feeding, interruptible cone control, a defensive shell, grounded draconic authority, and two distinct winged lineages. Every addition has three visible power bundles, authored strengths and drawbacks, original portraits/icons, presentation and explicit optional affinities.
+- New cooldowns survive death, race changes and reconnects, and pause offline. Holding the primary key cannot repeatedly recall an anchor or toggle a shell. Small owner state updates expose remaining preparation time, charges, guard, marks and environmental remedies.
+- Successful-hit rewards now use accepted health damage. Canceled hits and absorption alone cannot grant racial lifesteal or venom. Racial wards choose one strongest applicable prevention per hit, after ordinary mitigation and absorption; healing and retaliation have finite, nonrecursive budgets.
+- Added data tags for biome/terrain/food/target/damage extensions and a default-off racial PvP-control option. Non-damage support/control exposes a cancellable Forge permission event. Protected pets and allies are excluded from offensive targeting.
+- New Pehkui sizes affect body geometry without granting racial reach. Unsafe growth waits for room. Shellfast blocks vanilla actions and guarded Ars/Iron's casting, including existing Iron's channels.
+- Corrected Curios grants to use owned slot modifiers and return displaced items after occupied slots shrink. Feathers bonuses preserve external maximum-stamina contributions. Ars mana and cost calculations correct floating-point truncation at exact integer boundaries.
+- Reconciled the generator with the shipped 1.6.3 data before expanding it. Fixed unsupported inversion wrappers in Magi, Sky One, Sea Serpen, Volt Drake and Wind Wyrm powers; their intended numbers are unchanged. The Reaper revival cooldown remains separate from Returned.
+- Added Forge GameTests, pure budget/input/persistence tests, semantic generator checks, expanded diagnostics and pack-author documentation. See [the validation record](docs/VALIDATION_1.7.0.md) for executed checks and release gates.
+
+**Client and server must both update:** network protocol is now **3**. Minecraft remains **1.20.1**, Forge, Java 17.
+
 ## [1.6.3] — 2026-09-02 — The server stops paying for every cooldown tick
 
 Server-side performance and correctness pass. No origin id, power id, or balance change, and

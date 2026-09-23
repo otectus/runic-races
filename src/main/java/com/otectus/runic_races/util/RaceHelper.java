@@ -44,6 +44,13 @@ public class RaceHelper {
             OriginsDynamicRegistries.LAYERS_REGISTRY, new ResourceLocation(RunicRacesMod.MOD_ID, "race"));
 
     /**
+     * Origins' sentinel for "no origin chosen on this layer". {@code IOriginContainer.hasOrigin}
+     * treats a layer holding this key exactly like an unset one, so writing it un-chooses a layer.
+     */
+    public static final ResourceKey<Origin> EMPTY_ORIGIN = ResourceKey.create(
+            OriginsDynamicRegistries.ORIGINS_REGISTRY, new ResourceLocation("origins", "empty"));
+
+    /**
      * Get the configured Pehkui scale for a race. Returns 1.0 for unknown/null races.
      */
     public static float getRaceScale(String raceName) {
@@ -108,6 +115,11 @@ public class RaceHelper {
     public static void clearAll() {
         SERVER_MEMO.clear();
         CLIENT_MEMO.clear();
+    }
+
+    /** Server-side memo entries (diagnostics). */
+    public static int serverMemoCount() {
+        return SERVER_MEMO.size();
     }
 
     /**

@@ -16,10 +16,21 @@ public record RaceDefinition(
         double luckBonus,
         float knockbackTaken,
         boolean venomous,
-        SlotGrant[] curiosSlotGrants
+        SlotGrant[] curiosSlotGrants,
+        MagicAffinity magicAffinity
 ) {
     /** No extra curios slots. */
     public static final SlotGrant[] NO_SLOTS = new SlotGrant[0];
+
+    public record MagicAffinity(double arsMana, double arsCost, float spellDamage) {}
+    public RaceDefinition(String name, String family, String displayName, float scale, int maxFeathers,
+                          double luckBonus, float knockbackTaken, boolean venomous, SlotGrant[] curiosSlotGrants) {
+        this(name, family, displayName, scale, maxFeathers, luckBonus, knockbackTaken, venomous, curiosSlotGrants, null);
+    }
+    public RaceDefinition withMagicAffinity(double mana, double cost, float damage) {
+        return new RaceDefinition(name, family, displayName, scale, maxFeathers, luckBonus, knockbackTaken, venomous,
+                curiosSlotGrants, new MagicAffinity(mana, cost, damage));
+    }
 
     /**
      * Convenience constructor for the common case: vanilla knockback (1.0), no venom.

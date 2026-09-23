@@ -1,0 +1,11 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.grove_elf.canopy_strider.name",
+  "description": "power.runic_races.grove_elf.canopy_strider.description",
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "forest_speed": 0.1
+    }
+  }
+}

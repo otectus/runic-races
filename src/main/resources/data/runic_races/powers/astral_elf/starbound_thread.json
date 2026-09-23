@@ -1,0 +1,27 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.astral_elf.starbound_thread.name",
+  "description": "power.runic_races.astral_elf.starbound_thread.description",
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 800,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "active_ability": {
+    "type": "runic_races:racial_ability",
+    "kind": "astral_elf",
+    "cooldown_ticks": 800,
+    "duration_ticks": 160,
+    "parameters": {
+      "range": 16
+    }
+  }
+}

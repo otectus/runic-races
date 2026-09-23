@@ -83,6 +83,79 @@ public final class ClientRacialAmbienceHandler {
     private ClientRacialAmbienceHandler() {}
 
     static {
+        ROUTINES.put("colossan", (p, l, t) -> {
+            if (p.onGround() && p.isSprinting() && every("colossan.identity", t, 100))
+                puff(l, ModParticles.ROCK_CHIP.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("auroran", (p, l, t) -> {
+            if (l.isDay() && p.getMainHandItem().isEnchanted() && every("auroran.identity", t, 100))
+                puff(l, ModParticles.ARCANE_GLINT.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("grove_elf", (p, l, t) -> {
+            if (p.onGround() && l.getBiome(p.blockPosition()).is(com.otectus.runic_races.ability.RacialTags.GROVE) && every("grove_elf.identity", t, 100))
+                puff(l, ModParticles.LEAF_PETAL.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("tide_elf", (p, l, t) -> {
+            if (p.isInWater() && every("tide_elf.identity", t, 100))
+                puff(l, ParticleTypes.BUBBLE, p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("astral_elf", (p, l, t) -> {
+            if (com.otectus.runic_races.ability.RacialEnvironment.night(p) && every("astral_elf.identity", t, 100))
+                puff(l, ModParticles.MOON_SLIVER.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("mountain_one", (p, l, t) -> {
+            if (p.onGround() && p.swinging && every("mountain_one.identity", t, 100))
+                puff(l, ModParticles.ROCK_CHIP.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("moss_one", (p, l, t) -> {
+            if (p.onGround() && p.getDeltaMovement().lengthSqr() < 0.001 && every("moss_one.identity", t, 100))
+                puff(l, ModParticles.POLLEN_MOTE.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("crystal_one", (p, l, t) -> {
+            if (p.getMainHandItem().isEnchanted() && every("crystal_one.identity", t, 100))
+                puff(l, ModParticles.MIRROR_SHARD.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("bovine", (p, l, t) -> {
+            if (p.onGround() && p.isSprinting() && every("bovine.identity", t, 100))
+                puff(l, ModParticles.ROCK_CHIP.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("saurian", (p, l, t) -> {
+            if (p.isInPowderSnow && every("saurian.identity", t, 100))
+                puff(l, ParticleTypes.CRIT, p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("chelon", (p, l, t) -> {
+            if (p.isInWater() && every("chelon.identity", t, 100))
+                puff(l, ParticleTypes.WAX_ON, p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("zephyr", (p, l, t) -> {
+            maybeRunWingEnv(p, l, "zephyr", t);
+            tickWingTrail(p, l, "zephyr", t);
+            if (p.isFallFlying() && every("zephyr.identity", t, 100))
+                puff(l, ModParticles.GALE_STREAK.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("nightborn", (p, l, t) -> {
+            if (com.otectus.runic_races.ability.RacialEnvironment.night(p) && every("nightborn.identity", t, 100))
+                puff(l, ModParticles.SHADOW_WISP.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("returned", (p, l, t) -> {
+            if (p.getHealth() < p.getMaxHealth() * 0.5 && every("returned.identity", t, 100))
+                puff(l, ModParticles.SOUL_WISP.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("wailer", (p, l, t) -> {
+            if (p.getDeltaMovement().lengthSqr() < 0.001 && every("wailer.identity", t, 100))
+                puff(l, ModParticles.SOUL_WISP.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("scaleheir", (p, l, t) -> {
+            if (p.isBlocking() && every("scaleheir.identity", t, 100))
+                puff(l, ModParticles.EMBER_SCALE.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+        ROUTINES.put("wyvernkin", (p, l, t) -> {
+            maybeRunWingEnv(p, l, "wyvernkin", t);
+            tickWingTrail(p, l, "wyvernkin", t);
+            if (p.isFallFlying() && every("wyvernkin.identity", t, 100))
+                puff(l, ModParticles.GALE_STREAK.get(), p.getX(), p.getY() + 0.25, p.getZ(), scaled(1), 0.3, 0.01);
+        });
+
         // ----- Human -----
         ROUTINES.put("primian", (p, l, t) -> {
             // Always learning: a single glint at the hands while adaptation stacks are live.
@@ -317,7 +390,8 @@ public final class ClientRacialAmbienceHandler {
                 if (every("sea_serpen.bubbles", t, 20)) {
                     puff(l, ParticleTypes.BUBBLE, p.getX(), p.getY() + 0.6, p.getZ(), scaled(2), 0.4, 0.02);
                 }
-            } else if (t - lastWetTick < 200 && every("sea_serpen.drip", t, 30)) {
+            } else if (lastWetTick != Long.MIN_VALUE && t - lastWetTick < 200
+                    && every("sea_serpen.drip", t, 30)) {
                 puff(l, ParticleTypes.FALLING_WATER, p.getX(), p.getY() + 1.3, p.getZ(), scaled(2), 0.4, 0.0);
             }
         });
@@ -367,6 +441,7 @@ public final class ClientRacialAmbienceHandler {
         lastWetTick = Long.MIN_VALUE;
         LAST_FIRED.clear();
         RaceHelper.clearAll();
+        com.otectus.runic_races.client.state.ClientRaceState.reset();
     }
 
     // ============================================================
@@ -524,7 +599,8 @@ public final class ClientRacialAmbienceHandler {
         double dxq = player.getX() - lastScentQueryX;
         double dyq = player.getY() - lastScentQueryY;
         double dzq = player.getZ() - lastScentQueryZ;
-        boolean stale = gameTime - lastScentQueryTick >= SCENT_QUERY_MAX_AGE;
+        boolean stale = lastScentQueryTick == Long.MIN_VALUE
+                || gameTime - lastScentQueryTick >= SCENT_QUERY_MAX_AGE;
         boolean moved = dxq * dxq + dyq * dyq + dzq * dzq > SCENT_REQUERY_DIST_SQ;
         if (stale || moved) {
             AABB box = player.getBoundingBox().inflate(24.0);

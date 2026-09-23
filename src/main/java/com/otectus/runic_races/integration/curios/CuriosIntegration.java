@@ -6,22 +6,9 @@ import com.otectus.runic_races.race.RaceDefinition;
 import com.otectus.runic_races.race.RaceRegistry;
 import com.otectus.runic_races.util.RaceHelper;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import top.theillusivec4.curios.api.SlotAttribute;
 
-/**
- * Curios integration: Grants extra accessory slots based on race.
- *
- * Goblin: +1 ring slot, +1 charm slot (double accessories fantasy)
- * Dwarves: +1 belt slot
- * Elves: +1 necklace slot
- *
- * Uses SlotAttribute (Curios API) which allows dynamic slot counts
- * via standard Minecraft attribute modifiers.
- *
- * Race-specific slot grants are defined in {@link RaceRegistry}.
- */
+/** Optional Curios slot grants use its inventory API and retain unrelated modifiers and stacks. */
 public class CuriosIntegration implements ModIntegration {
 
     @Override
@@ -42,40 +29,35 @@ public class CuriosIntegration implements ModIntegration {
     private void applySlotGrants(ServerPlayer player) {
         String race = RaceHelper.getRaceName(player).orElse(null);
 
-        // Remove any existing racial slot grants first
-        removeAllSlotGrants(player);
-
-        // Apply grants for current race
-        if (race == null) return;
-        RaceDefinition.SlotGrant[] grants = RaceRegistry.getSlotGrants(race);
-        if (grants.length == 0) return;
-
-        for (RaceDefinition.SlotGrant grant : grants) {
-            try {
-                AttributeInstance instance = player.getAttribute(SlotAttribute.getOrCreate(grant.slotId()));
-                if (instance != null && instance.getModifier(grant.uuid()) == null) {
-                    instance.addTransientModifier(new AttributeModifier(
-                            grant.uuid(),
-                            "Runic Races " + grant.slotId() + " slot",
-                            grant.amount(),
-                            AttributeModifier.Operation.ADDITION
-                    ));
+        var desired = new java.util.HashMap<java.util.UUID, RaceDefinition.SlotGrant>();
+        if (race != null && com.otectus.runic_races.config.RRServerConfig.CURIOS_INTEGRATION.get())
+            for (var grant : RaceRegistry.getSlotGrants(race)) desired.put(grant.uuid(), grant);
+        top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
+            boolean changed = false;
+            var updated = new java.util.HashSet<top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler>();
+            for (var grant : RaceRegistry.allSlotGrants()) {
+                var stacks = inventory.getStacksHandler(grant.slotId()).orElse(null);
+                if (stacks == null) continue;
+                var old = stacks.getModifiers().get(grant.uuid());
+                var wanted = desired.get(grant.uuid());
+                if (wanted != null && old != null && old.getAmount() == wanted.amount()
+                        && old.getOperation() == AttributeModifier.Operation.ADDITION) continue;
+                if (old != null) { inventory.removeSlotModifier(grant.slotId(), grant.uuid()); changed = true; }
+                if (wanted != null) {
+                    inventory.addTransientSlotModifier(wanted.slotId(), wanted.uuid(), "Runic Races " + wanted.slotId(), wanted.amount(), AttributeModifier.Operation.ADDITION);
+                    changed = true;
                 }
-            } catch (Exception e) {
-                RunicRacesMod.debug("[RunicRaces] Could not apply slot grant for {}: {}", grant.slotId(), e.getMessage());
+                if (old != null || wanted != null) updated.add(stacks);
             }
-        }
-    }
-
-    private void removeAllSlotGrants(ServerPlayer player) {
-        for (RaceDefinition.SlotGrant grant : RaceRegistry.allSlotGrants()) {
-            try {
-                AttributeInstance instance = player.getAttribute(SlotAttribute.getOrCreate(grant.slotId()));
-                if (instance != null) {
-                    instance.removeModifier(grant.uuid());
-                }
-            } catch (Exception ignored) {
+            // Let Curios process shrinking occupied inventories once, after the final desired
+            // modifiers exist. Never clear slot stacks or another mod's modifier collection.
+            if (changed) {
+                // Curios resizes lazily. Materialize the final sizes before draining its
+                // invalid-stack queue, otherwise a removed occupied slot waits until a
+                // later inventory read and can miss this synchronization's return pass.
+                updated.forEach(top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler::update);
+                inventory.handleInvalidStacks();
             }
-        }
+        });
     }
 }

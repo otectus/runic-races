@@ -1,0 +1,46 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.zephyr.airborne_essence.name",
+  "description": "power.runic_races.zephyr.airborne_essence.description",
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "fall_reduction": 0.5
+    }
+  },
+  "elytra_flight": {
+    "type": "origins:elytra_flight",
+    "render_elytra": false
+  },
+  "flap_cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 40,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "flap_cooldown_decay": {
+    "type": "origins:action_over_time",
+    "interval": 5,
+    "entity_action": {
+      "type": "origins:if_else",
+      "condition": {
+        "type": "origins:resource",
+        "resource": "runic_races:zephyr/airborne_essence_flap_cooldown_timer",
+        "comparison": ">",
+        "compare_to": 0
+      },
+      "if_action": {
+        "type": "runic_races:cooldown_decay",
+        "resource": "runic_races:zephyr/airborne_essence_flap_cooldown_timer",
+        "change": -5
+      }
+    }
+  }
+}

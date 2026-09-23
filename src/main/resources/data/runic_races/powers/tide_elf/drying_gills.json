@@ -1,0 +1,22 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.tide_elf.drying_gills.name",
+  "description": "power.runic_races.tide_elf.drying_gills.description",
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": -2,
+      "name": "Drying Gills health"
+    }
+  },
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "dry_after": 1200,
+      "wet_refresh": 20,
+      "dry_slow": 0.08
+    }
+  }
+}

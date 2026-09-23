@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:villager",
+    "minecraft:wandering_trader",
+    "minecraft:iron_golem",
+    "minecraft:snow_golem",
+    "minecraft:armor_stand",
+    "minecraft:allay",
+    "minecraft:vex",
+    "minecraft:blaze",
+    "minecraft:slime",
+    "minecraft:magma_cube",
+    "minecraft:shulker",
+    "runic_races:grave_servant",
+    {
+      "id": "mca:male_villager",
+      "required": false
+    },
+    {
+      "id": "mca:female_villager",
+      "required": false
+    }
+  ]
+}

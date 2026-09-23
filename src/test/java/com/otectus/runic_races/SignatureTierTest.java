@@ -19,8 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Enforces the CLAUDE.md VFX density guideline on the Java signature recipes:
  * summed authored particle counts per entry must sit in the entry's Intensity band
  * (MINOR ≤ 20, MAJOR 30-60, MYTHIC ≥ 80), staged beats must stay within the
- * scheduler's clamp, and every entry must have at least one zero-delay spec so
- * activation feedback is instant.
+ * scheduler's clamp, every entry must have at least one zero-delay spec so
+ * activation feedback is instant, and every entry must emit at least one
+ * particle — a silent entry is an ability with no visible identity.
  *
  * Source-scanned (SignatureRegistry's static init builds Minecraft particle
  * options, which are compileOnly). Relies on the registry's formatting
@@ -123,6 +124,22 @@ class SignatureTierTest {
             }
         }
         assertTrue(problems.isEmpty(), "Staging violations:\n" + String.join("\n", problems));
+    }
+
+    @Test
+    void everyEntryEmitsAtLeastOneParticle() throws IOException {
+        List<String> problems = new ArrayList<>();
+        for (Map.Entry<String, String> entry : entryBlocks().entrySet()) {
+            Matcher counts = VFX_COUNT.matcher(entry.getValue());
+            int sum = 0;
+            while (counts.find()) {
+                sum += Integer.parseInt(counts.group(1));
+            }
+            if (sum <= 0) {
+                problems.add(entry.getKey() + ": no particles — the cue is invisible in game");
+            }
+        }
+        assertTrue(problems.isEmpty(), "Silent signature entries:\n" + String.join("\n", problems));
     }
 
     /** Splits the registry source into per-entry blocks keyed by SignatureKey name. */

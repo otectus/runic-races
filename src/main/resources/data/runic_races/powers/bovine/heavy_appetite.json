@@ -1,0 +1,21 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.bovine.heavy_appetite.name",
+  "description": "power.runic_races.bovine.heavy_appetite.description",
+  "attack_speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_speed",
+      "operation": "multiply_total",
+      "value": -0.08,
+      "name": "Heavy Appetite attack_speed"
+    }
+  },
+  "exhaustion": {
+    "type": "origins:modify_exhaustion",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.2
+    }
+  }
+}

@@ -1,13 +1,16 @@
 package com.otectus.runic_races.presentation;
 
 import com.otectus.runic_races.config.RRServerConfig;
+import com.otectus.runic_races.diagnostics.RRMetrics;
 import com.otectus.runic_races.network.NetworkHandler;
 import com.otectus.runic_races.network.S2CScreenCuePacket;
 import com.otectus.runic_races.presentation.SignatureEntry.SfxSpec;
 import com.otectus.runic_races.presentation.SignatureEntry.VfxSpec;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -55,9 +58,14 @@ public final class RunicPresentation {
         Vec3 origin = pos.add(0, 0.3, 0);
         for (VfxSpec spec : entry.particles()) {
             if (spec.delayTicks() <= 0) {
-                spawnOneVfx(level, origin, look, spec, lineTarget);
+                spawnOneVfx(level, origin, look, spec, lineTarget, player.getEyePosition());
             } else {
-                PresentationScheduler.scheduleVfx(player, spec, lineTarget);
+                boolean snapshot = switch (key) {
+                    case FIRE_DRAKE_BREATH, ICE_DRAKE_BREATH, SEA_SERPEN_BREATH,
+                            TERRA_DRAKE_BREATH, VOLT_DRAKE_BREATH, WIND_WYRM_BREATH -> true;
+                    default -> false;
+                };
+                PresentationScheduler.scheduleVfx(player, spec, lineTarget, snapshot);
             }
         }
         showRunicBanner(player, entry, bannerArgs);
@@ -109,7 +117,11 @@ public final class RunicPresentation {
     }
 
     static void spawnOneVfx(ServerLevel level, Vec3 origin, Vec3 look, VfxSpec spec, Vec3 lineTarget) {
-        spawnShaped(level, origin, look, spec, lineTarget);
+        spawnOneVfx(level, origin, look, spec, lineTarget, origin.add(0, 1.2, 0));
+    }
+
+    static void spawnOneVfx(ServerLevel level, Vec3 origin, Vec3 look, VfxSpec spec, Vec3 lineTarget, Vec3 eyes) {
+        spawnShaped(level, origin, look, spec, lineTarget, eyes);
     }
 
     /**
@@ -118,29 +130,58 @@ public final class RunicPresentation {
      * rather than a bug; 0.0 disables signature particles outright.
      */
     private static int scaledCount(VfxSpec spec) {
-        double density = RRServerConfig.SIGNATURE_PARTICLE_DENSITY.get();
-        if (density <= 0.0) return 0;
-        if (Math.abs(density - 1.0) < 1.0e-3) return spec.count();
         int floor = switch (spec.shape()) {
             case POINT, LINE -> 1;
             default -> Math.min(spec.count(), 6);
         };
-        return Math.max(floor, Math.min(spec.count(), (int) Math.round(spec.count() * density)));
+        return ParticleBudget.scale(spec.count(), RRServerConfig.SIGNATURE_PARTICLE_DENSITY.get(), floor);
+    }
+
+    /** How far a surface-clipped particle is lifted off the block face it landed on. */
+    private static final double SURFACE_PULLBACK = 0.15;
+
+    /** Beyond this range a signature cue is not worth a forced packet. */
+    private static final double FORCE_RADIUS = 32.0;
+
+    /**
+     * Sends one particle emission, forcing it past the client's particle limiter so
+     * signature cues still read at {@code Particles: Minimal}. The public per-player
+     * {@code sendParticles} overload ties the override to a 512-block radius, so the
+     * packet is built and delivered by hand to nearby players.
+     */
+    private static void emit(ServerLevel level, ParticleOptions particle,
+                             double x, double y, double z, int count,
+                             double dx, double dy, double dz, double speed) {
+        var packet = new ClientboundLevelParticlesPacket(particle, true, x, y, z,
+                (float) dx, (float) dy, (float) dz, (float) speed, count);
+        Vec3 at = new Vec3(x, y, z);
+        RRMetrics.add(RRMetrics.Counter.PARTICLE_EMISSIONS);
+        RRMetrics.add(RRMetrics.Counter.PARTICLE_POINTS, count);
+        for (ServerPlayer player : level.players()) {
+            if (player.blockPosition().closerToCenterThan(at, FORCE_RADIUS)) {
+                player.connection.send(packet);
+                RRMetrics.add(RRMetrics.Counter.PARTICLE_PACKETS);
+            }
+        }
     }
 
     /**
      * Places each particle of a shaped spec individually. Directed motion uses the
      * vanilla count-0 trick: {@code sendParticles(p, x, y, z, 0, dx, dy, dz, speed)}
-     * gives the single particle velocity {@code (dx, dy, dz) * speed}.
+     * gives the single particle velocity {@code (dx, dy, dz) * speed}. The points of one
+     * emission are delivered together by {@link ParticleBatch}; POINT bursts and the
+     * no-target fallbacks are already a single vanilla packet.
      */
-    private static void spawnShaped(ServerLevel level, Vec3 origin, Vec3 look, VfxSpec spec, Vec3 lineTarget) {
+    private static void spawnShaped(ServerLevel level, Vec3 origin, Vec3 look, VfxSpec spec, Vec3 lineTarget, Vec3 eyes) {
         var particle = spec.particle().get();
         int count = scaledCount(spec);
         if (count <= 0) return;
         double radius = spec.spreadX();
         double height = spec.spreadY();
+        // Every non-POINT shape places particles one by one; they travel as one batch.
+        ParticleBatch batch = ParticleBatch.directed(particle, true, count);
         switch (spec.shape()) {
-            case POINT -> level.sendParticles(particle, origin.x, origin.y, origin.z, count,
+            case POINT -> emit(level, particle, origin.x, origin.y, origin.z, count,
                     spec.spreadX(), spec.spreadY(), spec.spreadZ(), spec.speed());
             case RING, RING_IN, RING_ORBIT -> {
                 for (int i = 0; i < count; i++) {
@@ -156,9 +197,8 @@ public final class RunicPresentation {
                     } else {
                         vx = cx; vz = cz;
                     }
-                    level.sendParticles(particle,
-                            origin.x + cx * radius, origin.y + 0.1, origin.z + cz * radius,
-                            0, vx, 0.05, vz, spec.speed());
+                    batch.add(origin.x + cx * radius, origin.y + 0.1, origin.z + cz * radius,
+                            vx, 0.05, vz, spec.speed());
                 }
             }
             case HELIX -> {
@@ -167,11 +207,10 @@ public final class RunicPresentation {
                     double t = (double) i / Math.max(1, count - 1);
                     double angle = Math.PI * 2 * turns * t;
                     double r = Math.max(0.3, radius);
-                    level.sendParticles(particle,
-                            origin.x + Math.cos(angle) * r,
+                    batch.add(origin.x + Math.cos(angle) * r,
                             origin.y + t * Math.max(0.5, height),
                             origin.z + Math.sin(angle) * r,
-                            0, 0, 0.6, 0, spec.speed());
+                            0, 0.6, 0, spec.speed());
                 }
             }
             case DOME -> {
@@ -183,14 +222,13 @@ public final class RunicPresentation {
                     double sx = Math.sin(inclination) * Math.cos(azimuth);
                     double sy = Math.cos(inclination);
                     double sz = Math.sin(inclination) * Math.sin(azimuth);
-                    level.sendParticles(particle,
-                            origin.x + sx * radius, origin.y + sy * radius, origin.z + sz * radius,
-                            0, sx, sy, sz, spec.speed());
+                    batch.add(origin.x + sx * radius, origin.y + sy * (height > 0 ? height : radius), origin.z + sz * radius,
+                            sx, sy, sz, spec.speed());
                 }
             }
             case LINE -> {
                 if (lineTarget == null) {
-                    level.sendParticles(particle, origin.x, origin.y, origin.z, count,
+                    emit(level, particle, origin.x, origin.y, origin.z, count,
                             0.3, 0.3, 0.3, spec.speed());
                     return;
                 }
@@ -198,35 +236,33 @@ public final class RunicPresentation {
                 Vec3 dir = lineTarget.subtract(origin).normalize();
                 for (int i = 0; i < count; i++) {
                     Vec3 p = origin.add(step.scale(i));
-                    level.sendParticles(particle, p.x, p.y, p.z,
-                            0, dir.x, dir.y, dir.z, spec.speed());
+                    batch.add(p.x, p.y, p.z,
+                            dir.x, dir.y, dir.z, spec.speed());
                 }
             }
             case SPOKES -> {
-                int spokes = 8;
-                int perSpoke = Math.max(1, count / spokes);
+                int spokes = Math.min(8, count);
                 for (int s = 0; s < spokes; s++) {
+                    int perSpoke = count / spokes + (s < count % spokes ? 1 : 0);
                     double angle = (Math.PI * 2 * s) / spokes;
                     double cx = Math.cos(angle);
                     double cz = Math.sin(angle);
                     for (int i = 1; i <= perSpoke; i++) {
                         double dist = radius * i / perSpoke;
-                        level.sendParticles(particle,
-                                origin.x + cx * dist, origin.y + 0.05, origin.z + cz * dist,
-                                0, 0, 0.02, 0, spec.speed());
+                        batch.add(origin.x + cx * dist, origin.y + 0.05, origin.z + cz * dist,
+                                0, 0.02, 0, spec.speed());
                     }
                 }
             }
             case CONE -> {
                 if (look == null || look.lengthSqr() < 1.0e-4) {
                     // No aim available (position-based entry point) — degrade to a small cloud.
-                    level.sendParticles(particle, origin.x, origin.y, origin.z, count,
+                    emit(level, particle, origin.x, origin.y, origin.z, count,
                             0.4, 0.4, 0.4, spec.speed());
                     return;
                 }
-                Vec3 dir = look.normalize();
-                // Raise from the feet-anchored origin toward the eyes so the jet leaves the face.
-                Vec3 eye = origin.add(0, 1.2, 0);
+                EffectGeometry frame = EffectGeometry.along(look);
+                Vec3 dir = frame.forward();
                 double range = Math.max(1.0, radius);
                 double endRadius = Math.max(0.15, height);
                 // Start the visual cone out from the face so first person isn't blinded
@@ -234,14 +270,17 @@ public final class RunicPresentation {
                 double startDist = Math.min(1.5, range * 0.25);
                 for (int i = 0; i < count; i++) {
                     double t = (i + 0.5) / count;
-                    Vec3 axis = eye.add(dir.scale(startDist + (range - startDist) * t));
-                    double spread = endRadius * t;
-                    double ox = (level.random.nextDouble() * 2 - 1) * spread;
-                    double oy = (level.random.nextDouble() * 2 - 1) * spread;
-                    double oz = (level.random.nextDouble() * 2 - 1) * spread;
-                    level.sendParticles(particle,
-                            axis.x + ox, axis.y + oy, axis.z + oz,
-                            0, dir.x, dir.y, dir.z, spec.speed());
+                    Vec3 axis = eyes.add(dir.scale(startDist + (range - startDist) * t));
+                    double spread = endRadius * t * Math.sqrt(level.random.nextDouble());
+                    Vec3 sample = axis.add(frame.radial(i * 2.399963).scale(spread));
+                    var hit = level.clip(new net.minecraft.world.level.ClipContext(eyes, sample,
+                            net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                            net.minecraft.world.level.ClipContext.Fluid.NONE, null));
+                    Vec3 spot = hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS
+                            ? sample
+                            : EffectGeometry.pullBack(eyes, hit.getLocation(), SURFACE_PULLBACK);
+                    batch.add(spot.x, spot.y, spot.z,
+                            dir.x, dir.y, dir.z, spec.speed());
                 }
             }
             case BURST_UP -> {
@@ -251,14 +290,75 @@ public final class RunicPresentation {
                     double azimuth = Math.PI * (1 + Math.sqrt(5)) * i;
                     double r = radius * Math.sqrt((i + 0.5) / count);
                     double y = Math.max(0.5, height) * i / Math.max(1, count - 1);
-                    level.sendParticles(particle,
-                            origin.x + Math.cos(azimuth) * r,
+                    batch.add(origin.x + Math.cos(azimuth) * r,
                             origin.y + y,
                             origin.z + Math.sin(azimuth) * r,
-                            0, 0, 1, 0, spec.speed());
+                            0, 1, 0, spec.speed());
+                }
+            }
+            case SHIELD, WAVE -> {
+                EffectGeometry frame = EffectGeometry.along(look);
+                double distance = spec.shape() == SignatureEntry.Shape.WAVE ? height
+                        : (spec.spreadZ() > 0 ? spec.spreadZ() : 0.9);
+                double halfHeight = Math.max(0.15, height / 2);
+                Vec3 center = (spec.shape() == SignatureEntry.Shape.WAVE ? eyes : origin.add(0, halfHeight, 0))
+                        .add(frame.forward().scale(distance));
+                for (int i = 0; i < count; i++) {
+                    double angle = 2 * Math.PI * i / count;
+                    double vertical = spec.shape() == SignatureEntry.Shape.SHIELD ? halfHeight : radius;
+                    // Shield perimeter with four inset corner points gives it a faceted, voxel-friendly face.
+                    double inset = spec.shape() == SignatureEntry.Shape.SHIELD && i % 4 == 0 ? 0.6 : 1;
+                    Vec3 p = center.add(frame.right().scale(Math.cos(angle) * radius * inset))
+                            .add(frame.up().scale(Math.sin(angle) * vertical * inset));
+                    Vec3 spot = p;
+                    if (spec.shape() == SignatureEntry.Shape.WAVE) {
+                        var hit = level.clip(new net.minecraft.world.level.ClipContext(eyes, p,
+                                net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                                net.minecraft.world.level.ClipContext.Fluid.NONE, null));
+                        if (hit.getType() != net.minecraft.world.phys.HitResult.Type.MISS) {
+                            // Aiming at a wall or the floor: paint the cue on the surface
+                            // instead of losing the beat entirely.
+                            spot = EffectGeometry.pullBack(eyes, hit.getLocation(), SURFACE_PULLBACK);
+                        }
+                    }
+                    batch.add(spot.x, spot.y, spot.z,
+                            frame.forward().x, frame.forward().y, frame.forward().z, spec.speed());
+                }
+            }
+            case ARC -> {
+                Vec3 flat = new Vec3(look.x, 0, look.z);
+                EffectGeometry frame = EffectGeometry.along(flat);
+                for (int i = 0; i < count; i++) {
+                    double angle = -Math.PI * 0.4 + Math.PI * 0.8 * i / Math.max(1, count - 1);
+                    Vec3 out = frame.forward().scale(Math.cos(angle)).add(frame.right().scale(Math.sin(angle)));
+                    Vec3 p = origin.add(0, height, 0).add(out.scale(radius));
+                    batch.add(p.x, p.y, p.z, out.x, 0.04, out.z, spec.speed());
+                }
+            }
+            case SIGIL -> {
+                int rim = Math.max(1, count * 2 / 3);
+                for (int i = 0; i < count; i++) {
+                    double x;
+                    double z;
+                    if (i < rim) {
+                        double angle = Math.PI * 2 * i / rim;
+                        x = Math.cos(angle) * radius;
+                        z = Math.sin(angle) * radius;
+                    } else {
+                        double edge = (i - rim) * 4.0 / Math.max(1, count - rim);
+                        int side = (int) edge;
+                        double t = edge - side;
+                        double a = side * Math.PI / 2;
+                        double b = a + Math.PI / 2;
+                        x = radius * 0.8 * ((1 - t) * Math.cos(a) + t * Math.cos(b));
+                        z = radius * 0.8 * ((1 - t) * Math.sin(a) + t * Math.sin(b));
+                    }
+                    batch.add(origin.x + x, origin.y + 0.02, origin.z + z,
+                            0, 1, 0, spec.speed());
                 }
             }
         }
+        batch.send(level);
     }
 
     public static void showRunicBanner(ServerPlayer player, SignatureEntry entry, Object... args) {

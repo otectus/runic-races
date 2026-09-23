@@ -1,6 +1,7 @@
 package com.otectus.runic_races.integration.apotheosis;
 
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.diagnostics.RRMetrics;
 import com.otectus.runic_races.integration.ModIntegration;
 import com.otectus.runic_races.race.RaceRegistry;
 import com.otectus.runic_races.util.RaceHelper;
@@ -11,21 +12,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 
 import java.util.UUID;
 
-/**
- * Apotheosis integration: Modifies loot luck and crafting bonuses based on race.
- *
- * Phase 4 scope:
- * - Goblin: +2 luck attribute (better Apotheosis loot rolls)
- * - Mountain Dwarf: +1 luck when crafting-related (represented as flat luck bonus)
- * - Elder Drake: -2 luck (prideful, scorns trinkets)
- * - Halfling: +1.5 luck (lucky by nature)
- *
- * Forge Blessing (Mountain Dwarf's signature ability that grants Apotheosis affixes
- * on crafted items) requires deep Apotheosis API integration and is deferred to Phase 5.
- * The Appraise ability (Goblin) similarly requires custom UI and is Phase 5+.
- *
- * For now, luck attribute modifiers serve as the mechanical proxy for loot interaction.
- */
+/** Optional Apotheosis-facing luck contribution, owned by UUID and derived from RaceRegistry. */
 public class ApotheosisIntegration implements ModIntegration {
 
     private static final UUID RACE_LUCK_UUID = UUID.fromString("d2e3f4a5-6789-abcd-ef01-234567890001");
@@ -50,12 +37,20 @@ public class ApotheosisIntegration implements ModIntegration {
         AttributeInstance luckAttr = player.getAttribute(Attributes.LUCK);
         if (luckAttr == null) return;
 
-        // Remove existing racial luck modifier
-        luckAttr.removeModifier(RACE_LUCK_UUID);
+        double luckBonus = race == null || !com.otectus.runic_races.config.RRServerConfig.APOTHEOSIS_INTEGRATION.get()
+                ? 0.0 : RaceRegistry.getLuckBonus(race);
 
-        if (race == null) return;
-
-        double luckBonus = RaceRegistry.getLuckBonus(race);
+        // Reconcile desired against actual: an unchanged owned modifier is left alone, so a
+        // same-race respawn or dimension change sends no attribute update at all.
+        AttributeModifier existing = luckAttr.getModifier(RACE_LUCK_UUID);
+        if (existing != null && existing.getAmount() == luckBonus
+                && existing.getOperation() == AttributeModifier.Operation.ADDITION) {
+            return;
+        }
+        if (existing != null) {
+            luckAttr.removeModifier(RACE_LUCK_UUID);
+            RRMetrics.add(RRMetrics.Counter.MODIFIER_WRITES);
+        }
         if (luckBonus != 0.0) {
             luckAttr.addTransientModifier(new AttributeModifier(
                     RACE_LUCK_UUID,
@@ -63,6 +58,7 @@ public class ApotheosisIntegration implements ModIntegration {
                     luckBonus,
                     AttributeModifier.Operation.ADDITION
             ));
+            RRMetrics.add(RRMetrics.Counter.MODIFIER_WRITES);
         }
     }
 

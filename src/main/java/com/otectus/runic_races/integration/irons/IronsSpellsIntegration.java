@@ -36,6 +36,7 @@ public class IronsSpellsIntegration implements ModIntegration {
 
     @SubscribeEvent
     public void onSpellDamage(SpellDamageEvent event) {
+        if (!com.otectus.runic_races.config.RRServerConfig.IRONS_SPELLS_INTEGRATION.get()) return;
         try {
             // The event entity is the victim; the caster is the damage source entity.
             Entity sourceEntity = event.getSpellDamageSource().getEntity();
@@ -60,6 +61,8 @@ public class IronsSpellsIntegration implements ModIntegration {
      * bonuses will layer on top in a later phase.
      */
     private float getDamageMultiplier(String race) {
+        var affinity = com.otectus.runic_races.race.RaceRegistry.get(race).map(com.otectus.runic_races.race.RaceDefinition::magicAffinity).orElse(null);
+        if (affinity != null) return affinity.spellDamage();
         return switch (race) {
             case "magi"      -> 1.15f;  // born of raw magic
             case "high_elf"  -> 1.10f;  // arcane aptitude
@@ -76,4 +79,5 @@ public class IronsSpellsIntegration implements ModIntegration {
             default          -> 1.0f;
         };
     }
+
 }

@@ -12,27 +12,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * Articulated wing model. One bake contains all three silhouettes as separate
- * part groups; {@link #setSilhouette} toggles visibility so a single
- * {@code ModelLayerLocation} serves every winged race:
- *
- * <ul>
- *   <li><b>MEMBRANE</b> (wyvern + drakes) — inner arm box with a nested outer
- *       membrane tip that lags the arm (cascaded transform via child part).</li>
- *   <li><b>FEATHERED</b> (avian) — arm + lagging primary feathers + static
- *       covert overlay, layered for plumage depth.</li>
- *   <li><b>GOSSAMER</b> (sprite/faerie) — independent fore/hind wing pairs;
- *       the hindwing runs a phase behind the forewing.</li>
- * </ul>
- *
- * Texture sheet is 64x64 (grown from the 64x32 elytra layout in v1.4.0).
- * UV islands (see tools/generate_wings.py, which paints them):
- * <pre>
- *   membrane arm  (0,0)  5x20x2      membrane tip (14,0) 6x20x2
- *   feather arm   (30,0) 4x18x2      primaries    (42,0) 7x20x1
- *   coverts       (0,24) 5x12x1      forewing     (12,24) 8x14x1
- *   hindwing      (30,24) 6x10x1
- * </pre>
+ * Pixel-scale articulated wings. A shared 64x64 atlas supplies three physical
+ * silhouettes: ribbed/scalloped membranes, overlapping individual feathers, and
+ * stepped fore/hind gossamer lobes. Every dimension and UV stays on Minecraft's
+ * one-texel-per-model-unit grid; small depth offsets separate overlapping layers.
+ * UV boxes are mirrored by tools/generate_wings.py's ISLANDS contract.
  */
 @OnlyIn(Dist.CLIENT)
 public class WingModel extends EntityModel<AbstractClientPlayer> {
@@ -77,74 +61,87 @@ public class WingModel extends EntityModel<AbstractClientPlayer> {
 
     public static LayerDefinition createLayer() {
         MeshDefinition mesh = new MeshDefinition();
-        PartDefinition root = mesh.getRoot();
-
-        // ===== MEMBRANE (wyvern/drakes): arm + lagging outer membrane =====
-        PartDefinition leftMemArm = root.addOrReplaceChild("left_membrane_arm",
-                CubeListBuilder.create().texOffs(0, 0)
-                        .addBox(-5.0F, 0.0F, 0.0F, 5.0F, 20.0F, 2.0F, CubeDeformation.NONE),
-                PartPose.offsetAndRotation(5.0F, 0.0F, 0.0F, REST_X, 0.0F, -REST_Z));
-        // Tip pivots at the arm's outer edge; +0.1 Z keeps its faces off the arm's (z-fight guard).
-        leftMemArm.addOrReplaceChild("left_membrane_tip",
-                CubeListBuilder.create().texOffs(14, 0)
-                        .addBox(-6.0F, 0.0F, 0.0F, 6.0F, 20.0F, 2.0F, new CubeDeformation(-0.05F)),
-                PartPose.offset(-5.0F, 0.0F, 0.1F));
-
-        PartDefinition rightMemArm = root.addOrReplaceChild("right_membrane_arm",
-                CubeListBuilder.create().texOffs(0, 0).mirror()
-                        .addBox(0.0F, 0.0F, 0.0F, 5.0F, 20.0F, 2.0F, CubeDeformation.NONE),
-                PartPose.offsetAndRotation(-5.0F, 0.0F, 0.0F, REST_X, 0.0F, REST_Z));
-        rightMemArm.addOrReplaceChild("right_membrane_tip",
-                CubeListBuilder.create().texOffs(14, 0).mirror()
-                        .addBox(0.0F, 0.0F, 0.0F, 6.0F, 20.0F, 2.0F, new CubeDeformation(-0.05F)),
-                PartPose.offset(5.0F, 0.0F, 0.1F));
-
-        // ===== FEATHERED (avian): arm + lagging primaries + static coverts overlay =====
-        PartDefinition leftFeaArm = root.addOrReplaceChild("left_feather_arm",
-                CubeListBuilder.create().texOffs(30, 0)
-                        .addBox(-4.0F, 0.0F, 0.0F, 4.0F, 18.0F, 2.0F, CubeDeformation.NONE),
-                PartPose.offsetAndRotation(5.0F, 0.0F, 0.0F, REST_X, 0.0F, -REST_Z));
-        leftFeaArm.addOrReplaceChild("left_primaries",
-                CubeListBuilder.create().texOffs(42, 0)
-                        .addBox(-7.0F, 0.0F, 0.15F, 7.0F, 20.0F, 1.0F, new CubeDeformation(-0.05F)),
-                PartPose.offset(-4.0F, 0.0F, 0.0F));
-        leftFeaArm.addOrReplaceChild("left_coverts",
-                CubeListBuilder.create().texOffs(0, 24)
-                        .addBox(-5.0F, 0.0F, 0.3F, 5.0F, 12.0F, 1.0F, new CubeDeformation(-0.1F)),
-                PartPose.offset(-1.0F, 0.0F, 0.0F));
-
-        PartDefinition rightFeaArm = root.addOrReplaceChild("right_feather_arm",
-                CubeListBuilder.create().texOffs(30, 0).mirror()
-                        .addBox(0.0F, 0.0F, 0.0F, 4.0F, 18.0F, 2.0F, CubeDeformation.NONE),
-                PartPose.offsetAndRotation(-5.0F, 0.0F, 0.0F, REST_X, 0.0F, REST_Z));
-        rightFeaArm.addOrReplaceChild("right_primaries",
-                CubeListBuilder.create().texOffs(42, 0).mirror()
-                        .addBox(0.0F, 0.0F, 0.15F, 7.0F, 20.0F, 1.0F, new CubeDeformation(-0.05F)),
-                PartPose.offset(4.0F, 0.0F, 0.0F));
-        rightFeaArm.addOrReplaceChild("right_coverts",
-                CubeListBuilder.create().texOffs(0, 24).mirror()
-                        .addBox(0.0F, 0.0F, 0.3F, 5.0F, 12.0F, 1.0F, new CubeDeformation(-0.1F)),
-                PartPose.offset(1.0F, 0.0F, 0.0F));
-
-        // ===== GOSSAMER (sprite/faerie): independent fore/hind pairs =====
-        root.addOrReplaceChild("left_forewing",
-                CubeListBuilder.create().texOffs(12, 24)
-                        .addBox(-8.0F, 0.0F, 0.0F, 8.0F, 14.0F, 1.0F, CubeDeformation.NONE),
-                PartPose.offsetAndRotation(5.0F, -1.0F, 0.0F, REST_X, 0.0F, -REST_Z));
-        root.addOrReplaceChild("right_forewing",
-                CubeListBuilder.create().texOffs(12, 24).mirror()
-                        .addBox(0.0F, 0.0F, 0.0F, 8.0F, 14.0F, 1.0F, CubeDeformation.NONE),
-                PartPose.offsetAndRotation(-5.0F, -1.0F, 0.0F, REST_X, 0.0F, REST_Z));
-        root.addOrReplaceChild("left_hindwing",
-                CubeListBuilder.create().texOffs(30, 24)
-                        .addBox(-6.0F, 0.0F, 0.0F, 6.0F, 10.0F, 1.0F, CubeDeformation.NONE),
-                PartPose.offsetAndRotation(5.0F, 4.0F, 0.15F, REST_X, 0.0F, -REST_Z));
-        root.addOrReplaceChild("right_hindwing",
-                CubeListBuilder.create().texOffs(30, 24).mirror()
-                        .addBox(0.0F, 0.0F, 0.0F, 6.0F, 10.0F, 1.0F, CubeDeformation.NONE),
-                PartPose.offsetAndRotation(-5.0F, 4.0F, 0.15F, REST_X, 0.0F, REST_Z));
-
+        for (boolean mirror : new boolean[]{false, true}) {
+            addMembrane(mesh.getRoot(), mirror);
+            addFeathers(mesh.getRoot(), mirror);
+            addGossamer(mesh.getRoot(), mirror);
+        }
         return LayerDefinition.create(mesh, 64, 64);
+    }
+
+    private static void addMembrane(PartDefinition root, boolean mirror) {
+        String side = mirror ? "right" : "left";
+        float sign = mirror ? -1.0F : 1.0F;
+        PartDefinition arm = root.addOrReplaceChild(side + "_membrane_arm",
+                box(mirror, 0, 0, -5, 1, 0.35F, 5, 15, 1),
+                PartPose.offsetAndRotation(sign * 5, 0, 0, REST_X, 0, -sign * REST_Z));
+        arm.addOrReplaceChild(side + "_shoulder",
+                box(mirror, 30, 0, -1.5F, -0.5F, 0.1F, 3, 7, 2), PartPose.ZERO);
+        arm.addOrReplaceChild(side + "_inner_spar",
+                box(mirror, 42, 0, -5.3F, 0, 0.85F, 2, 13, 1), PartPose.ZERO);
+        PartDefinition tip = arm.addOrReplaceChild(side + "_membrane_tip",
+                box(mirror, 14, 0, -6, 0, 0.45F, 6, 17, 1),
+                PartPose.offset(sign * -5, 0, 0));
+        // Raised finger bones follow the outer membrane, framing its cutout
+        // scallops; the projecting claw adds another step to the silhouette.
+        for (int i = 0; i < 3; i++) {
+            tip.addOrReplaceChild(side + "_finger_" + i,
+                    box(mirror, 50, 0, -0.5F, 0, 1.05F, 1, 15, 1),
+                    PartPose.offsetAndRotation(sign * (-5.5F + i * 2.6F), 0, 0,
+                            0, 0, sign * (i - 1) * 0.07F));
+        }
+        tip.addOrReplaceChild(side + "_wing_claw",
+                box(mirror, 56, 0, -6.25F, -2.5F, 0.9F, 2, 4, 1), PartPose.ZERO);
+    }
+
+    private static void addFeathers(PartDefinition root, boolean mirror) {
+        String side = mirror ? "right" : "left";
+        float sign = mirror ? -1.0F : 1.0F;
+        PartDefinition arm = root.addOrReplaceChild(side + "_feather_arm",
+                box(mirror, 0, 24, -4, 0, 0, 4, 14, 2),
+                PartPose.offsetAndRotation(sign * 5, 0, 0, REST_X, 0, -sign * REST_Z));
+        PartDefinition primaries = arm.addOrReplaceChild(side + "_primaries",
+                CubeListBuilder.create(), PartPose.offset(sign * -3.5F, 1, 0));
+        // Four separated cuboid flight feathers make a stepped fan with real depth.
+        int[] lengths = {12, 15, 17, 15};
+        int[] uv = {30, 22, 14, 22};
+        for (int i = 0; i < lengths.length; i++) {
+            primaries.addOrReplaceChild(side + "_primary_" + i,
+                    box(mirror, uv[i], 24, -2, 0, 0, 2, lengths[i], 1),
+                    PartPose.offsetAndRotation(sign * -i * 1.65F, -i * 0.65F, 0.3F + i * 0.12F,
+                            0, 0, sign * (i - 1) * 0.075F));
+        }
+        // Coverts sit above the arm surface and overlap the primary roots.
+        for (int i = 0; i < 3; i++) {
+            arm.addOrReplaceChild(side + "_covert_" + i,
+                    box(mirror, 38, 24, -2, 0, 0, 2, 7, 1),
+                    PartPose.offsetAndRotation(sign * -i * 1.6F, 1 + i * 0.8F, 1.65F + i * 0.06F,
+                            0, 0, sign * 0.12F));
+        }
+    }
+
+    private static void addGossamer(PartDefinition root, boolean mirror) {
+        String side = mirror ? "right" : "left";
+        float sign = mirror ? -1.0F : 1.0F;
+        PartDefinition fore = root.addOrReplaceChild(side + "_forewing",
+                box(mirror, 0, 48, -6, 0, 0, 6, 12, 1),
+                PartPose.offsetAndRotation(sign * 5, -1, 0, REST_X, 0, -sign * REST_Z));
+        fore.addOrReplaceChild(side + "_fore_tip",
+                box(mirror, 16, 48, -8.5F, -1.5F, 0.12F, 3, 7, 1), PartPose.ZERO);
+        fore.addOrReplaceChild(side + "_fore_vein",
+                box(mirror, 48, 48, -5.65F, 0.5F, 0.6F, 1, 9, 1), PartPose.ZERO);
+        PartDefinition hind = root.addOrReplaceChild(side + "_hindwing",
+                box(mirror, 26, 48, -5, 0, 0, 5, 8, 1),
+                PartPose.offsetAndRotation(sign * 5, 6, 0.45F, REST_X, 0, -sign * REST_Z));
+        hind.addOrReplaceChild(side + "_hind_tip",
+                box(mirror, 40, 48, -6.5F, 5, 0.12F, 2, 5, 1), PartPose.ZERO);
+    }
+
+    /** Reflect geometry and UVs together so both wings keep their outward-facing art. */
+    private static CubeListBuilder box(boolean mirror, int u, int v,
+                                       float x, float y, float z, float width, float height, float depth) {
+        return CubeListBuilder.create().texOffs(u, v).mirror(mirror)
+                .addBox(mirror ? -x - width : x, y, z, width, height, depth, CubeDeformation.NONE);
     }
 
     /** Show only the given silhouette's part group. */
@@ -184,20 +181,24 @@ public class WingModel extends EntityModel<AbstractClientPlayer> {
             case MEMBRANE -> {
                 setPart(leftMembraneArm, xRot, leftYRot, leftZRot);
                 setPart(rightMembraneArm, xRot, rightYRot, rightZRot);
-                leftMembraneTip.zRot = leftTipDelta;
-                rightMembraneTip.zRot = rightTipDelta;
+                leftMembraneTip.zRot = Mth.clamp(leftTipDelta, -0.65F, 0.65F);
+                rightMembraneTip.zRot = Mth.clamp(rightTipDelta, -0.65F, 0.65F);
+                leftMembraneTip.yRot = -0.08F + leftTipDelta * 0.16F;
+                rightMembraneTip.yRot = 0.08F + rightTipDelta * 0.16F;
             }
             case FEATHERED -> {
                 setPart(leftFeatherArm, xRot, leftYRot, leftZRot);
                 setPart(rightFeatherArm, xRot, rightYRot, rightZRot);
-                leftPrimaries.zRot = leftTipDelta;
-                rightPrimaries.zRot = rightTipDelta;
+                leftPrimaries.zRot = Mth.clamp(leftTipDelta, -0.6F, 0.6F);
+                rightPrimaries.zRot = Mth.clamp(rightTipDelta, -0.6F, 0.6F);
+                leftPrimaries.yRot = -0.12F;
+                rightPrimaries.yRot = 0.12F;
             }
             case GOSSAMER -> {
                 setPart(leftForewing, xRot, leftYRot, leftZRot);
                 setPart(rightForewing, xRot, rightYRot, rightZRot);
-                setPart(leftHindwing, xRot, leftYRot, leftZRot + leftHindDelta);
-                setPart(rightHindwing, xRot, rightYRot, rightZRot + rightHindDelta);
+                setPart(leftHindwing, xRot + 0.08F, leftYRot - 0.12F, leftZRot + leftHindDelta - 0.24F);
+                setPart(rightHindwing, xRot + 0.08F, rightYRot + 0.12F, rightZRot + rightHindDelta + 0.24F);
             }
         }
     }

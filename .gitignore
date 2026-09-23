@@ -30,3 +30,7 @@ Dependencies/*.jar
 # Decompiled/extracted dependency classes (never commit binary dep cruft)
 /io/
 Dependencies/io/
+
+# Python authoring tools
+__pycache__/
+*.pyc

@@ -1,0 +1,28 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.colossan.colossal_heave.name",
+  "description": "power.runic_races.colossan.colossal_heave.description",
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 700,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "active_ability": {
+    "type": "runic_races:racial_ability",
+    "kind": "colossan",
+    "cooldown_ticks": 700,
+    "duration_ticks": 100,
+    "parameters": {
+      "bonus": 3,
+      "min_charge": 0.9
+    }
+  }
+}

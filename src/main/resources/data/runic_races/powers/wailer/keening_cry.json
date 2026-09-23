@@ -1,0 +1,33 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.wailer.keening_cry.name",
+  "description": "power.runic_races.wailer.keening_cry.description",
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 800,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "active_ability": {
+    "type": "runic_races:racial_ability",
+    "kind": "wailer",
+    "cooldown_ticks": 800,
+    "duration_ticks": 11,
+    "parameters": {
+      "windup": 10,
+      "range": 6,
+      "angle": 35,
+      "targets": 6,
+      "damage": 2,
+      "effect_ticks": 80,
+      "speed": 0.3
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:magic",
+    "minecraft:indirect_magic",
+    "minecraft:dragon_breath",
+    "minecraft:sonic_boom",
+    "minecraft:wither",
+    "minecraft:wither_skull",
+    "runic_races:resonance",
+    {"id":"#forge:is_magic","required":false},
+    {"id":"#neoforge:is_magic","required":false}
+  ]
+}

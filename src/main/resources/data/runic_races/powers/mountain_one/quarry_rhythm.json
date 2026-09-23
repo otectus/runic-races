@@ -1,0 +1,28 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.mountain_one.quarry_rhythm.name",
+  "description": "power.runic_races.mountain_one.quarry_rhythm.description",
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 900,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "active_ability": {
+    "type": "runic_races:racial_ability",
+    "kind": "mountain_one",
+    "cooldown_ticks": 900,
+    "duration_ticks": 120,
+    "parameters": {
+      "fraction": 0.4,
+      "charges": 10
+    }
+  }
+}

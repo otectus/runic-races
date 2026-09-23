@@ -3,7 +3,7 @@
 ## Quick Reference
 - **Mod ID**: `runic_races`
 - **Package**: `com.otectus.runic_races`
-- **Version**: 1.6.3
+- **Version**: 1.7.2
 - **MC**: 1.20.1 | **Forge**: 47.2.0 | **Java**: 17
 - **Mappings**: Official
 
@@ -36,7 +36,7 @@
 
 ## Conventions
 - Registration: DeferredRegister on MOD bus
-- Origins add-on: **37 races across 7 families** (`human, elven, dwarven, bestial, faeborne, undead, draconic`)
+- Origins add-on: **54 races across 7 families** (`human, elven, dwarven, bestial, faeborne, undead, draconic`)
 - Each race has exactly **3 powers**: one active (cooldown-gated), one passive positive, one weakness
 - Per-race metadata (`scale`/Pehkui height, `maxFeathers`, `luckBonus`, Curios slots) lives in `race/RaceRegistry.java`; integrations read it via `RaceHelper`/`RaceRegistry` (no per-race code)
 - Two-layer selection: pick a `family_*` origin (layer `family`), then a race (layer `race`, gated by family)
@@ -45,7 +45,7 @@
 - License: All Rights Reserved
 
 ## Race data authoring (`tools/`)
-The 44 origins, 111 power JSONs, 2 origin layers, the 37 icon textures, and `en_us.json`
+The 61 origins, 162 power JSONs, 2 origin layers, the 54 icon textures, and `en_us.json`
 are emitted by static generator scripts (NOT wired into Gradle — the committed JSON is
 hand-written-equivalent and authoritative):
 - `tools/generate_races.py` — origins/powers/layers + `tools/race_lang.json`; its `PRESENT_SIG`
@@ -63,6 +63,21 @@ hand-written-equivalent and authoritative):
 Resource-id rule: cooldown resources are `runic_races:<race>/<powerFile>_cooldown_timer` and
 must match exactly in JSON and any Java that reads them (`FlightConfig`, `AbilityIconRegistry`,
 `RacialEventHandler`).
+Decay steps use `runic_races:cooldown_decay` (`resource`/`change` fields, like `origins:change_resource`;
+`network/CooldownSync` sends the changed value instead of the whole power container);
+activation keeps `origins:change_resource` so a cast still fully syncs.
+
+## Server transport & state (1.7.2)
+- Race-state flags: power-driven flags go through `RaceStateTracker.setContribution` (per-power
+  source, OR-aggregated in `FlagAggregate`); single-writer flags use `setFlag`. One packet per
+  player per tick; notifications fire from the net change.
+- Per-point particle loops use `presentation/ParticleBatch` (one packet per nearby player, same
+  32-block per-point visibility); single `sendParticles` bursts stay vanilla.
+- Protocol 5 appended `S2CPowerDataPacket` and `S2CParticleBatchPacket`; `network.*` server
+  config toggles fall back to the old transport. `/runicraces diagnostics` shows counters and
+  per-player map sizes.
+- Integrations: adapters load once per JVM; `IntegrationManager.isIntegrationActive` reads the
+  live config toggle.
 
 ## Custom particles & sounds
 - `registry/ModParticles.java` — 18 identity particles (`rune_glyph`, `soul_wisp`, `fae_sparkle`,
@@ -79,7 +94,7 @@ must match exactly in JSON and any Java that reads them (`FlightConfig`, `Abilit
   before registration resolves
 
 ## Signature presentation (every active)
-- ALL 37 actives route through `SignatureRegistry` (JSON has one
+- Legacy actives route through `SignatureRegistry` (JSON has one
   `runic_races:signature_presentation` action; the recipe — layered sounds, shaped particles,
   banner, screen cue — lives in Java). Keep the family grammar: Human snap / Elven rise-implode /
   Dwarven ground-burst / Bestial lunge / Faeborne swirl-pop / Undead sink-drain / Draconic exhale.
@@ -135,3 +150,9 @@ Tier every ability's particle count so VFX grammar stays consistent:
 - **Mythic** (rare life-saving moments, Nine Lives, Death Revival): 80+ particles
 
 Pick one VFX path per ability — never both `origins:spawn_particles` AND `execute_command particle ... force`. Use `execute_command ... force` only for mythic tier.
+
+## Expansion authoring
+
+The 17 new actives call `SignatureRegistry` from the server ability service. `tools/expansion_content.py` emits their tuning into the three visible power bundles. Runtime code reads those configurations; do not add a second per-race TOML tuning table. Cooldown debt alone is persisted in the owned expansion compound. Fields, anchors, preparations, arrows and wards must retain generation/owner validation and bounded lifetimes.
+
+Run `python tools/generate_races.py --check`, `python tools/build_lang.py --check`, `./gradlew test build`, and `./gradlew runGameTestServer`. The GameTest source set is excluded from the release jar. Runtime validation requirements and remaining hands-on gates are recorded in `docs/VALIDATION_1.7.0.md`.

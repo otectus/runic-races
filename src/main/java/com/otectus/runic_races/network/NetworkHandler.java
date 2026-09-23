@@ -12,7 +12,7 @@ public final class NetworkHandler {
 
     // Bump whenever the message list changes — mismatched jars must fail the
     // handshake cleanly instead of silently misrouting packet ids.
-    private static final String PROTOCOL_VERSION = "2";
+    private static final String PROTOCOL_VERSION = "5";
     private static SimpleChannel channel;
 
     private NetworkHandler() {}
@@ -59,6 +59,22 @@ public final class NetworkHandler {
                 .consumerMainThread(C2SBackToFamilyPacket::handle)
                 .add();
 
+        channel.messageBuilder(AbilityInputPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(AbilityInputPacket::encode).decoder(AbilityInputPacket::decode)
+                .consumerMainThread(AbilityInputPacket::handle).add();
+        channel.messageBuilder(AbilitySnapshot.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(AbilitySnapshot::encode).decoder(AbilitySnapshot::decode)
+                .consumerMainThread(AbilitySnapshot::handle).add();
+        channel.messageBuilder(S2CBreathVfxPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(S2CBreathVfxPacket::encode).decoder(S2CBreathVfxPacket::decode)
+                .consumerMainThread(S2CBreathVfxPacket::handle).add();
+        // Protocol 5: cooldown decay values and batched shaped particles.
+        channel.messageBuilder(S2CPowerDataPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(S2CPowerDataPacket::encode).decoder(S2CPowerDataPacket::decode)
+                .consumerMainThread(S2CPowerDataPacket::handle).add();
+        channel.messageBuilder(S2CParticleBatchPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(S2CParticleBatchPacket::encode).decoder(S2CParticleBatchPacket::decode)
+                .consumerMainThread(S2CParticleBatchPacket::handle).add();
         RunicRacesMod.LOGGER.info("[RunicRaces] Network channel registered ({} packets)", id);
     }
 
@@ -68,5 +84,21 @@ public final class NetworkHandler {
 
     public static void sendToPlayer(ServerPlayer player, Object msg) {
         channel.send(PacketDistributor.PLAYER.with(() -> player), msg);
+    }
+
+    /** The owner (if a player) and every player tracking {@code entity} — Apoli's sync audience. */
+    public static void sendToTrackingAndSelf(net.minecraft.world.entity.Entity entity, Object msg) {
+        channel.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), msg);
+    }
+
+    /** Encodes {@code msg} once so the same packet can be handed to several connections. */
+    public static net.minecraft.network.protocol.Packet<?> toClientPacket(Object msg) {
+        return channel.toVanillaPacket(msg, NetworkDirection.PLAY_TO_CLIENT);
+    }
+
+    public static void sendNear(net.minecraft.server.level.ServerLevel level,
+                                net.minecraft.world.phys.Vec3 origin, double radius, Object msg) {
+        channel.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
+                origin.x, origin.y, origin.z, radius, level.dimension())), msg);
     }
 }

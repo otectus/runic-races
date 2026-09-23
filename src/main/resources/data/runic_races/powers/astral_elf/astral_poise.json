@@ -1,0 +1,19 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.astral_elf.astral_poise.name",
+  "description": "power.runic_races.astral_elf.astral_poise.description",
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "fall_reduction": 0.3
+    }
+  },
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1,
+    "condition": {
+      "type": "runic_races:racial_environment",
+      "predicate": "night"
+    }
+  }
+}

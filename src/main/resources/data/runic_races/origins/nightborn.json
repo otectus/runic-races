@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:nightborn_icon"
+  },
+  "order": 6062,
+  "impact": 2,
+  "name": "origin.runic_races.nightborn.name",
+  "description": "origin.runic_races.nightborn.description",
+  "powers": [
+    "runic_races:nightborn/crimson_hunt",
+    "runic_races:nightborn/nocturnal_senses",
+    "runic_races:nightborn/sun_starved"
+  ]
+}

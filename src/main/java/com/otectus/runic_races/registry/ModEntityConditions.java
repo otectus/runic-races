@@ -26,6 +26,8 @@ public class ModEntityConditions {
 
     public static final RegistryObject<ResourceAvailableCondition> RESOURCE_AVAILABLE =
             ENTITY_CONDITIONS.register("resource_available", ResourceAvailableCondition::new);
+    public static final RegistryObject<com.otectus.runic_races.condition.RacialEnvironmentCondition> RACIAL_ENVIRONMENT =
+            ENTITY_CONDITIONS.register("racial_environment", com.otectus.runic_races.condition.RacialEnvironmentCondition::new);
 
     public static void register(IEventBus modBus) {
         ENTITY_CONDITIONS.register(modBus);

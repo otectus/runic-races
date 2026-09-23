@@ -31,7 +31,7 @@ public final class AbilityDenyHandler {
 
     private static KeyMapping primaryActiveKey;
     private static boolean keyResolved = false;
-    private static long lastDenyGameTime = Long.MIN_VALUE;
+    private static long lastDenyGameTime = -DEBOUNCE_TICKS;
 
     private AbilityDenyHandler() {}
 
@@ -55,12 +55,15 @@ public final class AbilityDenyHandler {
     }
 
     private static void onPrimaryActivePressed() {
+        if (ExpansionClient.secondStage()) return;
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player == null || mc.screen != null) return;
 
         long gameTime = player.level().getGameTime();
-        if (gameTime - lastDenyGameTime < DEBOUNCE_TICKS) return;
+        // Do not use Long.MIN_VALUE as the sentinel: subtracting it from a normal
+        // non-negative world time overflows and suppresses the first deny cue.
+        if (gameTime < lastDenyGameTime + DEBOUNCE_TICKS) return;
 
         String race = RaceHelper.getRaceName(player).orElse(null);
         if (race == null) return;
@@ -90,5 +93,10 @@ public final class AbilityDenyHandler {
             }
         }
         return primaryActiveKey;
+    }
+
+    @SubscribeEvent
+    public static void onLogout(net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
+        lastDenyGameTime = -DEBOUNCE_TICKS;
     }
 }

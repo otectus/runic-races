@@ -1,0 +1,30 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.auroran.dawnward.name",
+  "description": "power.runic_races.auroran.dawnward.description",
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 1100,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "active_ability": {
+    "type": "runic_races:racial_ability",
+    "kind": "auroran",
+    "cooldown_ticks": 1100,
+    "duration_ticks": 120,
+    "parameters": {
+      "budget": 4,
+      "prevent_fraction": 1,
+      "range": 6,
+      "targets": 3
+    }
+  }
+}

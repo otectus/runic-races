@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:saurian_icon"
+  },
+  "order": 4059,
+  "impact": 2,
+  "name": "origin.runic_races.saurian.name",
+  "description": "origin.runic_races.saurian.description",
+  "powers": [
+    "runic_races:saurian/patient_ambush",
+    "runic_races:saurian/scaled_survivor",
+    "runic_races:saurian/cold_blooded"
+  ]
+}

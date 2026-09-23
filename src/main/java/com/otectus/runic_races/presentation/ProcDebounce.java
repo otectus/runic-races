@@ -42,6 +42,11 @@ public final class ProcDebounce {
         LAST_FIRED.clear();
     }
 
+    /** Players with at least one stamp (diagnostics). */
+    public static int trackedCount() {
+        return LAST_FIRED.size();
+    }
+
     @SubscribeEvent
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         LAST_FIRED.remove(event.getEntity().getUUID());

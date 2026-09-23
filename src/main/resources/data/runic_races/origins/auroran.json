@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:auroran_icon"
+  },
+  "order": 1051,
+  "impact": 2,
+  "name": "origin.runic_races.auroran.name",
+  "description": "origin.runic_races.auroran.description",
+  "powers": [
+    "runic_races:auroran/dawnward",
+    "runic_races:auroran/inner_radiance",
+    "runic_races:auroran/mortal_vessel"
+  ]
+}

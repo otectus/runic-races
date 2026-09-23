@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.common.state.RaceStateFlags;
 import com.otectus.runic_races.common.state.RaceStateTracker;
+import com.otectus.runic_races.diagnostics.RRMetrics;
 import com.otectus.runic_races.race.RaceDefinition;
 import com.otectus.runic_races.race.RaceRegistry;
 import com.otectus.runic_races.util.RaceHelper;
@@ -56,7 +57,40 @@ public class RRCommands {
                         .requires(source -> source.hasPermission(2))
                         .then(Commands.argument("player", EntityArgument.player())
                                 .executes(RRCommands::state)))
+                .then(Commands.literal("diagnostics")
+                        .requires(source -> source.hasPermission(2))
+                        .executes(RRCommands::diagnostics)
+                        .then(Commands.literal("reset")
+                                .executes(RRCommands::resetDiagnostics)))
         );
+    }
+
+    /**
+     * Aggregated server-cost counters since the last reset, plus the size of every
+     * per-player structure Runic Races owns (all return to zero once every player leaves).
+     */
+    private static int diagnostics(CommandContext<CommandSourceStack> context) {
+        double seconds = RRMetrics.windowSeconds();
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format(java.util.Locale.ROOT, "Runic Races diagnostics — %.1f s window\n", seconds));
+        for (RRMetrics.Counter counter : RRMetrics.Counter.values()) {
+            long value = RRMetrics.get(counter);
+            sb.append(String.format(java.util.Locale.ROOT, "  %s: %d (%.2f/s)\n", counter.label(), value, value / seconds));
+        }
+        sb.append("Owned state: race-state players=").append(RaceStateTracker.trackedCount())
+                .append(", race memos=").append(RaceHelper.serverMemoCount())
+                .append(", proc debounce players=").append(com.otectus.runic_races.presentation.ProcDebounce.trackedCount())
+                .append(", flap guards=").append(com.otectus.runic_races.flight.FlightServerHandler.trackedCount())
+                .append(", queued beats=").append(com.otectus.runic_races.presentation.PresentationScheduler.queuedBeats())
+                .append(", pending cooldown syncs=").append(com.otectus.runic_races.network.CooldownSync.pendingCount());
+        context.getSource().sendSuccess(() -> Component.literal(sb.toString()), false);
+        return 1;
+    }
+
+    private static int resetDiagnostics(CommandContext<CommandSourceStack> context) {
+        RRMetrics.reset();
+        context.getSource().sendSuccess(() -> Component.literal("Runic Races diagnostics counters reset."), true);
+        return 1;
     }
 
     private static int infoSelf(CommandContext<CommandSourceStack> context) {
@@ -82,6 +116,16 @@ public class RRCommands {
         String raceId = RaceHelper.getRaceId(player).map(Object::toString).orElse("none selected");
         context.getSource().sendSuccess(() ->
                 Component.literal(player.getName().getString() + "'s race: " + raceId), false);
+        var session = com.otectus.runic_races.ability.AbilityService.session(player);
+        if (session != null && session.tuning != null) {
+            var snapshot = com.otectus.runic_races.network.AbilitySnapshot.of(player, session);
+            String detail = "Ability: " + session.tuning.kind().path() + " | cooldown " + snapshot.cooldown() + "/" + snapshot.maximum()
+                    + " ticks | state " + (snapshot.state().isEmpty() ? "ready" : snapshot.state())
+                    + " | active " + snapshot.activeTicks() + " ticks | charges " + snapshot.charges() + " | guard " + snapshot.guard() + " HP"
+                    + "\nEnvironment: dry=" + snapshot.dry() + ", cold=" + snapshot.cold() + ", sun=" + snapshot.sunlight()
+                    + "\nEffective tuning: " + session.tuning.parameters();
+            context.getSource().sendSuccess(() -> Component.literal(detail), false);
+        }
         return 1;
     }
 

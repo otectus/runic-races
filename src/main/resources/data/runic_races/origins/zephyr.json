@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:zephyr_icon"
+  },
+  "order": 5061,
+  "impact": 3,
+  "name": "origin.runic_races.zephyr.name",
+  "description": "origin.runic_races.zephyr.description",
+  "powers": [
+    "runic_races:zephyr/crosswind",
+    "runic_races:zephyr/airborne_essence",
+    "runic_races:zephyr/scattered_form"
+  ]
+}

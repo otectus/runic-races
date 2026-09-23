@@ -8,12 +8,16 @@ import java.util.Optional;
 /**
  * Maps each winged race to its wing rendering configuration.
  *
- * Per-race textures are emitted by {@code tools/generate_wings.py} from the three
- * hand-made bases (pixie/wyvern/drake); {@code drake_wings.png} is kept as the
- * generator source even though no type references it directly.
+ * Per-race pixel atlases are authored by {@code tools/generate_wings.py}.
+ * All ten textures share the model's UV layout, with distinct elemental scales,
+ * feather barbs, fae veins, and air ribbons instead of resampled legacy art.
  */
 @OnlyIn(Dist.CLIENT)
 public enum WingType {
+    ZEPHYR_WINGS("textures/entity/zephyr_wings.png", 0.72f, -10f, -65f, -95f,
+            8, true, false, true, 1.35f, 18f, 0.25f, WingModel.Silhouette.GOSSAMER, 0.8f, 1.12f),
+    WYVERNKIN_WINGS("textures/entity/wyvernkin_wings.png", 1.08f, -18f, -73f, -116f,
+            11, false, false, false, 0.9f, 10f, 0.55f, WingModel.Silhouette.MEMBRANE, 0.58f, 1.23f),
     SPRITE_WINGS(
             "textures/entity/pixie_wings.png",
             0.5f,
@@ -142,6 +146,8 @@ public enum WingType {
      */
     public static Optional<WingType> forRaceName(String raceName) {
         return Optional.ofNullable(switch (raceName) {
+            case "zephyr" -> ZEPHYR_WINGS;
+            case "wyvernkin" -> WYVERNKIN_WINGS;
             case "sprite" -> SPRITE_WINGS;
             case "faerie" -> FAERIE_WINGS;
             case "avian" -> AVIAN_WINGS;

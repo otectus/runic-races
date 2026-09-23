@@ -1,10 +1,13 @@
 package com.otectus.runic_races.power;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.common.state.RaceStateFlags;
 import com.otectus.runic_races.common.state.RaceStateTracker;
+import com.otectus.runic_races.diagnostics.RRMetrics;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
@@ -17,9 +20,10 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.Map;
+import javax.annotation.Nullable;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Custom Apoli power: applies different attribute modifiers based on time of day.
@@ -36,10 +40,47 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Configuration> {
 
-    // Both derivations read immutable config, so they are hashed/resolved once per key
-    // instead of on every tick invocation.
-    private static final Map<String, UUID> UUID_CACHE = new ConcurrentHashMap<>();
-    private static final Map<String, Attribute> ATTR_CACHE = new ConcurrentHashMap<>();
+    private static final int FLAG_MASK = RaceStateFlags.NIGHT_EMPOWERED.mask();
+    private static final ResourceLocation UNNAMED_SOURCE = new ResourceLocation(RunicRacesMod.MOD_ID, "scaling_attribute");
+
+    /**
+     * Values derived once from the immutable configuration. The attribute itself is
+     * resolved on first use — registries are frozen by then — and a failed lookup is
+     * remembered, so an unknown attribute warns once per configuration generation
+     * instead of on every check interval.
+     */
+    public static final class Derived {
+        final UUID uuid;
+        final ResourceLocation attributeId;
+        final AttributeModifier.Operation operation;
+        // Benign race: both logical sides resolve the same registry value.
+        private volatile Optional<Attribute> attribute;
+
+        Derived(UUID uuid, ResourceLocation attributeId, AttributeModifier.Operation operation) {
+            this.uuid = uuid;
+            this.attributeId = attributeId;
+            this.operation = operation;
+        }
+
+        @Nullable
+        Attribute attribute() {
+            Optional<Attribute> resolved = attribute;
+            if (resolved == null) {
+                Attribute found = ForgeRegistries.ATTRIBUTES.getValue(attributeId);
+                if (found == null) {
+                    RunicRacesMod.LOGGER.warn("[RunicRaces] Unknown attribute '{}' in ScalingAttributePower — is the target mod loaded?", attributeId);
+                }
+                resolved = Optional.ofNullable(found);
+                attribute = resolved;
+            }
+            return resolved.orElse(null);
+        }
+
+        // Identity-free: the derived values are a pure function of the configuration.
+        @Override public boolean equals(Object o) { return o instanceof Derived; }
+        @Override public int hashCode() { return 0; }
+        @Override public String toString() { return "Derived[" + uuid + "]"; }
+    }
 
     public record Configuration(
             String attribute,
@@ -47,10 +88,11 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
             double nightValue,
             String operation,
             int checkInterval,
-            boolean requireSkyExposure
+            boolean requireSkyExposure,
+            Derived derived
     ) implements IDynamicFeatureConfiguration {
 
-        public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance ->
+        private static final MapCodec<Configuration> RAW = RecordCodecBuilder.mapCodec(instance ->
                 instance.group(
                         Codec.STRING.fieldOf("attribute").forGetter(Configuration::attribute),
                         Codec.DOUBLE.optionalFieldOf("day_value", 0.0).forGetter(Configuration::dayValue),
@@ -62,16 +104,44 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
         );
 
         /**
+         * A malformed attribute id or a non-finite value fails at load instead of inside every tick.
+         * Validated at the MapCodec level: Apoli only merges a factory's fields with the
+         * shared power fields when the codec is a {@code MapCodec.MapCodecCodec}.
+         */
+        public static final Codec<Configuration> CODEC = RAW.flatXmap(Configuration::validate, DataResult::success).codec();
+
+        public Configuration(String attribute, double dayValue, double nightValue, String operation,
+                             int checkInterval, boolean requireSkyExposure) {
+            this(attribute, dayValue, nightValue, operation, checkInterval, requireSkyExposure,
+                    derive(attribute, dayValue, nightValue, operation));
+        }
+
+        private static DataResult<Configuration> validate(Configuration config) {
+            if (config.derived.attributeId == null) {
+                return DataResult.error(() -> "scaling_attribute: malformed attribute id '" + config.attribute + "'");
+            }
+            if (!Double.isFinite(config.dayValue) || !Double.isFinite(config.nightValue)) {
+                return DataResult.error(() -> "scaling_attribute: day_value/night_value must be finite");
+            }
+            return DataResult.success(config);
+        }
+
+        /**
          * Modifier UUID derived from the config so two scaling powers on the same
          * attribute (with different values) no longer silently overwrite each other.
          * Identical configs still share one modifier — intended idempotency.
          */
         public UUID modifierUuid() {
-            String key = "runic_races:scaling:" + attribute + ":" + operation
-                    + ":" + dayValue + ":" + nightValue;
-            return UUID_CACHE.computeIfAbsent(key,
-                    k -> UUID.nameUUIDFromBytes(k.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            return derived.uuid;
         }
+    }
+
+    // Kept byte-for-byte: modifier identity depends on this exact key.
+    private static Derived derive(String attribute, double dayValue, double nightValue, String operation) {
+        String key = "runic_races:scaling:" + attribute + ":" + operation
+                + ":" + dayValue + ":" + nightValue;
+        UUID uuid = UUID.nameUUIDFromBytes(key.getBytes(StandardCharsets.UTF_8));
+        return new Derived(uuid, ResourceLocation.tryParse(attribute), resolveOperation(operation));
     }
 
     public ScalingAttributePower() {
@@ -102,30 +172,31 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
             value = config.nightValue();
         }
 
-        Attribute attr = resolveAttribute(config.attribute());
+        Derived derived = config.derived();
+        Attribute attr = derived.attribute();
         if (attr == null) return;
 
-        AttributeModifier.Operation op = resolveOperation(config.operation());
         AttributeInstance instance = player.getAttribute(attr);
         if (instance == null) return;
 
-        UUID uuid = config.modifierUuid();
-        AttributeModifier existing = instance.getModifier(uuid);
+        AttributeModifier existing = instance.getModifier(derived.uuid);
         if (value != 0.0) {
             if (existing == null || existing.getAmount() != value) {
-                if (existing != null) instance.removeModifier(uuid);
+                if (existing != null) instance.removeModifier(derived.uuid);
                 instance.addTransientModifier(new AttributeModifier(
-                        uuid, "Runic Races Scaling", value, op));
+                        derived.uuid, "Runic Races Scaling", value, derived.operation));
+                RRMetrics.add(RRMetrics.Counter.MODIFIER_WRITES, existing == null ? 1 : 2);
             }
         } else if (existing != null) {
-            instance.removeModifier(uuid);
+            instance.removeModifier(derived.uuid);
+            RRMetrics.add(RRMetrics.Counter.MODIFIER_WRITES);
         }
 
         // "Night empowered" = not daytime AND the night value is the stronger (non-zero) side.
         // Used by the HUD state-rune overlay to signal to night-empowered races that their buff is live.
         if (player instanceof ServerPlayer serverPlayer) {
             boolean nightEmpowered = !isDaytime && config.nightValue() > 0.0;
-            RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.NIGHT_EMPOWERED, nightEmpowered);
+            RaceStateTracker.setContribution(serverPlayer, source(power), FLAG_MASK, nightEmpowered ? FLAG_MASK : 0);
         }
     }
 
@@ -133,35 +204,24 @@ public class ScalingAttributePower extends PowerFactory<ScalingAttributePower.Co
     public void onRemoved(ConfiguredPower<Configuration, ?> power, Entity entity) {
         if (!(entity instanceof Player player)) return;
         Configuration config = power.getConfiguration();
-        Attribute attr = resolveAttribute(config.attribute());
+        if (player instanceof ServerPlayer serverPlayer) {
+            RaceStateTracker.clearContribution(serverPlayer, source(power));
+        }
+        Attribute attr = config.derived().attribute();
         if (attr == null) return;
         AttributeInstance instance = player.getAttribute(attr);
-        if (instance != null) instance.removeModifier(config.modifierUuid());
-        if (player instanceof ServerPlayer serverPlayer) {
-            RaceStateTracker.setFlag(serverPlayer, RaceStateFlags.NIGHT_EMPOWERED, false);
+        if (instance != null && instance.getModifier(config.modifierUuid()) != null) {
+            instance.removeModifier(config.modifierUuid());
+            RRMetrics.add(RRMetrics.Counter.MODIFIER_WRITES);
         }
     }
 
-    private Attribute resolveAttribute(String name) {
-        // computeIfAbsent does not store a null result, so unknown names keep warning
-        // on their own cadence rather than being memoized as "missing".
-        return ATTR_CACHE.computeIfAbsent(name, ScalingAttributePower::lookupAttribute);
+    private static ResourceLocation source(ConfiguredPower<?, ?> power) {
+        ResourceLocation name = power.getRegistryName();
+        return name != null ? name : UNNAMED_SOURCE;
     }
 
-    private static Attribute lookupAttribute(String name) {
-        ResourceLocation rl = ResourceLocation.tryParse(name);
-        if (rl == null) {
-            RunicRacesMod.LOGGER.warn("[RunicRaces] Invalid attribute name '{}' in ScalingAttributePower config", name);
-            return null;
-        }
-        Attribute attr = ForgeRegistries.ATTRIBUTES.getValue(rl);
-        if (attr == null) {
-            RunicRacesMod.LOGGER.warn("[RunicRaces] Unknown attribute '{}' in ScalingAttributePower — is the target mod loaded?", rl);
-        }
-        return attr;
-    }
-
-    private AttributeModifier.Operation resolveOperation(String name) {
+    private static AttributeModifier.Operation resolveOperation(String name) {
         return switch (name) {
             case "addition" -> AttributeModifier.Operation.ADDITION;
             case "multiply_base" -> AttributeModifier.Operation.MULTIPLY_BASE;

@@ -1,0 +1,21 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.saurian.cold_blooded.name",
+  "description": "power.runic_races.saurian.cold_blooded.description",
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.05,
+      "name": "Cold-Blooded speed"
+    }
+  },
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "cold_attack_slow": 0.15,
+      "cold_freeze_extra": 0.25
+    }
+  }
+}

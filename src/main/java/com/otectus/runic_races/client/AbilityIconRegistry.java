@@ -92,6 +92,24 @@ public class AbilityIconRegistry {
                 icon("wind_wyrm/galeforce_breath_cooldown_timer", Items.ELYTRA, "Galeforce Breath", 1),
                 icon("wind_wyrm/skylord_flap_cooldown_timer", Items.PHANTOM_MEMBRANE, "Skylord Wings", 2));
 
+        register("colossan", icon("colossan/colossal_heave_cooldown_timer", Items.AMETHYST_SHARD, "Colossal Heave", 1));
+        register("auroran", icon("auroran/dawnward_cooldown_timer", Items.AMETHYST_SHARD, "Dawnward", 1));
+        register("grove_elf", icon("grove_elf/stillleaf_aim_cooldown_timer", Items.AMETHYST_SHARD, "Stillleaf Aim", 1));
+        register("tide_elf", icon("tide_elf/currentstep_cooldown_timer", Items.AMETHYST_SHARD, "Currentstep", 1));
+        register("astral_elf", icon("astral_elf/starbound_thread_cooldown_timer", Items.AMETHYST_SHARD, "Starbound Thread", 1));
+        register("mountain_one", icon("mountain_one/quarry_rhythm_cooldown_timer", Items.AMETHYST_SHARD, "Quarry Rhythm", 1));
+        register("moss_one", icon("moss_one/mycelial_respite_cooldown_timer", Items.AMETHYST_SHARD, "Mycelial Respite", 1));
+        register("crystal_one", icon("crystal_one/prism_reprisal_cooldown_timer", Items.AMETHYST_SHARD, "Prism Reprisal", 1));
+        register("bovine", icon("bovine/hornrush_cooldown_timer", Items.AMETHYST_SHARD, "Hornrush", 1));
+        register("saurian", icon("saurian/patient_ambush_cooldown_timer", Items.AMETHYST_SHARD, "Patient Ambush", 1));
+        register("chelon", icon("chelon/shellfast_cooldown_timer", Items.AMETHYST_SHARD, "Shellfast", 1));
+        register("zephyr", icon("zephyr/crosswind_cooldown_timer", Items.AMETHYST_SHARD, "Crosswind", 1), icon("zephyr/airborne_essence_flap_cooldown_timer", Items.FEATHER, "Airborne Essence", 2));
+        register("nightborn", icon("nightborn/crimson_hunt_cooldown_timer", Items.AMETHYST_SHARD, "Crimson Hunt", 1));
+        register("returned", icon("returned/unfinished_purpose_cooldown_timer", Items.AMETHYST_SHARD, "Unfinished Purpose", 1));
+        register("wailer", icon("wailer/keening_cry_cooldown_timer", Items.AMETHYST_SHARD, "Keening Cry", 1));
+        register("scaleheir", icon("scaleheir/dominion_roar_cooldown_timer", Items.AMETHYST_SHARD, "Dominion Roar", 1));
+        register("wyvernkin", icon("wyvernkin/venom_swoop_cooldown_timer", Items.AMETHYST_SHARD, "Venom Swoop", 1));
+
         int totalAbilities = RACE_ABILITIES.values().stream().mapToInt(List::size).sum();
         RunicRacesMod.LOGGER.info("[RunicRaces] AbilityIconRegistry: {} races, {} abilities. Races: {}",
                 RACE_ABILITIES.size(), totalAbilities, RACE_ABILITIES.keySet());

@@ -95,9 +95,9 @@ public class RacialCooldownOverlay implements IGuiOverlay {
             debugLogged = false;
         }
 
-        if (gameTime < lastRaceCheck || gameTime - lastRaceCheck > 100 || cachedRace == null) {
+        if (gameTime != lastRaceCheck || cachedRace == null) {
             String newRace = RaceHelper.getRaceName(player).orElse(null);
-            if (newRace != null && !newRace.equals(cachedRace)) {
+            if (!java.util.Objects.equals(newRace, cachedRace)) {
                 resourceCache.clear();
                 wasReady.clear();
                 flashUntil.clear();
@@ -136,9 +136,19 @@ public class RacialCooldownOverlay implements IGuiOverlay {
         boolean readyGlow = RRClientConfig.HUD_READY_GLOW.get();
 
         Font font = mc.font;
-        int rowHeight = SLOT + ROW_SPACING;
-        int totalHeight = abilities.size() * rowHeight - ROW_SPACING;
-        int contentWidth = SLOT + TEXT_GAP + 48; // icon + gap + text budget
+        int rowHeight = (showNames ? Math.max(SLOT, (SLOT - font.lineHeight) / 2 + 2 * font.lineHeight + 1) : SLOT) + ROW_SPACING;
+        var extraLines = ExpansionClient.lines();
+        int totalHeight = abilities.size() * rowHeight - ROW_SPACING
+                + (extraLines.isEmpty() ? 0 : ROW_SPACING + 3 + extraLines.size() * 11);
+        int textWidth = 48;
+        for (var ability : abilities) {
+            if (showNames) textWidth = Math.max(textWidth, font.width(ability.name()));
+            if (!minimal) {
+                String hint = resolveKeyHint(ability);
+                if (hint != null) textWidth = Math.max(textWidth, font.width(hint));
+            }
+        }
+        int contentWidth = Math.max(SLOT + TEXT_GAP + textWidth, extraLines.stream().mapToInt(font::width).max().orElse(0));
 
         int[] anchor = resolveAnchor(screenWidth, screenHeight, contentWidth, totalHeight, scale);
         int baseX = anchor[0];
@@ -158,6 +168,7 @@ public class RacialCooldownOverlay implements IGuiOverlay {
             renderSlot(graphics, font, ability, state, 0, rowY, opacity, minimal, showNames, readyGlow, gameTime);
         }
 
+        ExpansionClient.render(graphics, abilities.size() * rowHeight + 3, opacity, extraLines);
         graphics.pose().popPose();
         RenderSystem.disableBlend();
     }
@@ -186,7 +197,10 @@ public class RacialCooldownOverlay implements IGuiOverlay {
                             ResourceState state, int x, int y, float opacity, boolean minimal,
                             boolean showNames, boolean readyGlow, long gameTime) {
         FamilyAccent accent = ability.accent();
-        boolean ready = state == null || state.isReady();
+        // No state yet means the server has not hydrated this cooldown (login, respawn,
+        // race change): show it as pending, never as a false "ready".
+        boolean known = state != null;
+        boolean ready = known && state.isReady();
         int alphaByte = (int) (opacity * 255) & 0xFF;
 
         float pulse = readyGlow && ready ? 0.75f + 0.25f * (float) Math.sin(gameTime * 0.15) : 1.0f;
@@ -207,12 +221,14 @@ public class RacialCooldownOverlay implements IGuiOverlay {
         }
 
         // --- Vertical clock-wipe cooldown mask ---
-        if (state != null && !ready) {
+        if (known && !ready) {
             float progress = state.readyProgress(); // 0 = just triggered, 1 = ready
             int maskHeight = Math.max(0, (int) ((1.0f - progress) * ICON));
             if (maskHeight > 0) {
                 graphics.fill(ix, iy, ix + ICON, iy + maskHeight, DEPLETED_OVERLAY);
             }
+        } else if (!known) {
+            graphics.fill(ix, iy, ix + ICON, iy + ICON, DEPLETED_OVERLAY);
         }
 
         // --- Ready transition flash (white overlay fading out) ---
@@ -238,10 +254,10 @@ public class RacialCooldownOverlay implements IGuiOverlay {
         // --- Side text: seconds remaining / key hint ---
         int textX = x + SLOT + TEXT_GAP;
         int textY = y + (SLOT - font.lineHeight) / 2;
-        if (!ready) {
+        if (known && !ready) {
             int secondsRemaining = Math.max(0, state.value() / 20);
             graphics.drawString(font, secondsRemaining + "s", textX, textY, COOLDOWN_TEXT_COLOR, false);
-        } else if (!minimal) {
+        } else if (ready && !minimal) {
             String keyHint = resolveKeyHint(ability);
             if (keyHint != null) {
                 graphics.drawString(font, keyHint, textX, textY, READY_TEXT_COLOR, false);
@@ -298,7 +314,9 @@ public class RacialCooldownOverlay implements IGuiOverlay {
         for (AbilityIconRegistry.AbilityIcon ability : abilities) {
             ResourceLocation id = ability.resourceId();
             ResourceState state = resourceCache.get(id);
-            boolean nowReady = state == null || state.isReady();
+            // Unknown is not a transition: the first hydrated value never flashes.
+            if (state == null) continue;
+            boolean nowReady = state.isReady();
             boolean prevReady = wasReady.getOrDefault(id, nowReady);
             if (nowReady && !prevReady) {
                 flashUntil.put(id, gameTime + FLASH_TICKS);
@@ -318,7 +336,7 @@ public class RacialCooldownOverlay implements IGuiOverlay {
             ResourceLocation resId = ability.resourceId();
             com.otectus.runic_races.client.state.ClientCooldownReader.read(player, resId).ifPresentOrElse(
                     s -> resourceCache.put(resId, new ResourceState(s.value(), s.max())),
-                    () -> resourceCache.putIfAbsent(resId, new ResourceState(0, 1)));
+                    () -> resourceCache.remove(resId));
         }
     }
 }

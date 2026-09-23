@@ -1,0 +1,30 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.crystal_one.prism_reprisal.name",
+  "description": "power.runic_races.crystal_one.prism_reprisal.description",
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 800,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "active_ability": {
+    "type": "runic_races:racial_ability",
+    "kind": "crystal_one",
+    "cooldown_ticks": 800,
+    "duration_ticks": 120,
+    "parameters": {
+      "budget": 4,
+      "prevent_fraction": 0.5,
+      "reply_damage": 2,
+      "reply_range": 8
+    }
+  }
+}

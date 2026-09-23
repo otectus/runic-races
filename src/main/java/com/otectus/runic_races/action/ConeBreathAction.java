@@ -7,10 +7,8 @@ import com.otectus.runic_races.util.Hostility;
 import com.otectus.runic_races.registry.ModParticles;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
-import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -70,8 +68,10 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
         }
     }
 
-    private static final Codec<Element> ELEMENT_CODEC =
-            Codec.STRING.xmap(Element::fromString, Element::serialName);
+    private static final Codec<Element> ELEMENT_CODEC = Codec.STRING.comapFlatMap(s -> {
+        try { return com.mojang.serialization.DataResult.success(Element.valueOf(s.toUpperCase(Locale.ROOT))); }
+        catch (IllegalArgumentException ex) { return com.mojang.serialization.DataResult.error(() -> "Unknown breath element: " + s); }
+    }, Element::serialName);
 
     public record Configuration(
             double range,
@@ -82,10 +82,10 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
     ) implements IDynamicFeatureConfiguration {
         public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
-                        Codec.DOUBLE.optionalFieldOf("range", 6.0).forGetter(Configuration::range),
-                        Codec.DOUBLE.optionalFieldOf("half_angle_degrees", 25.0).forGetter(Configuration::halfAngleDegrees),
-                        Codec.FLOAT.optionalFieldOf("damage", 8.0f).forGetter(Configuration::damage),
-                        Codec.INT.optionalFieldOf("fire_seconds", 5).forGetter(Configuration::fireSeconds),
+                        Codec.doubleRange(0.5, 16).optionalFieldOf("range", 6.0).forGetter(Configuration::range),
+                        Codec.doubleRange(1, 60).optionalFieldOf("half_angle_degrees", 25.0).forGetter(Configuration::halfAngleDegrees),
+                        Codec.floatRange(0, 40).optionalFieldOf("damage", 8.0f).forGetter(Configuration::damage),
+                        Codec.intRange(0, 30).optionalFieldOf("fire_seconds", 5).forGetter(Configuration::fireSeconds),
                         ELEMENT_CODEC.optionalFieldOf("element", Element.FIRE).forGetter(Configuration::element)
                 ).apply(instance, Configuration::new)
         );
@@ -105,34 +105,17 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
         double range = config.range();
         double halfAngleCos = Math.cos(Math.toRadians(config.halfAngleDegrees()));
 
-        ParticleOptions primary = primaryParticle(config.element());
         ParticleOptions secondary = secondaryParticle(config.element());
 
-        // Spawn directional particles along the cone axis. Budget (density 1.0, range 7,
-        // Major band 30-60 with the ~15-particle signature accent counted in):
-        //   cone primary 2/step * 14 steps = 28, secondary every 3rd step ≈ 4,
-        //   impact bursts ≤ 12, accent 15  →  ≈ 59 total.
-        // vfx.breathParticleDensity scales the cone/impact portions; below 0.5 the
-        // secondary accents are skipped entirely.
+        // Broadcast one snapshot; clients animate the 16-tick torrent locally.
+        // Damage remains one instantaneous cone, using this same origin and aim.
         double density = RRServerConfig.BREATH_PARTICLE_DENSITY.get();
         boolean skipSecondary = density < 0.5;
-        int primaryCount = (int) Math.max(density > 0 ? 1 : 0, Math.round(2 * density));
-        // Start the visual cone ~1.5 blocks out so the caster isn't blinded by their
-        // own breath in first person. Hit detection below still starts at the eyes.
-        double startDist = Math.min(1.5, range * 0.25);
-        int steps = Math.max(4, (int) (range * 2));
-        for (int i = 1; i <= steps && primaryCount > 0; i++) {
-            double t = (double) i / steps;
-            Vec3 step = origin.add(look.scale(startDist + (range - startDist) * t));
-            double spread = 0.15 + (config.halfAngleDegrees() / 90.0) * t * 0.8;
-            level.sendParticles(primary,
-                    step.x, step.y, step.z,
-                    primaryCount, spread, spread, spread, 0.02);
-            if (i % 3 == 0 && !skipSecondary) {
-                level.sendParticles(secondary,
-                        step.x, step.y, step.z,
-                        1, spread * 0.6, spread * 0.6, spread * 0.6, 0.01);
-            }
+        if (density > 0) {
+            com.otectus.runic_races.network.NetworkHandler.sendNear(level, origin, 64,
+                    new com.otectus.runic_races.network.S2CBreathVfxPacket(caster.getId(),
+                            level.dimension().location(), config.element(), origin, look,
+                            range, config.halfAngleDegrees(), density));
         }
 
         // Gather candidate living entities in a bounding box that contains the cone.
@@ -143,7 +126,7 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
         List<LivingEntity> candidates = level.getEntitiesOfClass(LivingEntity.class, box,
                 e -> e != caster && e.isAlive() && !Hostility.isProtectedAlly(caster, e));
 
-        DamageSource source = level.damageSources().mobAttack(caster);
+        DamageSource source = new com.otectus.runic_races.ability.RacialDamageSource(caster, false);
         int impactBursts = 0;
         for (LivingEntity target : candidates) {
             Vec3 toTarget = target.position().add(0, target.getBbHeight() * 0.5, 0).subtract(origin);
@@ -152,8 +135,9 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
 
             double cosAngle = toTarget.normalize().dot(look);
             if (cosAngle < halfAngleCos) continue;
-
-            target.hurt(source, config.damage());
+            if (!com.otectus.runic_races.ability.TargetPolicy.visible(caster, target)) continue;
+            float before = target.getHealth() + target.getAbsorptionAmount();
+            if (!target.hurt(source, config.damage()) || target.getHealth() + target.getAbsorptionAmount() >= before) continue;
             applyElementRider(config.element(), target, look, config.fireSeconds());
 
             // Small on-hit burst so the breath visibly "lands" — capped at 4 targets
@@ -169,28 +153,14 @@ public class ConeBreathAction extends EntityAction<ConeBreathAction.Configuratio
         }
     }
 
-    private static ParticleOptions primaryParticle(Element element) {
-        return switch (element) {
-            // Actual flame: the vanilla dragon-breath particle is purple and read as
-            // ender magic, not dragonfire. Embers (secondary) carry the heat trail.
-            case FIRE -> ParticleTypes.FLAME;
-            case FROST -> ParticleTypes.SNOWFLAKE;
-            case WATER -> ParticleTypes.BUBBLE;
-            // Seismic identity: actual stone-debris chips instead of generic poofs.
-            case EARTH -> new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState());
-            case SHOCK -> ParticleTypes.ELECTRIC_SPARK;
-            case WIND -> ParticleTypes.CLOUD;
-        };
-    }
-
     private static ParticleOptions secondaryParticle(Element element) {
         return switch (element) {
             // Drifting ember flakes make fire breath read as dragonfire, not a campfire.
             case FIRE -> ModParticles.EMBER_SCALE.get();
             // Crystalline rime motes give frost breath a glitter the snowball item lacked.
             case FROST -> ModParticles.FROST_MOTE.get();
-            // Rising bubble columns read as churning tide instead of flat splashes.
-            case WATER -> ParticleTypes.BUBBLE_COLUMN_UP;
+            // Splashes remain visible out of water, unlike bubble-column particles.
+            case WATER -> ParticleTypes.SPLASH;
             // Stone chips tumble out of the seismic wave with real physics.
             case EARTH -> ModParticles.ROCK_CHIP.get();
             case SHOCK -> ParticleTypes.CRIT;

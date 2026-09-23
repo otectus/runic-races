@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:scaleheir_icon"
+  },
+  "order": 7065,
+  "impact": 1,
+  "name": "origin.runic_races.scaleheir.name",
+  "description": "origin.runic_races.scaleheir.description",
+  "powers": [
+    "runic_races:scaleheir/dominion_roar",
+    "runic_races:scaleheir/inherited_scales",
+    "runic_races:scaleheir/demanding_blood"
+  ]
+}

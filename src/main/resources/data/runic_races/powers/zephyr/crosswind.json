@@ -1,0 +1,28 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.zephyr.crosswind.name",
+  "description": "power.runic_races.zephyr.crosswind.description",
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 600,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "active_ability": {
+    "type": "runic_races:racial_ability",
+    "kind": "zephyr",
+    "cooldown_ticks": 600,
+    "duration_ticks": 8,
+    "parameters": {
+      "range": 5,
+      "move_ticks": 8
+    }
+  }
+}

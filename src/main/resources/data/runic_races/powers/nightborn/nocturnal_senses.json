@@ -1,0 +1,24 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.nightborn.nocturnal_senses.name",
+  "description": "power.runic_races.nightborn.nocturnal_senses.description",
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "night_speed": 0.15,
+      "night_food": 12
+    }
+  },
+  "poison_immunity": {
+    "type": "origins:effect_immunity",
+    "effect": "minecraft:poison"
+  },
+  "night_vision": {
+    "type": "origins:night_vision",
+    "strength": 1,
+    "condition": {
+      "type": "runic_races:racial_environment",
+      "predicate": "low_light"
+    }
+  }
+}

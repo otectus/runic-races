@@ -1,0 +1,29 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.bovine.herd_strength.name",
+  "description": "power.runic_races.bovine.herd_strength.description",
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": 2,
+      "name": "Herd Strength health"
+    }
+  },
+  "kb": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.knockback_resistance",
+      "operation": "addition",
+      "value": 0.2,
+      "name": "Herd Strength kb"
+    }
+  },
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "sprint_speed": 0.1
+    }
+  }
+}

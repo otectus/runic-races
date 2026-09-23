@@ -31,7 +31,7 @@
         "compare_to": 0
       },
       "if_action": {
-        "type": "origins:change_resource",
+        "type": "runic_races:cooldown_decay",
         "resource": "runic_races:wind_wyrm/skylord_flap_cooldown_timer",
         "change": -5
       }

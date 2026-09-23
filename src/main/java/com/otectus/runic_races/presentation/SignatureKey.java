@@ -8,6 +8,23 @@ package com.otectus.runic_races.presentation;
  * sfx/vfx/banner recipe that needs to stay consistent across invocations.
  */
 public enum SignatureKey {
+    COLOSSAN_ACTIVE,
+    AURORAN_ACTIVE,
+    GROVE_ELF_ACTIVE,
+    TIDE_ELF_ACTIVE,
+    ASTRAL_ELF_ACTIVE,
+    MOUNTAIN_ONE_ACTIVE,
+    MOSS_ONE_ACTIVE,
+    CRYSTAL_ONE_ACTIVE,
+    BOVINE_ACTIVE,
+    SAURIAN_ACTIVE,
+    CHELON_ACTIVE,
+    ZEPHYR_ACTIVE,
+    NIGHTBORN_ACTIVE,
+    RETURNED_ACTIVE,
+    WAILER_ACTIVE,
+    SCALEHEIR_ACTIVE,
+    WYVERNKIN_ACTIVE,
     // Human
     PRIMIAN_FORTUNE,
     CELERON_DASH,
@@ -56,6 +73,7 @@ public enum SignatureKey {
     VOLT_DRAKE_BREATH,
     WIND_WYRM_BREATH,
     // Wing flaps (fired by the flight handler)
+    ZEPHYR_WING_FLAP,
     SPRITE_WING_FLAP,
     FAERIE_WING_FLAP,
     AVIAN_WING_FLAP,

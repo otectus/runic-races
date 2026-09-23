@@ -31,10 +31,8 @@
       "name": "Grounded"
     },
     "condition": {
-      "type": "origins:invert",
-      "condition": {
-        "type": "origins:exposed_to_sky"
-      }
+      "type": "origins:exposed_to_sky",
+      "inverted": true
     }
   }
 }

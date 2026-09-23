@@ -1,0 +1,24 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.wyvernkin.lean_wings.name",
+  "description": "power.runic_races.wyvernkin.lean_wings.description",
+  "armor": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.armor",
+      "operation": "addition",
+      "value": 1,
+      "name": "Lean Wings armor"
+    }
+  },
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "fall_reduction": 0.25
+    }
+  },
+  "elytra_flight": {
+    "type": "origins:elytra_flight",
+    "render_elytra": false
+  }
+}

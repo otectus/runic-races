@@ -1,0 +1,14 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.grove_elf.slender_frame.name",
+  "description": "power.runic_races.grove_elf.slender_frame.description",
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": -3,
+      "name": "Slender Frame health"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.chelon.living_shell.name",
+  "description": "power.runic_races.chelon.living_shell.description",
+  "armor": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.armor",
+      "operation": "addition",
+      "value": 3,
+      "name": "Living Shell armor"
+    }
+  },
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "extra_air": 200
+    }
+  }
+}

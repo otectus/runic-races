@@ -62,7 +62,7 @@ public class AfflictHostilesAction extends EntityAction<AfflictHostilesAction.Co
     ) implements IDynamicFeatureConfiguration {
         public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
-                        Codec.DOUBLE.optionalFieldOf("radius", 6.0).forGetter(Configuration::radius),
+                        Codec.doubleRange(0.0, 128.0).optionalFieldOf("radius", 6.0).forGetter(Configuration::radius),
                         EffectSpec.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(Configuration::effects),
                         Codec.INT.optionalFieldOf("set_on_fire_seconds", 0).forGetter(Configuration::setOnFireSeconds)
                 ).apply(instance, Configuration::new)
@@ -79,19 +79,38 @@ public class AfflictHostilesAction extends EntityAction<AfflictHostilesAction.Co
         if (!(caster.level() instanceof ServerLevel level)) return;
 
         AABB box = caster.getBoundingBox().inflate(config.radius());
+        double radiusSquared = config.radius() * config.radius();
         List<LivingEntity> nearby = level.getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != caster && e.isAlive() && Hostility.isThreatTo(caster, e));
+                e -> e != caster && e.isAlive() && e.distanceToSqr(caster) <= radiusSquared
+                        && Hostility.isThreatTo(caster, e));
+
+        if (nearby.isEmpty()) return;
+
+        // Resolve each configured effect once per cast, not once per target. Every target
+        // still gets its own (mutable) MobEffectInstance, in the configured order.
+        List<EffectSpec> specs = config.effects();
+        MobEffect[] effects = new MobEffect[specs.size()];
+        for (int i = 0; i < effects.length; i++) {
+            effects[i] = resolveEffect(specs.get(i).effect());
+        }
+        String race = caster instanceof net.minecraft.server.level.ServerPlayer player
+                ? com.otectus.runic_races.util.RaceHelper.getRaceName(player).orElse("") : "";
 
         for (LivingEntity target : nearby) {
-            for (EffectSpec spec : config.effects()) {
-                MobEffect effect = resolveEffect(spec.effect());
-                if (effect != null) {
-                    target.addEffect(new MobEffectInstance(effect, spec.durationTicks(), spec.amplifier(), false, true));
+            boolean afflicted = false;
+            for (int i = 0; i < effects.length; i++) {
+                if (effects[i] != null) {
+                    EffectSpec spec = specs.get(i);
+                    afflicted |= target.addEffect(new MobEffectInstance(effects[i], spec.durationTicks(), spec.amplifier(), false, true));
                 }
             }
             if (config.setOnFireSeconds() > 0) {
+                int previousFire = target.getRemainingFireTicks();
                 target.setSecondsOnFire(config.setOnFireSeconds());
+                afflicted |= target.getRemainingFireTicks() > previousFire;
             }
+            if (afflicted && caster instanceof net.minecraft.server.level.ServerPlayer player)
+                com.otectus.runic_races.ability.AbilityFeedback.affliction(player, target, race);
         }
     }
 

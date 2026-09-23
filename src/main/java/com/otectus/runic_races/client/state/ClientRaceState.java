@@ -34,4 +34,13 @@ public final class ClientRaceState {
     public static void setAdaptationStacks(int stacks) {
         adaptationStacks = stacks;
     }
+
+    /**
+     * Connection boundary: forget the last server's state. The next server hydrates the
+     * mirror on login, so nothing from the previous world can light a rune meanwhile.
+     */
+    public static void reset() {
+        flags = 0;
+        adaptationStacks = 0;
+    }
 }

@@ -1,0 +1,23 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.mountain_one.deliberate_gait.name",
+  "description": "power.runic_races.mountain_one.deliberate_gait.description",
+  "speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.movement_speed",
+      "operation": "multiply_total",
+      "value": -0.08,
+      "name": "Deliberate Gait speed"
+    }
+  },
+  "attack_speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_speed",
+      "operation": "multiply_total",
+      "value": -0.08,
+      "name": "Deliberate Gait attack_speed"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:chelon_icon"
+  },
+  "order": 4060,
+  "impact": 2,
+  "name": "origin.runic_races.chelon.name",
+  "description": "origin.runic_races.chelon.description",
+  "powers": [
+    "runic_races:chelon/shellfast",
+    "runic_races:chelon/living_shell",
+    "runic_races:chelon/unhurried"
+  ]
+}

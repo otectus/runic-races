@@ -1,0 +1,20 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.auroran.inner_radiance.name",
+  "description": "power.runic_races.auroran.inner_radiance.description",
+  "health": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": 2,
+      "name": "Inner Radiance health"
+    }
+  },
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "magic_reduction": 0.15
+    }
+  }
+}

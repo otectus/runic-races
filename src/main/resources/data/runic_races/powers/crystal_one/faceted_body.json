@@ -1,0 +1,20 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.crystal_one.faceted_body.name",
+  "description": "power.runic_races.crystal_one.faceted_body.description",
+  "armor": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.armor",
+      "operation": "addition",
+      "value": 2,
+      "name": "Faceted Body armor"
+    }
+  },
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "magic_reduction": 0.1
+    }
+  }
+}

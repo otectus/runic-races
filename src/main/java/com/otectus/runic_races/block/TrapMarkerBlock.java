@@ -3,7 +3,6 @@ package com.otectus.runic_races.block;
 import com.otectus.runic_races.registry.ModBlockEntities;
 import com.otectus.runic_races.util.Hostility;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -89,12 +88,14 @@ public class TrapMarkerBlock extends BaseEntityBlock {
 
         server.playSound(null, pos, SoundEvents.TRIPWIRE_CLICK_ON, SoundSource.BLOCKS, 0.8f, 1.6f);
         server.playSound(null, pos, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 0.4f, 1.8f);
-        server.sendParticles(ParticleTypes.FLAME,
-                pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5,
-                18, 0.4, 0.2, 0.4, 0.04);
-        server.sendParticles(ParticleTypes.SMOKE,
-                pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5,
-                12, 0.4, 0.2, 0.4, 0.02);
+        if (ownerPlayer instanceof net.minecraft.server.level.ServerPlayer caster) {
+            com.otectus.runic_races.ability.AbilityFeedback.snare(caster, victim);
+        } else {
+            int count = com.otectus.runic_races.presentation.ParticleBudget.scale(24,
+                    com.otectus.runic_races.config.RRServerConfig.SIGNATURE_PARTICLE_DENSITY.get(), 1);
+            if (count > 0) server.sendParticles(com.otectus.runic_races.registry.ModParticles.WEB_STRAND.get(),
+                    victim.getX(), victim.getY() + 0.5, victim.getZ(), count, 0.4, 0.4, 0.4, 0.02);
+        }
 
         level.removeBlock(pos, false);
     }

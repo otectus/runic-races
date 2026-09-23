@@ -12,7 +12,9 @@
         "runic_races:primian",
         "runic_races:celeron",
         "runic_races:magi",
-        "runic_races:valen"
+        "runic_races:valen",
+        "runic_races:colossan",
+        "runic_races:auroran"
       ]
     },
     {
@@ -26,7 +28,10 @@
         "runic_races:dark_elf",
         "runic_races:moon_elf",
         "runic_races:blood_elf",
-        "runic_races:ice_elf"
+        "runic_races:ice_elf",
+        "runic_races:grove_elf",
+        "runic_races:tide_elf",
+        "runic_races:astral_elf"
       ]
     },
     {
@@ -41,7 +46,10 @@
         "runic_races:frost_one",
         "runic_races:iron_one",
         "runic_races:sky_one",
-        "runic_races:runic_one"
+        "runic_races:runic_one",
+        "runic_races:mountain_one",
+        "runic_races:moss_one",
+        "runic_races:crystal_one"
       ]
     },
     {
@@ -56,7 +64,10 @@
         "runic_races:canine",
         "runic_races:feline",
         "runic_races:kitsune",
-        "runic_races:serpen"
+        "runic_races:serpen",
+        "runic_races:bovine",
+        "runic_races:saurian",
+        "runic_races:chelon"
       ]
     },
     {
@@ -70,7 +81,8 @@
         "runic_races:dryad",
         "runic_races:sprite",
         "runic_races:nymph",
-        "runic_races:faerie"
+        "runic_races:faerie",
+        "runic_races:zephyr"
       ]
     },
     {
@@ -84,7 +96,10 @@
         "runic_races:skeleton",
         "runic_races:wraith",
         "runic_races:demon",
-        "runic_races:reaper"
+        "runic_races:reaper",
+        "runic_races:nightborn",
+        "runic_races:returned",
+        "runic_races:wailer"
       ]
     },
     {
@@ -99,7 +114,9 @@
         "runic_races:sea_serpen",
         "runic_races:terra_drake",
         "runic_races:volt_drake",
-        "runic_races:wind_wyrm"
+        "runic_races:wind_wyrm",
+        "runic_races:scaleheir",
+        "runic_races:wyvernkin"
       ]
     }
   ],

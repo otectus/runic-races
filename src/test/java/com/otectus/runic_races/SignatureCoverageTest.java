@@ -1,5 +1,9 @@
 package com.otectus.runic_races;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.otectus.runic_races.race.RaceRegistry;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -7,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -80,6 +85,67 @@ class SignatureCoverageTest {
             }
         }
         assertTrue(problems.isEmpty(), String.join("\n", problems));
+    }
+
+    @Test
+    void everyRacesActivatedPowerHasImmediateShapedAndStagedWorldFeedback() throws IOException {
+        String registry = Files.readString(REGISTRY_SRC);
+        List<String> problems = new ArrayList<>();
+        for (String race : RaceRegistry.allRaceNames()) {
+            JsonObject origin = JsonParser.parseString(Files.readString(
+                    POWERS.resolve("../origins/" + race + ".json").normalize())).getAsJsonObject();
+            String activeId = origin.getAsJsonArray("powers").get(0).getAsString();
+            JsonObject power = JsonParser.parseString(Files.readString(
+                    POWERS.resolve(activeId.substring("runic_races:".length()) + ".json"))).getAsJsonObject();
+            JsonElement active = power.get("active_ability");
+            Set<String> keys = new TreeSet<>();
+            collectActiveSignatures(active, keys);
+            if (keys.isEmpty()) {
+                problems.add(race + ": activated power has no signature presentation route");
+            }
+            for (String key : keys) {
+                int start = registry.indexOf("ENTRIES.put(SignatureKey." + key + ",");
+                if (start < 0) {
+                    problems.add(race + ": activated power has no recipe for " + key);
+                    continue;
+                }
+                int end = registry.indexOf("ENTRIES.put(SignatureKey.", start + 1);
+                String block = registry.substring(start, end < 0 ? registry.length() : end);
+                List<String> particleLines = block.lines().filter(line -> line.contains("new VfxSpec(")).toList();
+                if (particleLines.size() < 3) {
+                    problems.add(race + ": active needs anticipation, a visible silhouette, and a settling layer");
+                }
+                if (particleLines.stream().noneMatch(line -> !line.contains(".delayed("))) {
+                    problems.add(race + ": activation lacks immediate world particles");
+                }
+                long timedLayers = particleLines.stream().filter(line -> line.contains(".delayed(")).count();
+                if (timedLayers < 2) {
+                    problems.add(race + ": active has no sustained sequence of world particle layers");
+                }
+                if (particleLines.stream().noneMatch(line -> line.contains("SignatureEntry.Shape.")
+                        && !line.contains("SignatureEntry.Shape.POINT"))) {
+                    problems.add(race + ": active is only a random particle cloud");
+                }
+            }
+        }
+        assertTrue(problems.isEmpty(), String.join("\n", problems));
+    }
+
+    /** Both the legacy JSON action route and the expansion service's kind-to-key contract. */
+    private static void collectActiveSignatures(JsonElement element, Set<String> keys) {
+        if (element == null || element.isJsonNull()) return;
+        if (element.isJsonArray()) {
+            element.getAsJsonArray().forEach(child -> collectActiveSignatures(child, keys));
+        } else if (element.isJsonObject()) {
+            JsonObject object = element.getAsJsonObject();
+            String type = object.has("type") ? object.get("type").getAsString() : "";
+            if ("runic_races:signature_presentation".equals(type)) {
+                keys.add(object.get("key").getAsString());
+            } else if ("runic_races:racial_ability".equals(type)) {
+                keys.add(object.get("kind").getAsString().toUpperCase(Locale.ROOT) + "_ACTIVE");
+            }
+            object.entrySet().forEach(entry -> collectActiveSignatures(entry.getValue(), keys));
+        }
     }
 
     private static Set<String> enumConstants() throws IOException {

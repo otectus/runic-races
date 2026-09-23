@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:mountain_one_icon"
+  },
+  "order": 3055,
+  "impact": 1,
+  "name": "origin.runic_races.mountain_one.name",
+  "description": "origin.runic_races.mountain_one.description",
+  "powers": [
+    "runic_races:mountain_one/quarry_rhythm",
+    "runic_races:mountain_one/bedrock_bearing",
+    "runic_races:mountain_one/deliberate_gait"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.wailer.deathwatch.name",
+  "description": "power.runic_races.wailer.deathwatch.description",
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "sense_range": 8,
+      "sense_targets": 3
+    }
+  },
+  "poison_immunity": {
+    "type": "origins:effect_immunity",
+    "effect": "minecraft:poison"
+  }
+}

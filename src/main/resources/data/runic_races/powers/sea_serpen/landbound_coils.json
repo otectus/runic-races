@@ -48,11 +48,9 @@
       "name": "Beached"
     },
     "condition": {
-      "type": "origins:invert",
-      "condition": {
-        "type": "origins:submerged_in",
-        "fluid": "minecraft:water"
-      }
+      "type": "origins:submerged_in",
+      "fluid": "minecraft:water",
+      "inverted": true
     }
   }
 }

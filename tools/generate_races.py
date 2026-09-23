@@ -12,10 +12,19 @@ and the `runic_races:<race>/<file>_cooldown_timer` resource-id convention stay e
 
 Run from repo root:  python3 tools/generate_races.py
 """
-import json, os, shutil
+import argparse, json, os, shutil, tempfile
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+parser = argparse.ArgumentParser(description="Generate race data, or compare semantic output without modifying the checkout.")
+parser.add_argument("--output-root", type=Path, default=REPO)
+parser.add_argument("--check", action="store_true")
+args = parser.parse_args()
+temporary = tempfile.TemporaryDirectory(prefix="runic-races-") if args.check else None
+OUTPUT = Path(temporary.name) if temporary else args.output_root.resolve()
 
 NS = "runic_races"
-ROOT = os.path.join("src", "main", "resources", "data", NS)
+ROOT = str(OUTPUT / "src/main/resources/data" / NS)
 POWERS = os.path.join(ROOT, "powers")
 ORIGINS = os.path.join(ROOT, "origins")
 LAYERS = os.path.join(ROOT, "origin_layers")
@@ -26,7 +35,7 @@ LANG = {}
 # ---------------------------------------------------------------- builders
 def write_json(path, obj):
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(obj, f, indent=2)
         f.write("\n")
 
@@ -89,8 +98,10 @@ def afflict(radius, target_effects=(), set_fire=None):
     return o
 
 def cooldown_subpowers(resource_id, cd, step=10):
-    # step: ticks per decay beat. Apoli re-syncs the whole power container on every resource
-    # change, so decay coarsely (same total duration, 1/step the packets). Flap timers use 5.
+    # step: ticks per decay beat (same total duration; flap timers use 5). The decay step is
+    # runic_races:cooldown_decay -- origins:change_resource's exact mutation, but it sends the
+    # owner and trackers the changed value instead of re-syncing the whole power container.
+    # Activation keeps origins:change_resource (see active_power), so casts still hydrate fully.
     timer = {"type": "origins:resource", "min": 0, "max": cd, "start_value": 0,
              "hud_render": {"should_render": False,
                             "sprite_location": "origins:textures/gui/community/spade.png", "bar_index": 2},
@@ -99,7 +110,7 @@ def cooldown_subpowers(resource_id, cd, step=10):
              "entity_action": {"type": "origins:if_else",
                                "condition": {"type": "origins:resource", "resource": resource_id,
                                              "comparison": ">", "compare_to": 0},
-                               "if_action": {"type": "origins:change_resource", "resource": resource_id,
+                               "if_action": {"type": "%s:cooldown_decay" % NS, "resource": resource_id,
                                              "change": -step}}}
     return timer, decay
 
@@ -108,12 +119,23 @@ def active_power(race, file, cd, actions, name, desc, extra_conditions=None):
     timer, decay = cooldown_subpowers(rid, cd)
     full = list(actions) + [{"type": "origins:change_resource", "resource": rid, "change": cd}]
     condition = {"type": "origins:resource", "resource": rid, "comparison": "==", "compare_to": 0}
-    if extra_conditions:
-        condition = {"type": "origins:and", "conditions": [condition] + list(extra_conditions)}
-    active = {"type": "origins:active_self",
+
+    # Apoli's active_self defaults to an internal one-tick cooldown and stamps it when
+    # the power is gained. These powers already have an explicit resource cooldown;
+    # disable the redundant gate so a same-tick first press is not silently swallowed.
+    active = {"type": "origins:active_self", "cooldown": 0,
               "key": {"key": "key.origins.primary_active", "continuous": False},
               "condition": condition,
               "entity_action": {"type": "origins:and", "actions": full}}
+    if extra_conditions:
+        active["entity_action"] = {
+            "type": "origins:if_else",
+            "condition": {"type": "origins:or", "conditions": [
+                {"type": "runic_races:resource_available", "resource": "mana", "inverted": True},
+                *extra_conditions]},
+            "if_action": active["entity_action"],
+            "else_action": {"type": "runic_races:show_banner", "translation_key": "message.runic_races.ability.no_mana",
+                            "color": "red", "bold": True, "learning_hint": "message.runic_races.learning.arcane_overflow_mana"}}
     LANG["power.%s.%s.%s.name" % (NS, race, file)] = name
     LANG["power.%s.%s.%s.description" % (NS, race, file)] = desc
     # No "subpowers" index key: Apoli's origins:multiple treats EVERY key it does not reserve
@@ -122,7 +144,9 @@ def active_power(race, file, cd, actions, name, desc, extra_conditions=None):
     return {"type": "origins:multiple",
             "name": "power.%s.%s.%s.name" % (NS, race, file),
             "description": "power.%s.%s.%s.description" % (NS, race, file),
-            "cooldown_timer": timer, "cooldown_decay": decay, "active_ability": active}
+            "cooldown_timer": timer, "cooldown_decay": decay, "active_ability": active,
+            **({"badges": [{"sprite": "origins:textures/gui/badge/active.png", "text": "power.runic_races.fire_drake.dragonfire_breath.badge"}]}
+               if race == "fire_drake" and file == "dragonfire_breath" else {})}
 
 # ---- passive / weakness subpower helpers
 def attr_sub(attribute, op, value, name):
@@ -166,8 +190,8 @@ def biome_aff(race, file, home_tag, sb, db, hostile_tag=None, sp=0.0, dp=0.0):
          "home_biome_tag": home_tag, "speed_bonus": sb, "damage_bonus": db}
     if hostile_tag:
         o["hostile_biome_tag"] = hostile_tag
-        o["speed_penalty"] = sp
-        o["damage_penalty"] = dp
+        if sp: o["speed_penalty"] = sp
+        if dp: o["damage_penalty"] = dp
     o["check_interval"] = 40
     return o
 
@@ -199,7 +223,7 @@ def resource_holder(resource_id, cd):
 SUN_COND = {"type": "origins:and", "conditions": [
     {"type": "origins:exposed_to_sun"}, {"type": "origins:daytime"}]}
 WATER_COND = {"type": "origins:submerged_in", "fluid": "minecraft:water"}
-NO_SKY_COND = {"type": "origins:invert", "condition": {"type": "origins:exposed_to_sky"}}
+NO_SKY_COND = {"type": "origins:exposed_to_sky", "inverted": True}
 FIRE_NAMES = ["inFire", "onFire", "lava", "hotFloor"]
 COLD_NAMES = ["freeze"]
 HOLY_NAMES = ["magic", "indirectMagic"]
@@ -414,8 +438,8 @@ emit("valen", "human", 103, 2,
               ("kb", kb_resist(0.4, "Valen Stability")), ("melee", atk_dmg(0.10, "Valen Strength"))])),
      ("stalwart_not_swift",
       bundle("valen", "stalwart_not_swift", "Stalwart, Not Swift",
-             "-10% movement speed and -10% attack speed. Heavy and deliberate.",
-             [("speed", speed(-0.10, "Stalwart Slowness")), ("attack_speed", atk_spd(-0.10, "Stalwart Heft"))])))
+             "-8% movement speed and -8% attack speed. Heavy and deliberate.",
+             [("speed", speed(-0.08, "Stalwart Slowness")), ("attack_speed", atk_spd(-0.08, "Stalwart Heft"))])))
 
 # =================================================================== ELVEN
 emit("high_elf", "elven", 200, 2,
@@ -735,11 +759,12 @@ emit("canine", "bestial", 402, 1,
              "+12% speed, night vision, +10% melee damage, and at home in the forest.",
              [("speed", speed(0.12, "Pack Speed")), ("night_vision", night_vision()),
               ("melee", atk_dmg(0.10, "Hunter's Bite")),
-              ("forest_home", biome_aff("canine", "pack_hunter", "minecraft:is_forest", 0.06, 0.05))])),
+              ("forest_home", biome_aff("canine", "pack_hunter", "minecraft:is_forest", 0.06, 0.05)),
+              ("taiga_home", biome_aff("canine", "pack_hunter", "minecraft:is_taiga", 0.06, 0.05))])),
      ("ravenous",
       bundle("canine", "ravenous", "Ravenous",
-             "+40% hunger drain and -2 armor. Always hungry, thin of hide.",
-             [("hunger", exhaustion(0.4)), ("armor", armor(-2.0, "Thin Hide"))])))
+             "+25% hunger drain and -2 armor. Always hungry, thin of hide.",
+             [("hunger", exhaustion(0.25)), ("armor", armor(-2.0, "Thin Hide"))])))
 
 emit("feline", "bestial", 403, 2,
      "Graceful, instinctive folk of catlike blood; agile night-stalkers whose elegance hides predatory confidence.",
@@ -754,9 +779,9 @@ emit("feline", "bestial", 403, 2,
                    "Leap at your prey with a burst of Strength. 15-second cooldown.")),
      ("nine_lives",
       bundle("feline", "nine_lives", "Nine Lives & Night Eyes",
-             "Cheat death once every 10 minutes, landing on your feet. Night vision, +15% attack speed, and no fall damage.",
-             [("cooldown_timer", cooldown_subpowers("%s:feline/nine_lives_cooldown_timer" % NS, 12000)[0]),
-              ("cooldown_decay", cooldown_subpowers("%s:feline/nine_lives_cooldown_timer" % NS, 12000)[1]),
+             "Cheat death once every 15 minutes, landing on your feet. Night vision, +15% attack speed, and no fall damage.",
+             [("cooldown_timer", cooldown_subpowers("%s:feline/nine_lives_cooldown_timer" % NS, 18000)[0]),
+              ("cooldown_decay", cooldown_subpowers("%s:feline/nine_lives_cooldown_timer" % NS, 18000)[1]),
               ("night_vision", night_vision()), ("attack_speed", atk_spd(0.15, "Feline Quickness")),
               ("no_fall", NOFALL)])),
      ("hydrophobia",
@@ -782,9 +807,9 @@ emit("kitsune", "bestial", 404, 3,
              [("magic", magic_bonus(0.15)), ("night_vision", night_vision()), ("speed", speed(0.10, "Fox Step"))])),
      ("untamed_spirit",
       bundle("kitsune", "untamed_spirit", "Untamed Spirit",
-             "-2 hearts and +15% physical damage taken. A spirit-frail body.",
+             "-2 hearts and +20% damage taken in direct daylight. A spirit-frail body.",
              [("health", health(-4.0, "Spirit Frailty")),
-              ("phys", dmg_taken_type(["player", "mob", "arrow", "trident", "thrown", "sting", "mob_projectile"], 0.15))])))
+              ("daylight", dmg_taken_self(SUN_COND, 0.20))])))
 
 emit("serpen", "bestial", 405, 2,
      "Calm, dangerous folk of snake blood; venomous mystics and assassins who strike with the quiet power of the coiled strike.",
@@ -812,21 +837,21 @@ emit("serpen", "bestial", 405, 2,
 emit("changeling", "faeborne", 500, 2,
      "Mysterious shapeshifters who wear faces like masks; spies and infiltrators free to define themselves beyond blood.",
      ("mirror_shift",
-      active_power("changeling", "mirror_shift", 800,
+      active_power("changeling", "mirror_shift", 500,
                    [eff("invisibility", 120, 0, False), eff("speed", 100, 0)]
                    + present("changeling", "mirror_shift", "light_purple", "You slip behind a borrowed face.",
                              [sound("minecraft:entity.illusioner.mirror_move", 0.6, 1.0)],
                              [particles("smoke", 20, 0.1), particles("portal", 12, 0.2)]),
                    "Mirror Shift",
-                   "Slip away behind a glamour: Invisibility and Speed for 6s. 40-second cooldown.")),
+                   "Slip away behind a glamour: Invisibility and Speed for 6s. 25-second cooldown.")),
      ("manyfaces",
       bundle("changeling", "manyfaces", "Manyfaces",
              "+10% movement speed and +1 Luck. You wear whatever face the moment needs.",
              [("speed", speed(0.10, "Fluid Step")), ("luck", luck(1.0, "Borrowed Fortune"))])),
      ("hollow_identity",
       bundle("changeling", "hollow_identity", "Hollow Identity",
-             "-1 heart and -10% attack damage. With no true self, no strike lands with full conviction.",
-             [("health", health(-2.0, "Hollow Health")), ("attack", atk_dmg(-0.1, "No True Self"))])))
+             "-1 heart and -5% attack damage. With no true self, no strike lands with full conviction.",
+             [("health", health(-2.0, "Hollow Health")), ("attack", atk_dmg(-0.05, "No True Self"))])))
 
 emit("dryad", "faeborne", 501, 2,
      "Graceful forest-born fae bound to grove and root; gentle healers whose wrath is as old and unforgiving as the forest.",
@@ -863,10 +888,10 @@ emit("sprite", "faeborne", 502, 2,
                    "Flicker out of danger: blink forward with Invisibility and Speed II. 90-second cooldown.")),
      ("gossamer_wings",
       bundle("sprite", "gossamer_wings", "Gossamer Wings",
-             "Gossamer wings for gliding flight, Slow Falling, +30% speed, and +15% attack speed.",
+             "Gossamer wings for gliding flight, Slow Falling, +20% speed, and +10% attack speed.",
              wings_specs("sprite", "gossamer_wings", 30)
              + [("slow_fall", {"type": "origins:climbing"} if False else imm("none") if False else NOFALL),
-                ("speed", speed(0.30, "Sprite Swiftness")), ("attack_speed", atk_spd(0.15, "Sprite Flurry"))])),
+                ("speed", speed(0.20, "Sprite Swiftness")), ("attack_speed", atk_spd(0.10, "Sprite Flurry"))])),
      ("fragile_essence",
       bundle("sprite", "fragile_essence", "Fragile Essence",
              "-3 hearts and easily knocked from the air. A wisp of a body.",
@@ -906,9 +931,9 @@ emit("faerie", "faeborne", 504, 3,
                    "Weave an old enchantment: bless yourself with Regeneration and Absorption while cursing nearby foes with Slowness, Blindness, and Levitation. 50-second cooldown.")),
      ("pixie_flight",
       bundle("faerie", "pixie_flight", "Pixie Flight",
-             "Delicate wings for gliding flight, Slow Falling, +15% magic damage, +20% speed, and night vision.",
+             "Delicate wings for gliding flight, Slow Falling, +15% magic damage, +15% speed, and night vision.",
              wings_specs("faerie", "pixie_flight", 30)
-             + [("magic", magic_bonus(0.15)), ("speed", speed(0.20, "Pixie Swiftness")),
+             + [("magic", magic_bonus(0.15)), ("speed", speed(0.15, "Pixie Swiftness")),
                 ("night_vision", night_vision())])),
      ("cold_iron",
       bundle("faerie", "cold_iron", "Cold Iron",
@@ -937,7 +962,7 @@ emit("zombie", "undead", 600, 1,
              "-10% speed and your flesh decays in direct sunlight; you heal slowly.",
              [("speed", speed(-0.10, "Shamble")), ("sun_burn", sun_dot(1.0)),
               ("healing", {"type": "origins:modify_healing",
-                           "modifier": {"operation": "multiply_total_multiplicative", "value": -0.25}})])))
+                           "modifier": {"operation": "multiply_total_multiplicative", "value": -0.15}})])))
 
 emit("skeleton", "undead", 601, 1,
      "Fleshless undead given motion by old oaths; eerie, tireless bonecrafters and unerring archers.",
@@ -1038,7 +1063,7 @@ emit("fire_drake", "draconic", 700, 2,
      "Drakes of ember and ash whose hearts burn like a forge; their breath is living flame and their scales drink the heat.",
      ("dragonfire_breath",
       active_power("fire_drake", "dragonfire_breath", 800,
-                   [cone("fire", 7.0, 22.0, 7.0, 8)] + sig("FIRE_DRAKE_BREATH"),
+                   [cone("fire", 7.0, 22.0, 6.0, 8)] + sig("FIRE_DRAKE_BREATH"),
                    "Dragonfire Breath",
                    "Breathe a cone of searing flame that ignites all it touches. 40-second cooldown.")),
      ("emberscale_hide",
@@ -1051,8 +1076,8 @@ emit("fire_drake", "draconic", 700, 2,
                                        "forge:is_cold", -0.10, 0.0))])),
      ("cold_quenches_fire",
       bundle("fire_drake", "cold_quenches_fire", "Cold Quenches Fire",
-             "+30% cold damage taken, +20% hunger drain. Cold and water are your bane.",
-             [("cold", dmg_taken_type(COLD_NAMES, 0.30)), ("water", dmg_taken_self(WATER_COND, 0.30)),
+             "+35% cold and water damage taken, +20% hunger drain. Cold and water are your bane.",
+             [("cold", dmg_taken_type(COLD_NAMES, 0.35)), ("water", dmg_taken_self(WATER_COND, 0.35)),
               ("hunger", exhaustion(0.20))])))
 
 emit("ice_drake", "draconic", 701, 2,
@@ -1092,7 +1117,7 @@ emit("sea_serpen", "draconic", 702, 2,
              "-1 heart and +20% fire damage taken; far from water your coils grow sluggish.",
              [("health", health(-2.0, "Landbound")), ("fire", dmg_taken_type(FIRE_NAMES, 0.20)),
               ("dry_slow", cond_attr("minecraft:generic.movement_speed", "multiply_total", -0.10,
-                                     "Beached", {"type": "origins:invert", "condition": WATER_COND}))])))
+                                     "Beached", {**WATER_COND, "inverted": True}))])))
 
 emit("terra_drake", "draconic", 703, 2,
      "Mountainous drakes of stone and root; their hide is living rock and their breath shatters the earth.",
@@ -1127,7 +1152,8 @@ emit("volt_drake", "draconic", 704, 2,
              "Immune to lightning, +2 armor, +15% speed, +10% attack speed, and gliding wings.",
              wings_specs("volt_drake", "stormscale_hide", False)
              + [("lightning_imm", dmg_taken_type(["lightningBolt"], -1.0)), ("armor", armor(2.0, "Stormscale")),
-                ("speed", speed(0.15, "Storm Speed")), ("attack_speed", atk_spd(0.10, "Storm Flurry"))])),
+                ("speed", speed(0.15, "Storm Speed")), ("attack_speed", atk_spd(0.10, "Storm Flurry")),
+                ("storm_charged", cond_attr("minecraft:generic.attack_speed", "multiply_total", 0.10, "Storm Charged", {"type": "origins:in_rain"}))])),
      ("grounded",
       bundle("volt_drake", "grounded", "Grounded",
              "-1.5 hearts, +25% damage while wet, and weaker when shut away from the open sky.",
@@ -1162,6 +1188,9 @@ emit("wind_wyrm", "draconic", 705, 3,
                                       "Caged", NO_SKY_COND)),
               ("cave_weak", dmg_taken_self(NO_SKY_COND, 0.15))])))
 
+from expansion_content import emit_expansion
+emit_expansion(globals())
+
 # =================================================================== FAMILIES + LAYERS
 FAMILY_DESC = {
     "human": "The mortal races of humankind: adaptable, fortunate, and unspecialized, shaping the world to their will.",
@@ -1170,7 +1199,7 @@ FAMILY_DESC = {
     "bestial": "Folk of ancient beast bloodlines, gifted with sharp senses, agility, and predatory instinct.",
     "faeborne": "Small fae of wild magic and illusion: swift, magical, and often winged, but delicate of body.",
     "undead": "Those who refused to rest: tireless and immune to many ills, but undone by sunlight and the holy.",
-    "draconic": "Drakes and wyrms of elemental power: armored, breath-wielding flyers, each strong in one element and weak to its opposite.",
+    "draconic": "Heirs of dragonkind: elemental drakes, grounded scale-bearers and lean gliders, united by draconic presence and demanding blood.",
 }
 for fam, order in FAMILY_ORDER.items():
     first = FAMILY_FIRST[fam]
@@ -1228,10 +1257,24 @@ SIG_BANNERS = {
 }
 LANG.update(SIG_BANNERS)
 
-with open(os.path.join("tools", "race_lang.json"), "w") as f:
+os.makedirs(OUTPUT / "tools", exist_ok=True)
+with open(OUTPUT / "tools/race_lang.json", "w", encoding="utf-8") as f:
     json.dump(LANG, f, indent=2, sort_keys=True)
     f.write("\n")
 
 races_total = sum(len(v) for v in FAMILY_RACES.values())
 print("Generated %d races across %d families; %d lang keys -> tools/race_lang.json"
       % (races_total, len(FAMILY_ORDER), len(LANG)))
+
+if args.check:
+    differences = []
+    for generated in sorted(OUTPUT.rglob("*.json")):
+        relative = generated.relative_to(OUTPUT)
+        shipped = REPO / relative
+        if not shipped.exists() or json.loads(generated.read_text(encoding="utf-8")) != json.loads(shipped.read_text(encoding="utf-8")):
+            differences.append(str(relative))
+    temporary.cleanup()
+    if differences:
+        print("Semantic differences:\n" + "\n".join(differences))
+        raise SystemExit(1)
+    print("Generator semantic parity verified.")

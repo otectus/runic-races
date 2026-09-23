@@ -1,20 +1,23 @@
 # Runic Races
 
-A flagship Origins add-on for the **Runecraft** modpack. 37 deeply designed races across 7 families, each with exactly one active ability, one passive strength, and one weakness — plus environmental interactions and deep integration with Runecraft's mod ecosystem. Pick a **family** first, then a **race** within it. With Pehkui installed, each race also has its own **height** (0.45–1.30), clustered by family so a party reads at a glance.
+A flagship Origins add-on for the **Runecraft** modpack. 54 races across 7 families, each with exactly one active ability, one passive strength, and one weakness — plus environmental interactions and deep integration with Runecraft's mod ecosystem. Pick a **family** first, then a **race** within it. With Pehkui installed, each race also has its own **height** (0.45–1.30), clustered by family so a party reads at a glance.
 
 **Minecraft 1.20.1 | Forge | Requires Origins Forge**
 
 ## Races
 
-### Human (4) — adaptable generalists
+### Human (6) — adaptable generalists
 | Race | Active | Passive / Weakness |
 |------|--------|--------------------|
 | **Primian** | Stroke of Fortune | Luck + adaptability / no specialization |
 | **Celeron** | Messenger's Dash | speed & wit / fragile frame |
 | **Magi** | Arcane Overflow | born of magic / frail body |
 | **Valen** | Unbreakable Stand | armored bulwark / slow |
+| **Colossan** | Colossal Heave | Giant's Bearing / Heavy Limbs |
+| **Auroran** | Dawnward | Inner Radiance / Mortal Vessel |
 
-### Elven (5) — arcane grace, frail bodies
+
+### Elven (8) — arcane grace, frail bodies
 | Race | Active | Passive / Weakness |
 |------|--------|--------------------|
 | **High Elf** | Arcane Reflex | arcane mastery / physical frailty |
@@ -22,8 +25,12 @@ A flagship Origins add-on for the **Runecraft** modpack. 37 deeply designed race
 | **Moon Elf** | Moonlit Veil | moon/tide magic / waning by day |
 | **Blood Elf** | Blood Frenzy | bloodcraft lifesteal / reduced healing |
 | **Ice Elf** | Frostbind | frost mastery / fire |
+| **Grove Elf** | Stillleaf Aim | Canopy Strider / Slender Frame |
+| **Tide Elf** | Currentstep | Amphibious Grace / Drying Gills |
+| **Astral Elf** | Starbound Thread | Astral Poise / Thin Tether |
 
-### Dwarven (6) — tough, subterranean
+
+### Dwarven (9) — tough, subterranean
 | Race | Active | Passive / Weakness |
 |------|--------|--------------------|
 | **Deep One** | Tremorsense | darkvision miner / sunlight |
@@ -31,9 +38,13 @@ A flagship Origins add-on for the **Runecraft** modpack. 37 deeply designed race
 | **Frost One** | Glacial Resolve | cold-immune / fire |
 | **Iron One** | Shield Wall | fortress tank / slow & magic-poor |
 | **Sky One** | Mountain Leap | sure-footed climber / claustrophobia |
-| **Runic One** | Rune of Warding | rune-smith party support / scholarly frailty |
+| **Runic One** | Rune of Warding | self ward & hostile slowing / scholarly frailty |
+| **Mountain One** | Quarry Rhythm | Bedrock Bearing / Deliberate Gait |
+| **Moss One** | Mycelial Respite | Living Loam / Desiccation |
+| **Crystal One** | Prism Reprisal | Faceted Body / Fracture Lines |
 
-### Bestial (6) — sharp senses, predatory
+
+### Bestial (9) — sharp senses, predatory
 | Race | Active | Passive / Weakness |
 |------|--------|--------------------|
 | **Arachnid** | Web Snare | venom & vibration sense / fire |
@@ -42,8 +53,12 @@ A flagship Origins add-on for the **Runecraft** modpack. 37 deeply designed race
 | **Feline** | Pounce | **Nine Lives** / hydrophobia |
 | **Kitsune** | Foxfire Illusion | fox-spirit magic / spirit-frail |
 | **Serpen** | Shed Skin | venom & heat / cold-blooded |
+| **Bovine** | Hornrush | Herd Strength / Heavy Appetite |
+| **Saurian** | Patient Ambush | Scaled Survivor / Cold-Blooded |
+| **Chelon** | Shellfast | Living Shell / Unhurried |
 
-### Faeborne (5) — magic, illusion, often winged
+
+### Faeborne (6) — magic, illusion, often winged
 | Race | Active | Passive / Weakness |
 |------|--------|--------------------|
 | **Changeling** | Mirror Shift | many faces / hollow identity |
@@ -51,8 +66,10 @@ A flagship Origins add-on for the **Runecraft** modpack. 37 deeply designed race
 | **Sprite** | Phase Shift | gossamer flight / glass cannon |
 | **Nymph** | Siren's Charm | water spirit / bound to water |
 | **Faerie** | Faerie Bargain | pixie glamour / cold iron |
+| **Zephyr** | Crosswind | Airborne Essence / Scattered Form |
 
-### Undead (5) — undeath immunities, night power
+
+### Undead (8) — undeath immunities, night power
 | Race | Active | Passive / Weakness |
 |------|--------|--------------------|
 | **Zombie** | Undying Hunger | deathless flesh / sunlight decay |
@@ -60,8 +77,12 @@ A flagship Origins add-on for the **Runecraft** modpack. 37 deeply designed race
 | **Wraith** | Spectral Phase | soul-touched / sunlight & holy |
 | **Demon** | Infernal Wrath | infernal fire / holy & water |
 | **Reaper** | Soul Harvest | **death revival** / −50% healing |
+| **Nightborn** | Crimson Hunt | Nocturnal Senses / Sun-Starved |
+| **Returned** | Unfinished Purpose | Stubborn Remnant / Imperfect Return |
+| **Wailer** | Keening Cry | Deathwatch / Fraying Spirit |
 
-### Draconic (6) — elemental breath, scales, flight
+
+### Draconic (8) — breath, grounded scales and gliding lineages
 | Race | Active | Passive / Weakness |
 |------|--------|--------------------|
 | **Fire Drake** | Dragonfire Breath | fire immune / cold & water |
@@ -70,6 +91,9 @@ A flagship Origins add-on for the **Runecraft** modpack. 37 deeply designed race
 | **Terra Drake** | Seismic Breath | living stone / ponderous |
 | **Volt Drake** | Lightning Breath | storm speed / grounded & wet |
 | **Wind Wyrm** | Galeforce Breath | supreme flyer / caged underground |
+| **Scaleheir** | Dominion Roar | Inherited Scales / Demanding Blood |
+| **Wyvernkin** | Venom Swoop | Lean Wings / Exposed Membranes |
+
 
 ## Mod Integrations
 
@@ -91,7 +115,7 @@ Magi's Arcane Overflow is cooldown-only on a standalone install instead of silen
 ## Installation
 
 1. Requires **Origins Forge** (1.10.0.9+) installed in the modpack
-2. Drop `runic_races-1.6.3.jar` into the `mods/` folder (required on **both** client and server)
+2. Drop `runic_races-1.7.2.jar` into the `mods/` folder (required on **both** client and server)
 3. **Remove** the old KubeJS Runic Races datapack if present (`kubejs/data/runic_races/`)
 4. Existing players with preserved race names will keep their selection
 
@@ -140,6 +164,11 @@ flap spends feathers — exhausted wings refuse with a red banner until you reco
 **Breath weapons** are physical cones: they deliberately hit neutral and passive mobs (aim
 discipline is the counterplay) but never teammates, PvP-protected players, or anyone's pets.
 
+All ten wing variants have articulated block geometry and distinct pixel textures. Every
+race's activated power has staged world effects, with visible elemental breath torrents,
+confirmed hits, ally wards, healing fields and movement trails. See
+[wings and ability presentation](docs/WINGS_AND_VFX.md) for coverage and performance settings.
+
 ## Commands
 
 - `/runicraces info [player]` — Show selected race
@@ -161,7 +190,7 @@ discipline is the counterplay) but never teammates, PvP-protected players, or an
 ```bash
 # Place the compile-only dependency jars in Dependencies/ (gitignored), then:
 ./gradlew build
-# Output: build/libs/runic_races-1.6.3.jar
+# Output: build/libs/runic_races-1.7.2.jar
 ```
 
 **Required:** `origins-forge`, `apoli-forge`, `calio-forge`. Apoli and Calio ship *inside*
@@ -171,3 +200,13 @@ the Origins `-all` jar under `META-INF/jarjar/` — extract them:
 **Optional** (only needed to compile their integration classes): `ars_nouveau`, `irons_spellbooks`,
 `curios` (local jars from Modrinth). **Apotheosis**, **Pehkui**, and **Feathers** resolve from
 Maven automatically (CurseMaven / Modrinth) — no local jar needed.
+
+## Version 1.7.2
+
+1.7.2 is a server performance and stability update with no gameplay or balance changes. Cooldown countdowns now update only the changed value for the owner and nearby players. Racial particle shapes arrive as one packet per nearby player. State runes no longer flicker when two powers report the same condition. Integration toggles take effect in every world and on config reload. Both the client and the server must run 1.7.2 (network protocol 5). Server operators can inspect Runic Races' network and per-player state with `/runicraces diagnostics`. See the [1.7.2 validation record](docs/VALIDATION_1.7.2.md).
+
+Seventeen new races retain the original three-power presentation. Use the Origins primary active key; release and press again for Starbound Thread recall or to leave Shellfast. Zephyr also uses the existing wing controls. Wyvernkin glides without a powered flap.
+
+New racial cooldowns survive death, race changes and reconnects, and pause while offline. Cooldown debt keeps ticking online even after changing race. Updating both the client and server is required. The old Reaper revival resource keeps its original identity and is separate from Returned.
+
+See the [complete new-race reference](docs/EXPANSION_1.7.0_REFERENCE.md), [pack-author guide](docs/PACK_AUTHOR_1.7.0.md), and [implementation and validation record](docs/VALIDATION_1.7.0.md).

@@ -1,0 +1,32 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.moss_one.mycelial_respite.name",
+  "description": "power.runic_races.moss_one.mycelial_respite.description",
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 1100,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "active_ability": {
+    "type": "runic_races:racial_ability",
+    "kind": "moss_one",
+    "cooldown_ticks": 1100,
+    "duration_ticks": 160,
+    "parameters": {
+      "radius": 3,
+      "targets": 3,
+      "interval": 40,
+      "healing": 1,
+      "budget": 4,
+      "final_cap": 6
+    }
+  }
+}

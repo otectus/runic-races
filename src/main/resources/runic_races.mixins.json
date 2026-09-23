@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "com.otectus.runic_races.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "runic_races.refmap.json",
+  "mixins": ["LivingDamageMixin", "PlayerDamageMixin", "PlayerAttackMixin", "LivingHealingMixin", "UnderbrushMixin", "BreathCapacityMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

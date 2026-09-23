@@ -23,13 +23,23 @@ public class RRServerConfig {
 
     // Flight
     public static final ForgeConfigSpec.BooleanValue FLAP_STAMINA_COST;
+    public static final ForgeConfigSpec.BooleanValue RACIAL_PVP_CONTROL;
 
     // Server-authored VFX
     public static final ForgeConfigSpec.DoubleValue BREATH_PARTICLE_DENSITY;
     public static final ForgeConfigSpec.DoubleValue SIGNATURE_PARTICLE_DENSITY;
 
+    // Network transport (compatibility fallbacks; defaults are the optimized paths)
+    public static final ForgeConfigSpec.BooleanValue COOLDOWN_DELTA_SYNC;
+    public static final ForgeConfigSpec.BooleanValue BATCHED_PARTICLES;
+
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+
+        builder.push("combat");
+        RACIAL_PVP_CONTROL = builder.comment("Allow new racial crowd control against legal PvP targets. Half duration, with a 3-second reapplication guard; bosses resist control regardless.")
+                .define("racialPvpControl", false);
+        builder.pop();
 
         builder.comment("Integration toggles — disable specific mod integrations").push("integration");
         ARS_NOUVEAU_INTEGRATION = builder
@@ -85,13 +95,28 @@ public class RRServerConfig {
 
         builder.comment("Server-authored VFX tuning").push("vfx");
         BREATH_PARTICLE_DENSITY = builder
-                .comment("Density multiplier for draconic breath-weapon particles broadcast by the server (0.0 = none, 1.0 = default, 2.0 = double).",
-                        "Below 0.5 the secondary accent particles are skipped entirely.")
+                .comment("Density multiplier for draconic breath torrents and impact particles (0.0 = none, 1.0 = default, 2.0 = double).",
+                        "Clients animate a 16-tick cast snapshot, bounded to 12 streams / 192 new particles per tick.",
+                        "Below 0.5 secondary accents are skipped. Client particle settings and heavyEffects also reduce detail.")
                 .defineInRange("breathParticleDensity", 1.0, 0.0, 2.0);
         SIGNATURE_PARTICLE_DENSITY = builder
                 .comment("Density multiplier for signature-ability particles broadcast by the server (0.0 = none, 1.0 = default, 2.0 = double).",
                         "Shaped emissions (rings, domes, spokes, cones) keep a small floor so they stay readable at low values.")
                 .defineInRange("signatureParticleDensity", 1.0, 0.0, 2.0);
+        builder.pop();
+
+        builder.comment("Network transport. Both options only change how the same state and effects are delivered;",
+                "turn one off to fall back to the pre-1.7.2 packets if a modpack interaction is suspected.").push("network");
+        COOLDOWN_DELTA_SYNC = builder
+                .comment("Send each racial cooldown decay step as a small value update to the owner and the players",
+                        "tracking them, instead of re-sending the owner's entire Origins power container every step.",
+                        "Activation, login, respawn, dimension change and new trackers still receive the full container.")
+                .define("cooldownDeltaSync", true);
+        BATCHED_PARTICLES = builder
+                .comment("Deliver each shaped racial particle emission (rings, lines, domes, cones) as one packet per",
+                        "nearby player instead of one vanilla particle packet per particle. Positions, motion, recipients",
+                        "and the 32-block visibility range are unchanged.")
+                .define("batchedParticles", true);
         builder.pop();
 
         SPEC = builder.build();

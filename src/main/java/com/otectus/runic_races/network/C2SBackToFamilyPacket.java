@@ -3,13 +3,8 @@ package com.otectus.runic_races.network;
 import com.otectus.runic_races.RunicRacesMod;
 import com.otectus.runic_races.util.RaceHelper;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
-import io.github.edwinmindcraft.origins.api.origin.Origin;
-import io.github.edwinmindcraft.origins.api.registry.OriginsDynamicRegistries;
 import io.github.edwinmindcraft.origins.common.OriginsCommon;
-import io.github.edwinmindcraft.origins.common.network.S2COpenOriginScreen;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
@@ -18,14 +13,16 @@ import java.util.function.Supplier;
 
 /**
  * Sent by the "&lt; Back" button on the race selection screen. Un-chooses the player's
- * family-layer origin so Origins re-prompts the whole two-layer selection from the top.
+ * family-layer origin on the server and re-syncs the container. The client has already
+ * cleared the same layer locally and swapped to the family screen itself
+ * (see {@code client/OriginBackButtonHandler}); this packet only makes the server agree.
+ * It deliberately does <em>not</em> send Origins' {@code S2COpenOriginScreen}: that arms a
+ * reopen flag which only fires while no screen is open, so it would either do nothing or stay
+ * armed for the rest of the session.
  */
 public class C2SBackToFamilyPacket {
 
-    /** Origins' sentinel for "no origin chosen on this layer". */
-    private static final ResourceKey<Origin> EMPTY_ORIGIN = ResourceKey.create(
-            OriginsDynamicRegistries.ORIGINS_REGISTRY, new ResourceLocation("origins", "empty"));
-
+    /** Kept on the wire for format stability; the client now owns the reopen. */
     private final boolean showDirtBackground;
 
     public C2SBackToFamilyPacket(boolean showDirtBackground) {
@@ -53,14 +50,12 @@ public class C2SBackToFamilyPacket {
                 return;
             }
 
-            container.setOrigin(RaceHelper.FAMILY_LAYER, EMPTY_ORIGIN);
+            container.setOrigin(RaceHelper.FAMILY_LAYER, RaceHelper.EMPTY_ORIGIN);
             container.synchronize();
-            // Explicit ordered sends on Origins' own channel: the client must apply the
-            // cleared family BEFORE it rebuilds the unchosen-layer list for the screen.
+            // Explicit immediate sync so the client's optimistic clear is confirmed before
+            // the player's next choice can possibly be answered.
             OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
                     container.getSynchronizationPacket());
-            OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                    new S2COpenOriginScreen(msg.showDirtBackground));
             RunicRacesMod.debug("[RunicRaces] {} backed out of family selection", player.getName().getString());
         });
         ctx.get().setPacketHandled(true);

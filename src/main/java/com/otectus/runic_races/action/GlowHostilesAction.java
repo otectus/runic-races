@@ -37,7 +37,7 @@ public class GlowHostilesAction extends EntityAction<GlowHostilesAction.Configur
     public record Configuration(double radius, int durationTicks) implements IDynamicFeatureConfiguration {
         public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
-                        Codec.DOUBLE.optionalFieldOf("radius", 12.0).forGetter(Configuration::radius),
+                        Codec.doubleRange(0.0, 128.0).optionalFieldOf("radius", 12.0).forGetter(Configuration::radius),
                         Codec.INT.optionalFieldOf("duration_ticks", 200).forGetter(Configuration::durationTicks)
                 ).apply(instance, Configuration::new)
         );
@@ -53,8 +53,10 @@ public class GlowHostilesAction extends EntityAction<GlowHostilesAction.Configur
         if (!(caster.level() instanceof net.minecraft.server.level.ServerLevel)) return;
 
         AABB box = caster.getBoundingBox().inflate(config.radius());
+        double radiusSquared = config.radius() * config.radius();
         List<LivingEntity> nearby = caster.level().getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != caster && e.isAlive() && Hostility.isThreatTo(caster, e));
+                e -> e != caster && e.isAlive() && e.distanceToSqr(caster) <= radiusSquared
+                        && Hostility.isThreatTo(caster, e));
 
         for (LivingEntity target : nearby) {
             target.addEffect(new MobEffectInstance(MobEffects.GLOWING, config.durationTicks(), 0, false, false));

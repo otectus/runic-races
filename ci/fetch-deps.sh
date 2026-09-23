@@ -4,7 +4,7 @@
 # extracted from its -all jar — the same layout the manual setup documents.
 #
 # Iron's Spellbooks: the locally-pinned 3.15.4 is not published on Modrinth;
-# 3.15.5.1 is the nearest same-line release and is API-compatible for compiling.
+# CI compiles against the explicitly named published 3.15.5.1 API.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p Dependencies
@@ -25,8 +25,8 @@ fetch origins-forge 1.20.1-1.10.0.9 origins-forge-1.20.1-1.10.0.9-all.jar
 fetch curios 5.14.1+1.20.1 curios-forge-5.14.1+1.20.1.jar
 fetch ars-nouveau 4.12.7 ars_nouveau-1.20.1-4.12.7-all.jar
 # 3.15.4 is not on Modrinth (see header note); the API-compatible 3.15.5.1 is
-# saved under the filename build.gradle pins so the compile classpath resolves.
-fetch irons-spells-n-spellbooks 1.20.1-3.15.5.1 irons_spellbooks-1.20.1-3.15.4.jar
+# retained under its real version; build.gradle uses it when local 3.15.4 is absent.
+fetch irons-spells-n-spellbooks 1.20.1-3.15.5.1 irons_spellbooks-1.20.1-3.15.5.1.jar
 
 # Apoli + Calio (+ additionalentityattributes) ride inside the Origins all-jar.
 unzip -o -j "Dependencies/origins-forge-1.20.1-1.10.0.9-all.jar" 'META-INF/jarjar/*.jar' -d Dependencies/

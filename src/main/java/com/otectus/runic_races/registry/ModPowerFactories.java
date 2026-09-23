@@ -18,6 +18,11 @@ public class ModPowerFactories {
     public static final DeferredRegister<PowerFactory<?>> POWER_FACTORIES =
             DeferredRegister.create(ApoliRegistries.POWER_FACTORY_KEY, RunicRacesMod.MOD_ID);
 
+    public static final RegistryObject<com.otectus.runic_races.power.RacialAbilityPower> RACIAL_ABILITY =
+            POWER_FACTORIES.register("racial_ability", com.otectus.runic_races.power.RacialAbilityPower::new);
+    public static final RegistryObject<com.otectus.runic_races.ability.RacialTraits> RACIAL_TRAITS =
+            POWER_FACTORIES.register("racial_traits", com.otectus.runic_races.ability.RacialTraits::new);
+
     // Custom power: Biome affinity — grants buffs/debuffs based on biome tags
     public static final RegistryObject<BiomeAffinityPower> BIOME_AFFINITY =
             POWER_FACTORIES.register("biome_affinity", BiomeAffinityPower::new);

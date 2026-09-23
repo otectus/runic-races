@@ -78,7 +78,15 @@ public record SignatureEntry(
          */
         CONE,
         /** Feet-anchored fountain column: spreadX = disc radius, spreadY = column height, velocity straight up. */
-        BURST_UP
+        BURST_UP,
+        /** Aim-facing disc: spreadX = width radius, spreadY = total height, spreadZ = forward offset. */
+        SHIELD,
+        /** Forward horizontal crescent: spreadX = radius, spreadY = height above the origin. */
+        ARC,
+        /** Ground ring enclosing a four-sided rune; spreadX = radius. */
+        SIGIL,
+        /** Aim-facing ring: spreadX = radius, spreadY = distance forward, velocity along aim. */
+        WAVE
     }
 
     public record VfxSpec(

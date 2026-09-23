@@ -1,0 +1,31 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.returned.unfinished_purpose.name",
+  "description": "power.runic_races.returned.unfinished_purpose.description",
+  "cooldown_timer": {
+    "type": "origins:resource",
+    "min": 0,
+    "max": 800,
+    "start_value": 0,
+    "hud_render": {
+      "should_render": false,
+      "sprite_location": "origins:textures/gui/community/spade.png",
+      "bar_index": 2
+    },
+    "min_action": null,
+    "max_action": null
+  },
+  "active_ability": {
+    "type": "runic_races:racial_ability",
+    "kind": "returned",
+    "cooldown_ticks": 800,
+    "duration_ticks": 200,
+    "parameters": {
+      "range": 16,
+      "recency_ticks": 600,
+      "speed": 0.15,
+      "bonus": 2,
+      "min_charge": 0.9
+    }
+  }
+}

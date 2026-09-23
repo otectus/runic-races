@@ -33,6 +33,7 @@ public class ArsNouveauIntegration implements ModIntegration {
 
     @SubscribeEvent
     public void onMaxManaCalc(MaxManaCalcEvent event) {
+        if (!com.otectus.runic_races.config.RRServerConfig.ARS_NOUVEAU_INTEGRATION.get()) return;
         if (!(event.getEntity() instanceof Player player)) return;
 
         String race = RaceHelper.getRaceName(player).orElse(null);
@@ -40,7 +41,9 @@ public class ArsNouveauIntegration implements ModIntegration {
 
         double multiplier = getManaMultiplier(race, player);
         if (multiplier != 1.0) {
-            event.setMax((int) (event.getMax() * multiplier));
+            // Retain integer truncation, correcting one-ULP decimal multiplication error
+            // (100 * 1.15 must grant 115 mana rather than 114).
+            event.setMax((int) Math.nextUp(event.getMax() * multiplier));
         }
     }
 
@@ -49,6 +52,8 @@ public class ArsNouveauIntegration implements ModIntegration {
      * Specific race overrides take priority over family defaults.
      */
     private double getManaMultiplier(String race, Player player) {
+        var affinity = com.otectus.runic_races.race.RaceRegistry.get(race).map(com.otectus.runic_races.race.RaceDefinition::magicAffinity).orElse(null);
+        if (affinity != null) return affinity.arsMana();
         // Specific race overrides first
         return switch (race) {
             case "high_elf" -> 1.20;  // +20% (overrides elven family default)
@@ -78,6 +83,7 @@ public class ArsNouveauIntegration implements ModIntegration {
 
     @SubscribeEvent
     public void onSpellCostCalc(SpellCostCalcEvent event) {
+        if (!com.otectus.runic_races.config.RRServerConfig.ARS_NOUVEAU_INTEGRATION.get()) return;
         try {
             LivingEntity caster = event.context.getUnwrappedCaster();
             if (!(caster instanceof Player player)) return;
@@ -87,7 +93,7 @@ public class ArsNouveauIntegration implements ModIntegration {
 
             double multiplier = getCostMultiplier(race, player);
             if (multiplier != 1.0) {
-                event.currentCost = (int) Math.max(0, event.currentCost * multiplier);
+                event.currentCost = (int) Math.max(0, Math.nextUp(event.currentCost * multiplier));
             }
         } catch (Exception e) {
             // Gracefully handle API changes or unexpected nulls
@@ -100,6 +106,8 @@ public class ArsNouveauIntegration implements ModIntegration {
      * Specific race overrides take priority over family defaults.
      */
     private double getCostMultiplier(String race, Player player) {
+        var affinity = com.otectus.runic_races.race.RaceRegistry.get(race).map(com.otectus.runic_races.race.RaceDefinition::magicAffinity).orElse(null);
+        if (affinity != null) return affinity.arsCost();
         return switch (race) {
             case "high_elf"  -> 0.85;  // -15% (overrides elven family default)
             case "magi"      -> 0.85;  // -15%
@@ -116,4 +124,5 @@ public class ArsNouveauIntegration implements ModIntegration {
             }
         };
     }
+
 }

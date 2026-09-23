@@ -45,7 +45,7 @@ public class TremorPingAction extends EntityAction<TremorPingAction.Configuratio
     public record Configuration(double radius, int durationTicks) implements IDynamicFeatureConfiguration {
         public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
-                        Codec.DOUBLE.optionalFieldOf("radius", 16.0).forGetter(Configuration::radius),
+                        Codec.doubleRange(0.0, 128.0).optionalFieldOf("radius", 16.0).forGetter(Configuration::radius),
                         Codec.INT.optionalFieldOf("duration_ticks", 40).forGetter(Configuration::durationTicks)
                 ).apply(instance, Configuration::new)
         );
@@ -61,24 +61,27 @@ public class TremorPingAction extends EntityAction<TremorPingAction.Configuratio
         if (!(entity.level() instanceof ServerLevel level)) return;
 
         AABB box = caster.getBoundingBox().inflate(config.radius());
+        double radiusSquared = config.radius() * config.radius();
         List<LivingEntity> nearby = level.getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != caster && e.isAlive() && Hostility.isThreatTo(caster, e));
+                e -> e != caster && e.isAlive() && e.distanceToSqr(caster) <= radiusSquared
+                        && Hostility.isThreatTo(caster, e));
 
         for (LivingEntity target : nearby) {
             target.addEffect(new MobEffectInstance(MobEffects.GLOWING, config.durationTicks(), 0, false, false));
         }
 
-        // Dust ring at caster's feet
+        // Dust ring at caster's feet — 24 single-particle puffs, delivered as one batch.
         double cx = caster.getX();
         double cy = caster.getY() + 0.1;
         double cz = caster.getZ();
+        var ring = com.otectus.runic_races.presentation.ParticleBatch.jitter(
+                ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, false, 24, 0.05, 0.02, 0.05, 0.0);
         for (int i = 0; i < 24; i++) {
             double angle = (Math.PI * 2 * i) / 24.0;
             double r = 1.5;
-            level.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,
-                    cx + Math.cos(angle) * r, cy, cz + Math.sin(angle) * r,
-                    1, 0.05, 0.02, 0.05, 0.0);
+            ring.add(cx + Math.cos(angle) * r, cy, cz + Math.sin(angle) * r);
         }
+        ring.send(level);
 
         level.playSound(null, caster.getX(), caster.getY(), caster.getZ(),
                 SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 0.6f, 0.5f);

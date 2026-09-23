@@ -62,6 +62,8 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> SIZZLE_SUNLIGHT = register("sizzle.sunlight");
     public static final RegistryObject<SoundEvent> WARN_KINDLING = register("warn.kindling");
 
+    public static final RegistryObject<SoundEvent> WAILER_CRY = register("wailer.cry");
+
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(RunicRacesMod.MOD_ID, name)));

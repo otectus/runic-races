@@ -1,0 +1,21 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.moss_one.living_loam.name",
+  "description": "power.runic_races.moss_one.living_loam.description",
+  "armor": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.armor",
+      "operation": "addition",
+      "value": 2,
+      "name": "Living Loam armor"
+    }
+  },
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "food_bonus": 1,
+      "saturation_bonus": 1
+    }
+  }
+}

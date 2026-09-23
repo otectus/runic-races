@@ -2,7 +2,7 @@
 
 ## Power Budget per Race
 
-Each race nets **≈ 0** when summing benefits and drawbacks. Every race has exactly
+Benefits and drawbacks are a design target, not a literal zero-sum formula or proof of balance. Every race has exactly
 three powers: **one active** (cooldown-gated signature), **one passive positive**, and
 **one weakness** (passive negative, usually a conditional vulnerability). `impact` (1–3)
 rates intensity/uniqueness, not raw strength.
@@ -91,3 +91,9 @@ This is a design-side reference. The power JSON under
 6. **Intentional cross-family echoes**: Ice Elf and Frost One share the freeze-immune/fire-vulnerable
    pairing on purpose — the same element expressed as an offense mage vs. an armored tank. Echoes are
    fine across families when the play pattern differs; twins within a niche are not.
+
+## 1.7.0 additions
+
+The roster now contains **54 races**, retaining the 37 existing save identities. The [17-race expansion reference](docs/EXPANSION_1.7.0_REFERENCE.md) records every active, passive, weakness, exact cooldown, optional affinity and final comparison note. Shared wards select one strongest applicable prevention per hit after armor and absorption. Nightborn and Moss One cap final healing after ordinary healing modifiers.
+
+For the original roster, the [1.6.3 source inventory](docs/BASELINE_1.6.3_BALANCE_INVENTORY.md) distinguishes executed data from older shorthand above. Nymph does not provide charm AI, Wraith does not pass through solid blocks, and Runic One provides a self ward with hostile slowing. Unsupported legacy condition wrappers were repaired in 1.7.0 without changing their intended numerical values. Comparative playtesting status is recorded in [the validation record](docs/VALIDATION_1.7.0.md).

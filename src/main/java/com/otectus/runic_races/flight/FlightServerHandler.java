@@ -30,6 +30,7 @@ public final class FlightServerHandler {
     private FlightServerHandler() {}
 
     public static void handleFlap(ServerPlayer player) {
+        if (com.otectus.runic_races.ability.AbilityService.withdrawn(player) || !player.isAlive() || player.isPassenger() || player.isInWater()) return;
         String race = RaceHelper.getRaceName(player).orElse(null);
         if (race == null) return;
 
@@ -56,10 +57,11 @@ public final class FlightServerHandler {
         if (featherCost > 0 && StaminaHelper.isAvailable() && RRServerConfig.FLAP_STAMINA_COST.get()) {
             if (!StaminaHelper.hasEnoughStamina(player, featherCost)
                     || !StaminaHelper.consumePlayerStamina(player, featherCost)) {
-                // Exhausted wings: refuse with feedback, and don't burn the cooldown.
-                player.displayClientMessage(Component.translatable("message.runic_races.ability.no_stamina")
-                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
+                // Exhausted wings: refuse, and don't burn the cooldown. The banner shares the
+                // sound's one-second debounce — a held flap key is one message, not ten.
                 if (ProcDebounce.tryAcquire(player, "flap_deny", 20)) {
+                    player.displayClientMessage(Component.translatable("message.runic_races.ability.no_stamina")
+                            .withStyle(ChatFormatting.RED, ChatFormatting.BOLD), true);
                     player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                             ModSounds.ABILITY_DENY.get(), SoundSource.PLAYERS, 0.5f, 1.0f);
                 }
@@ -85,16 +87,27 @@ public final class FlightServerHandler {
         lastFlapTick.remove(id);
     }
 
+    /** Server stopping: nothing carries into the next world of an integrated session. */
+    public static void clearAll() {
+        lastFlapTick.clear();
+    }
+
+    public static int trackedCount() {
+        return lastFlapTick.size();
+    }
+
     public static void handleCancel(ServerPlayer player) {
         if (!player.isFallFlying()) return;
 
         String race = RaceHelper.getRaceName(player).orElse(null);
         if (race == null) return;
 
-        FlightConfig config = FlightConfig.forRace(race).orElse(null);
-        if (config == null) return;
+        boolean innate = io.github.edwinmindcraft.apoli.api.component.IPowerContainer.get(player)
+                .map(c -> c.getPowers().stream().anyMatch(h -> h.isBound() && h.value().getFactory()
+                        instanceof io.github.edwinmindcraft.apoli.common.power.ElytraFlightPower)).orElse(false);
+        if (!innate) return;
 
-        // Stop gliding — fall damage immunity is handled by Origins powers
+        // Glide-only races use the same fold controls; a powered flap profile is not required.
         player.stopFallFlying();
 
         RunicPresentation.fire(player, SignatureKey.FLIGHT_CANCEL);
@@ -105,6 +118,7 @@ public final class FlightServerHandler {
 
     private static Optional<SignatureKey> signatureKeyFor(FlightConfig config) {
         return switch (config) {
+            case ZEPHYR -> Optional.of(SignatureKey.ZEPHYR_WING_FLAP);
             case SPRITE -> Optional.of(SignatureKey.SPRITE_WING_FLAP);
             case FAERIE -> Optional.of(SignatureKey.FAERIE_WING_FLAP);
             case AVIAN -> Optional.of(SignatureKey.AVIAN_WING_FLAP);

@@ -61,6 +61,24 @@ public class ModItems {
     public static final RegistryObject<Item> VOLT_DRAKE_ICON = registerIcon("volt_drake_icon");
     public static final RegistryObject<Item> WIND_WYRM_ICON = registerIcon("wind_wyrm_icon");
 
+    public static final RegistryObject<Item> COLOSSAN_ICON = registerIcon("colossan_icon");
+    public static final RegistryObject<Item> AURORAN_ICON = registerIcon("auroran_icon");
+    public static final RegistryObject<Item> GROVE_ELF_ICON = registerIcon("grove_elf_icon");
+    public static final RegistryObject<Item> TIDE_ELF_ICON = registerIcon("tide_elf_icon");
+    public static final RegistryObject<Item> ASTRAL_ELF_ICON = registerIcon("astral_elf_icon");
+    public static final RegistryObject<Item> MOUNTAIN_ONE_ICON = registerIcon("mountain_one_icon");
+    public static final RegistryObject<Item> MOSS_ONE_ICON = registerIcon("moss_one_icon");
+    public static final RegistryObject<Item> CRYSTAL_ONE_ICON = registerIcon("crystal_one_icon");
+    public static final RegistryObject<Item> BOVINE_ICON = registerIcon("bovine_icon");
+    public static final RegistryObject<Item> SAURIAN_ICON = registerIcon("saurian_icon");
+    public static final RegistryObject<Item> CHELON_ICON = registerIcon("chelon_icon");
+    public static final RegistryObject<Item> ZEPHYR_ICON = registerIcon("zephyr_icon");
+    public static final RegistryObject<Item> NIGHTBORN_ICON = registerIcon("nightborn_icon");
+    public static final RegistryObject<Item> RETURNED_ICON = registerIcon("returned_icon");
+    public static final RegistryObject<Item> WAILER_ICON = registerIcon("wailer_icon");
+    public static final RegistryObject<Item> SCALEHEIR_ICON = registerIcon("scaleheir_icon");
+    public static final RegistryObject<Item> WYVERNKIN_ICON = registerIcon("wyvernkin_icon");
+
     private static RegistryObject<Item> registerIcon(String name) {
         return ITEMS.register(name, () -> new Item(new Item.Properties().stacksTo(1)));
     }

@@ -16,6 +16,8 @@ import java.util.function.Supplier;
  * entries are DeferredRegister objects that only resolve after registration.
  */
 public enum FlightConfig {
+    ZEPHYR("zephyr", 0.30, 40, 1, "zephyr/airborne_essence_flap_cooldown_timer",
+            () -> ModSounds.WINGS_FLAP_SMALL.get(), 0.2f, 1.6f, "The current lifts you."),
     SPRITE("sprite",
             0.3, 30, 1,
             "sprite/gossamer_wings_flap_cooldown_timer",

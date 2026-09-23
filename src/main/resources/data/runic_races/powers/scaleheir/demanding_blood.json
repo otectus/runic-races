@@ -1,0 +1,21 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.scaleheir.demanding_blood.name",
+  "description": "power.runic_races.scaleheir.demanding_blood.description",
+  "attack_speed": {
+    "type": "origins:attribute",
+    "modifier": {
+      "attribute": "minecraft:generic.attack_speed",
+      "operation": "multiply_total",
+      "value": -0.08,
+      "name": "Demanding Blood attack_speed"
+    }
+  },
+  "exhaustion": {
+    "type": "origins:modify_exhaustion",
+    "modifier": {
+      "operation": "multiply_total_multiplicative",
+      "value": 0.2
+    }
+  }
+}

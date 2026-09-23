@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:returned_icon"
+  },
+  "order": 6063,
+  "impact": 2,
+  "name": "origin.runic_races.returned.name",
+  "description": "origin.runic_races.returned.description",
+  "powers": [
+    "runic_races:returned/unfinished_purpose",
+    "runic_races:returned/stubborn_remnant",
+    "runic_races:returned/imperfect_return"
+  ]
+}

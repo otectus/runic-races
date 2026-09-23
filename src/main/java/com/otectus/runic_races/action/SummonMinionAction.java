@@ -106,7 +106,8 @@ public class SummonMinionAction extends EntityAction<SummonMinionAction.Configur
                         MobSpawnType.MOB_SUMMONED, null, null);
             }
 
-            level.addFreshEntity(spawned);
+            if (level.addFreshEntity(spawned) && caster instanceof net.minecraft.server.level.ServerPlayer player)
+                com.otectus.runic_races.ability.AbilityFeedback.summon(player, spawned.position());
         }
     }
 }

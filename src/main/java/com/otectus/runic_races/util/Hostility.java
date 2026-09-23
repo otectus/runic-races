@@ -22,15 +22,16 @@ public final class Hostility {
      * mid-fight defending its owner.
      */
     public static boolean isProtectedAlly(LivingEntity caster, LivingEntity entity) {
-        if (entity.isAlliedTo(caster)) return true;
+        if (entity == caster || entity.isAlliedTo(caster)) return true;
         if (entity instanceof Player other && caster instanceof Player casterPlayer
                 && !casterPlayer.canHarmPlayer(other)) {
             return true;
         }
-        if (entity instanceof TamableAnimal pet && pet.isTame()) {
-            LivingEntity owner = pet.getOwner();
-            return owner == caster || (owner != null && owner.isAlliedTo(caster));
-        }
+        if (entity instanceof net.minecraft.world.entity.OwnableEntity owned && owned.getOwnerUUID() != null) return true;
+        if (entity instanceof TamableAnimal pet && pet.isTame()) return true;
+        if (entity instanceof net.minecraft.world.entity.animal.horse.AbstractHorse horse && horse.isTamed()) return true;
+        if (caster instanceof net.minecraft.server.level.ServerPlayer player && entity instanceof Player
+                && !player.server.isPvpAllowed()) return true;
         return false;
     }
 

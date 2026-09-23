@@ -28,4 +28,19 @@ jobs:
         run: bash ci/fetch-deps.sh
 
       - name: Build and test
-        run: ./gradlew --no-daemon compileJava test
+        run: |
+          python3 tools/generate_races.py --check
+          python3 tools/build_lang.py --check
+          ./gradlew --no-daemon test build runGameTestServer
+          python3 tools/audit_release.py
+
+      - name: Preserve validation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-and-jar
+          path: |
+            build/reports/tests/
+            build/libs/*.jar
+            build/release-audit.json
+            run/gametest/**/logs/latest.log

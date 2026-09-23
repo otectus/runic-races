@@ -5,7 +5,7 @@ import com.otectus.runic_races.race.RaceDefinition.SlotGrant;
 import java.util.*;
 
 /**
- * Single source of truth for all 37 Runic Races across 7 families.
+ * Single source of truth for all 54 Runic Races across 7 families.
  * Other systems (integrations, commands, HUD) should query this registry
  * rather than maintaining their own hardcoded maps.
  *
@@ -67,6 +67,24 @@ public final class RaceRegistry {
         register(new RaceDefinition("terra_drake","draconic","Terra Drake",1.30f, 28, -1.0, RaceDefinition.NO_SLOTS));
         register(new RaceDefinition("volt_drake", "draconic","Volt Drake", 1.10f, 24, -0.5, RaceDefinition.NO_SLOTS));
         register(new RaceDefinition("wind_wyrm",  "draconic","Wind Wyrm",  1.15f, 24, -2.0, RaceDefinition.NO_SLOTS));
+        // 1.7.0 expansion: explicit optional affinities; no inherited caster defaults.
+        register(new RaceDefinition("colossan", "human", "Colossan", 1.20f, 26, 0.0, 1.00f, false, RaceDefinition.NO_SLOTS).withMagicAffinity(1.00, 1.00, 1.00f));
+        register(new RaceDefinition("auroran", "human", "Auroran", 1.02f, 18, 0.0, 1.00f, false, RaceDefinition.NO_SLOTS).withMagicAffinity(1.10, 0.95, 1.05f));
+        register(new RaceDefinition("grove_elf", "elven", "Grove Elf", 1.06f, 20, 0.0, 1.00f, false, elvenSlots()).withMagicAffinity(1.10, 0.92, 1.00f));
+        register(new RaceDefinition("tide_elf", "elven", "Tide Elf", 1.04f, 20, 0.0, 1.00f, false, elvenSlots()).withMagicAffinity(1.10, 0.92, 1.00f));
+        register(new RaceDefinition("astral_elf", "elven", "Astral Elf", 1.07f, 16, 0.0, 1.00f, false, elvenSlots()).withMagicAffinity(1.15, 0.90, 1.05f));
+        register(new RaceDefinition("mountain_one", "dwarven", "Mountain One", 0.76f, 26, 0.0, 1.00f, false, dwarvenSlots()).withMagicAffinity(0.90, 1.00, 1.00f));
+        register(new RaceDefinition("moss_one", "dwarven", "Moss One", 0.70f, 22, 0.0, 1.00f, false, dwarvenSlots()).withMagicAffinity(1.00, 1.00, 1.00f));
+        register(new RaceDefinition("crystal_one", "dwarven", "Crystal One", 0.72f, 20, 0.0, 1.00f, false, dwarvenSlots()).withMagicAffinity(1.05, 0.95, 1.05f));
+        register(new RaceDefinition("bovine", "bestial", "Bovine", 1.15f, 26, 0.0, 1.00f, false, RaceDefinition.NO_SLOTS).withMagicAffinity(1.00, 1.00, 1.00f));
+        register(new RaceDefinition("saurian", "bestial", "Saurian", 1.00f, 22, 0.0, 1.00f, false, RaceDefinition.NO_SLOTS).withMagicAffinity(1.00, 1.00, 1.00f));
+        register(new RaceDefinition("chelon", "bestial", "Chelon", 1.05f, 24, 0.0, 1.00f, false, RaceDefinition.NO_SLOTS).withMagicAffinity(1.00, 1.00, 1.00f));
+        register(new RaceDefinition("zephyr", "faeborne", "Zephyr", 0.80f, 14, 0.0, 1.40f, false, faeborneSlots()).withMagicAffinity(1.15, 0.90, 1.00f));
+        register(new RaceDefinition("nightborn", "undead", "Nightborn", 1.00f, 20, 0.0, 1.00f, false, undeadSlots()).withMagicAffinity(1.00, 1.00, 1.00f));
+        register(new RaceDefinition("returned", "undead", "Returned", 1.00f, 24, 0.0, 1.00f, false, undeadSlots()).withMagicAffinity(1.00, 1.00, 1.00f));
+        register(new RaceDefinition("wailer", "undead", "Wailer", 0.95f, 18, 0.0, 1.00f, false, undeadSlots()).withMagicAffinity(1.10, 0.95, 1.05f));
+        register(new RaceDefinition("scaleheir", "draconic", "Scaleheir", 1.10f, 24, 0.0, 1.00f, false, RaceDefinition.NO_SLOTS).withMagicAffinity(0.90, 1.10, 1.00f));
+        register(new RaceDefinition("wyvernkin", "draconic", "Wyvernkin", 1.08f, 22, 0.0, 1.00f, false, RaceDefinition.NO_SLOTS).withMagicAffinity(0.90, 1.10, 1.00f));
     }
 
     private static SlotGrant[] elvenSlots() {
@@ -151,12 +169,20 @@ public final class RaceRegistry {
 
     /** Returns all distinct SlotGrant entries across all races, for cleanup purposes. */
     public static Set<SlotGrant> allSlotGrants() {
-        Set<SlotGrant> all = new LinkedHashSet<>();
-        for (RaceDefinition def : RACES.values()) {
-            Collections.addAll(all, def.curiosSlotGrants());
+        Set<SlotGrant> all = allSlotGrants;
+        if (all == null) {
+            // The race table is immutable after class init, so the union is computed once.
+            Set<SlotGrant> union = new LinkedHashSet<>();
+            for (RaceDefinition def : RACES.values()) {
+                Collections.addAll(union, def.curiosSlotGrants());
+            }
+            all = Collections.unmodifiableSet(union);
+            allSlotGrants = all;
         }
         return all;
     }
+
+    private static volatile Set<SlotGrant> allSlotGrants;
 
     public static int raceCount() {
         return RACES.size();

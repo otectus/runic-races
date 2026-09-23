@@ -1,7 +1,6 @@
 package com.otectus.runic_races.presentation;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,18 +38,28 @@ public final class BeatQueue<T> {
         entries.add(new Entry<>(owner, payload, delay));
     }
 
-    /** Advances one tick; returns due payloads in the order they were scheduled. */
+    /**
+     * Advances one tick; returns due payloads in the order they were scheduled.
+     * One stable compaction pass: survivors slide down in place and the vacated
+     * tail is cleared once, so a burst of simultaneous beats costs O(n) instead of
+     * one array shift per removal. Nothing is allocated when no beat is due.
+     */
     public List<T> tick() {
-        List<T> due = new ArrayList<>();
-        Iterator<Entry<T>> it = entries.iterator();
-        while (it.hasNext()) {
-            Entry<T> entry = it.next();
+        List<T> due = null;
+        int size = entries.size();
+        int kept = 0;
+        for (int i = 0; i < size; i++) {
+            Entry<T> entry = entries.get(i);
             if (--entry.ticksLeft <= 0) {
+                if (due == null) due = new ArrayList<>();
                 due.add(entry.payload);
-                it.remove();
+            } else {
+                if (kept != i) entries.set(kept, entry);
+                kept++;
             }
         }
-        return due;
+        if (kept < size) entries.subList(kept, size).clear();
+        return due == null ? List.of() : due;
     }
 
     /** Drops every pending beat belonging to {@code owner} (player died / logged out). */

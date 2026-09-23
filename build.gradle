@@ -1,7 +1,8 @@
 plugins {
-    id 'net.minecraftforge.gradle' version '6.0.+'
+    id 'net.minecraftforge.gradle' version '6.0.54'
     id 'eclipse'
     id 'maven-publish'
+    id 'org.spongepowered.mixin' version '0.7.38'
 }
 
 version = mod_version
@@ -14,6 +15,19 @@ base {
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
+
+sourceSets {
+    gameTest {
+        compileClasspath += sourceSets.main.output + configurations.compileClasspath
+        runtimeClasspath += sourceSets.main.output + configurations.runtimeClasspath
+    }
+}
+
+def runtimeMods = providers.gradleProperty('rrRuntime').getOrElse('').tokenize(',').unique().sort()
+if (runtimeMods.any { !(it in ['pehkui', 'curios', 'feathers', 'ars', 'irons']) })
+    throw new GradleException('Unknown rrRuntime profile entry; use pehkui, curios, feathers, ars or irons')
+def gameTestProfile = "${forge_version}-" + (runtimeMods.isEmpty() ? 'required' : runtimeMods.join('-'))
+def gameTestRunDirectory = project.file("run/gametest/${gameTestProfile}")
 
 minecraft {
     mappings channel: 'official', version: minecraft_version
@@ -38,6 +52,19 @@ minecraft {
                 }
             }
         }
+        gameTestServer {
+            // Optional dimensions cannot be removed from an existing test world. Keep
+            // each dependency profile isolated, including its Forge version.
+            workingDirectory gameTestRunDirectory
+            property 'forge.enabledGameTestNamespaces', 'runic_races'
+            property 'forge.logging.console.level', 'info'
+            mods {
+                runic_races {
+                    source sourceSets.main
+                    source sourceSets.gameTest
+                }
+            }
+        }
         data {
             workingDirectory project.file('run')
             property 'forge.logging.console.level', 'debug'
@@ -55,6 +82,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     mavenCentral()
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
     flatDir { dirs 'Dependencies' }
     maven { url = "https://maven.blamejared.com" }
     maven { url = "https://www.cursemaven.com" }
@@ -72,6 +100,7 @@ dependencies {
 
     // Test dependencies
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     // Origins Forge + Apoli + Calio -- required hard dependency
     // Local jars in Dependencies/ folder (extracted from Origins -all jar)
@@ -80,10 +109,32 @@ dependencies {
     compileOnly files('Dependencies/apoli-forge-1.20.1-2.9.0.8.jar')
     compileOnly files('Dependencies/calio-forge-1.20.1-1.11.0.5.jar')
 
+    // Pinned minimal development runtime; these are not bundled into the release jar.
+    runtimeOnly fg.deobf('local:origins-forge-1.20.1:1.10.0.9:all')
+    runtimeOnly fg.deobf('local:apoli-forge-1.20.1:2.9.0.8')
+    runtimeOnly fg.deobf('local:calio-forge-1.20.1:1.11.0.5')
+    runtimeOnly fg.deobf('local:additionalentityattributes-forge:1.4.0.5+1.20.1')
+    runtimeOnly fg.deobf('maven.modrinth:caelus:3.2.0+1.20.1')
+    // Opt-in runtime matrix: -PrrRuntime=pehkui,curios,feathers
+    if (runtimeMods.contains('pehkui')) runtimeOnly fg.deobf('maven.modrinth:pehkui:3.8.2+1.20.1-forge')
+    if (runtimeMods.any { it in ['curios', 'ars', 'irons'] }) runtimeOnly fg.deobf('local:curios-forge:5.14.1+1.20.1')
+    if (runtimeMods.contains('feathers')) runtimeOnly fg.deobf('curse.maven:feathers-699933:4814309')
+    if (runtimeMods.any { it in ['ars', 'irons'] }) runtimeOnly fg.deobf('maven.modrinth:8BmcQJ2H:aVW7Z5da') // GeckoLib Forge 1.20.1 4.8.2
+    if (runtimeMods.contains('ars')) runtimeOnly fg.deobf('local:ars_nouveau-1.20.1:4.12.7:all')
+    if (runtimeMods.contains('irons')) {
+        runtimeOnly fg.deobf(file('Dependencies/irons_spellbooks-1.20.1-3.15.4.jar').exists()
+                ? 'local:irons_spellbooks-1.20.1:3.15.4' : 'local:irons_spellbooks-1.20.1:3.15.5.1')
+        runtimeOnly fg.deobf('maven.modrinth:gedNE4y2:xe2EVE6q') // Player Animator 1.0.2-rc1 Forge
+        runtimeOnly fg.deobf('maven.modrinth:9nfaJPtX:cDcVfrkg') // Iron's Patreon Library 1.20.1-1.0.1 (mod ID required by Spellbooks 3.15.5.1)
+    }
+
     // Optional mod integrations (compileOnly = doesn't require at runtime)
     // All compat code uses ModList.isLoaded() guards with reflection-based loading.
     compileOnly files('Dependencies/ars_nouveau-1.20.1-4.12.7-all.jar')
-    compileOnly files('Dependencies/irons_spellbooks-1.20.1-3.15.4.jar')
+    // The legacy local filename says 3.15.4 but its manifest declares 3.15.5.1.
+    compileOnly files(file('Dependencies/irons_spellbooks-1.20.1-3.15.4.jar').exists()
+            ? 'Dependencies/irons_spellbooks-1.20.1-3.15.4.jar'
+            : 'Dependencies/irons_spellbooks-1.20.1-3.15.5.1.jar')
     compileOnly files('Dependencies/curios-forge-5.14.1+1.20.1.jar')
 
     // Optional: Apotheosis (resolved via CurseMaven so a clean checkout builds without a local jar)
@@ -116,6 +167,11 @@ test {
     useJUnitPlatform()
 }
 
+mixin {
+    add sourceSets.main, 'runic_races.refmap.json'
+    config 'runic_races.mixins.json'
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
@@ -125,3 +181,17 @@ tasks.withType(JavaCompile).configureEach {
 // standalone jar invocation would otherwise emit a dev (Mojmap) jar that throws
 // NoSuchMethodError at runtime. Finalizing jar with reobfJar makes every jar build safe.
 tasks.named('jar') { finalizedBy 'reobfJar' }
+
+// Forge's vanilla server bootstrap can exit zero after failing to load a world.
+// Require a fresh successful GameTest result, not only a successful Java process.
+tasks.matching { it.name == 'runGameTestServer' }.configureEach {
+    long startedAt = 0
+    doFirst { startedAt = System.currentTimeMillis() }
+    doLast {
+        def resultLog = new File(gameTestRunDirectory, 'logs/latest.log')
+        if (!resultLog.isFile() || resultLog.lastModified() < startedAt ||
+                !(resultLog.getText('UTF-8') =~ /All [1-9][0-9]* required tests passed/).find()) {
+            throw new GradleException("GameTests did not report successful completion. Inspect ${resultLog}")
+        }
+    }
+}

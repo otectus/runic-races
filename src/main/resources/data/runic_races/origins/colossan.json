@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:colossan_icon"
+  },
+  "order": 1050,
+  "impact": 2,
+  "name": "origin.runic_races.colossan.name",
+  "description": "origin.runic_races.colossan.description",
+  "powers": [
+    "runic_races:colossan/colossal_heave",
+    "runic_races:colossan/giants_bearing",
+    "runic_races:colossan/heavy_limbs"
+  ]
+}

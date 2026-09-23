@@ -414,7 +414,12 @@ public class RacialEventHandler {
         if (player.tickCount % 10 != 0) return;
 
         String race = RaceHelper.getRaceName(player).orElse(null);
-        if (race == null) return;
+        if (race == null) {
+            // Race cleared entirely (command, datapack) — the Primian speed modifier is
+            // transient but would otherwise linger until the next login.
+            applyAdaptationModifier(player, 0);
+            return;
+        }
 
         long now = player.level().getGameTime();
 
@@ -616,13 +621,18 @@ public class RacialEventHandler {
         AttributeModifier existing = attr.getModifier(ADAPT_UUID);
         double target = stacks * 0.01; // +1% per stack
         if (target <= 0.0) {
-            if (existing != null) attr.removeModifier(ADAPT_UUID);
+            if (existing != null) {
+                attr.removeModifier(ADAPT_UUID);
+                com.otectus.runic_races.diagnostics.RRMetrics.add(com.otectus.runic_races.diagnostics.RRMetrics.Counter.MODIFIER_WRITES);
+            }
             return;
         }
         if (existing == null || existing.getAmount() != target) {
             if (existing != null) attr.removeModifier(ADAPT_UUID);
             attr.addTransientModifier(new AttributeModifier(ADAPT_UUID,
                     "Runic Races Human Adaptation", target, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            com.otectus.runic_races.diagnostics.RRMetrics.add(com.otectus.runic_races.diagnostics.RRMetrics.Counter.MODIFIER_WRITES,
+                    existing == null ? 1 : 2);
         }
     }
 
@@ -731,12 +741,10 @@ public class RacialEventHandler {
      * venomous races (Arachnid, Serpen) inject Poison I; Blood Elves leech 20% of
      * damage dealt (their own -30% modify_healing weakness taxes the returned heal).
      */
-    @SubscribeEvent
-    public void onMeleeDamageDealt(LivingDamageEvent event) {
-        if (!(event.getSource().getEntity() instanceof ServerPlayer attacker)) return;
-        if (event.getSource().getDirectEntity() != attacker) return; // melee only
-        LivingEntity target = event.getEntity();
-        if (target == attacker || event.getAmount() <= 0.0f) return;
+    public static void onAcceptedMeleeDamage(ServerPlayer attacker, LivingEntity target, DamageSource source, float actualLoss) {
+        if (com.otectus.runic_races.ability.DamagePolicy.internal(source)) return;
+        if (source.getDirectEntity() != attacker) return; // melee only
+        if (target == attacker || actualLoss <= 0.0f) return;
 
         String race = RaceHelper.getRaceName(attacker).orElse(null);
         if (race == null) return;
@@ -759,18 +767,19 @@ public class RacialEventHandler {
         if ("blood_elf".equals(race)) {
             // Lifesteal proc cue only when the heal actually matters (attacker is wounded).
             boolean wounded = attacker.getHealth() < attacker.getMaxHealth();
-            attacker.heal(event.getAmount() * 0.2f);
+            attacker.heal(actualLoss * 0.2f);
             if (wounded && attacker.level() instanceof ServerLevel level) {
                 // Visible siphon: crimson droplets on a line from the victim into the elf.
                 Vec3 from = new Vec3(target.getX(), target.getY(0.6), target.getZ());
                 Vec3 to = new Vec3(attacker.getX(), attacker.getY(0.8), attacker.getZ());
                 Vec3 dir = to.subtract(from);
+                var siphon = com.otectus.runic_races.presentation.ParticleBatch.directed(
+                        com.otectus.runic_races.presentation.RaceColors.CRIMSON_BLOOD, false, 5);
                 for (int i = 0; i < 5; i++) {
                     Vec3 p = from.add(dir.scale(i / 4.0));
-                    level.sendParticles(com.otectus.runic_races.presentation.RaceColors.CRIMSON_BLOOD,
-                            p.x, p.y, p.z, 0,
-                            dir.x, dir.y, dir.z, 0.05);
+                    siphon.add(p.x, p.y, p.z, dir.x, dir.y, dir.z, 0.05);
                 }
+                siphon.send(level);
                 level.sendParticles(net.minecraft.core.particles.ParticleTypes.DAMAGE_INDICATOR,
                         target.getX(), target.getY(0.5), target.getZ(),
                         3, 0.2, 0.2, 0.2, 0.1);
@@ -847,11 +856,13 @@ public class RacialEventHandler {
 
     @SubscribeEvent
     public void onPlayerClone(PlayerEvent.Clone event) {
+        // The replacement entity must resolve its race afresh, never from the old entity's memo.
+        RaceHelper.invalidate(event.getEntity().getUUID());
         CompoundTag oldData = event.getOriginal().getPersistentData();
         CompoundTag newData = event.getEntity().getPersistentData();
 
         for (String key : oldData.getAllKeys()) {
-            if (key.startsWith("runic_races:")) {
+            if (key.startsWith("runic_races:") && !key.equals(com.otectus.runic_races.ability.AbilityService.SAVE_KEY)) {
                 // Skip ephemeral keys on non-death clones (e.g. End portal return)
                 if (!event.isWasDeath() && EPHEMERAL_KEYS.contains(key)) continue;
                 newData.put(key, oldData.get(key).copy());

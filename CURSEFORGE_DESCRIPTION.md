@@ -1,16 +1,16 @@
 # Runic Races
 
-**Choose what you *are*.** Runic Races is a flagship [Origins](https://www.curseforge.com/minecraft/mc-mods/origins-forge) add-on that turns the origin screen into a two-step heritage choice: pick a **family**, then a **race** within it. **37 races across 7 families**, each hand-built on one clean promise — **one signature ability, one passive strength, and one real weakness.** No race is strictly best; every one changes *how* you play, not just *how well*.
+**Choose what you *are*.** Runic Races is a flagship [Origins](https://www.curseforge.com/minecraft/mc-mods/origins-forge) add-on that turns the origin screen into a two-step heritage choice: pick a **family**, then a **race** within it. **54 races across 7 families**, each hand-built on one clean promise — **one signature ability, one passive strength, and one real weakness.** Choose strengths and drawbacks that suit the way you play.
 
 ## The Seven Families
 
-- **Human** *(gold)* — adaptable generalists: Primian, Celeron, Magi, Valen
-- **Elven** *(magenta)* — arcane grace, frail bodies: High Elf, Dark Elf, Moon Elf, Blood Elf, Ice Elf
-- **Dwarven** *(slate)* — tough and subterranean: Deep One, Forge One, Frost One, Iron One, Sky One, Runic One
-- **Bestial** *(green)* — sharp senses and predatory instinct: Arachnid, Avian, Canine, Feline, Kitsune, Serpen
-- **Faeborne** *(teal)* — magic, illusion, and gossamer wings: Changeling, Dryad, Sprite, Nymph, Faerie
-- **Undead** *(purple)* — undeath's gifts and the sun's curse: Zombie, Skeleton, Wraith, Demon, Reaper
-- **Draconic** *(red)* — elemental breath, scaled hide, and flight: Fire Drake, Ice Drake, Sea Serpen, Terra Drake, Volt Drake, Wind Wyrm
+- **Human** *(gold)* — adaptable generalists: Primian, Celeron, Magi, Valen, Colossan, Auroran
+- **Elven** *(magenta)* — arcane grace, frail bodies: High Elf, Dark Elf, Moon Elf, Blood Elf, Ice Elf, Grove Elf, Tide Elf, Astral Elf
+- **Dwarven** *(slate)* — tough and subterranean: Deep One, Forge One, Frost One, Iron One, Sky One, Runic One, Mountain One, Moss One, Crystal One
+- **Bestial** *(green)* — sharp senses and predatory instinct: Arachnid, Avian, Canine, Feline, Kitsune, Serpen, Bovine, Saurian, Chelon
+- **Faeborne** *(teal)* — magic, illusion, and gossamer wings: Changeling, Dryad, Sprite, Nymph, Faerie, Zephyr
+- **Undead** *(purple)* — undeath's gifts and the sun's curse: Zombie, Skeleton, Wraith, Demon, Reaper, Nightborn, Returned, Wailer
+- **Draconic** *(red)* — elemental breath, scaled hide, and flight: Fire Drake, Ice Drake, Sea Serpen, Terra Drake, Volt Drake, Wind Wyrm, Scaleheir, Wyvernkin
 
 ## Signature Moments
 
@@ -34,4 +34,4 @@ Absent mods are silently skipped — Runic Races runs great standalone.
 
 ---
 
-**Requires Origins Forge.** Minecraft 1.20.1 • Forge • Version **1.6.3**.
+**Requires Origins Forge.** Minecraft 1.20.1 • Forge • Version **1.7.2**.

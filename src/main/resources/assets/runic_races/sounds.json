@@ -485,5 +485,16 @@
         "pitch": 1.1
       }
     ]
+  },
+  "wailer.cry": {
+    "subtitle": "subtitles.runic_races.wailer.cry",
+    "sounds": [
+      {
+        "name": "minecraft:entity.ghast.warn",
+        "type": "event",
+        "volume": 0.6,
+        "pitch": 1.3
+      }
+    ]
   }
 }

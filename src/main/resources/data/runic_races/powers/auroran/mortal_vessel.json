@@ -1,0 +1,11 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.auroran.mortal_vessel.name",
+  "description": "power.runic_races.auroran.mortal_vessel.description",
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "physical_extra": 0.15
+    }
+  }
+}

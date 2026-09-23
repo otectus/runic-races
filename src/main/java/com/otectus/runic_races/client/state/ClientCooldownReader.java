@@ -30,6 +30,8 @@ public final class ClientCooldownReader {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Optional<CooldownState> read(Player player, ResourceLocation resourceId) {
+        var owned = com.otectus.runic_races.client.ExpansionClient.cooldown(resourceId);
+        if (owned.isPresent()) return owned;
         try {
             IPowerContainer container = IPowerContainer.get(player).orElse(null);
             if (container == null || !container.hasPower(resourceId)) return Optional.empty();

@@ -78,23 +78,22 @@ public class RunicRacesMod {
 
         // Initialize network and optional mod integrations
         event.enqueueWork(NetworkHandler::init);
+        event.enqueueWork(IntegrationManager::registerCommonTypes);
     }
 
     private void onConfigReloading(final net.minecraftforge.fml.event.config.ModConfigEvent.Reloading event) {
         if (event.getConfig().getSpec() != RRServerConfig.SPEC) {
             return;
         }
-        // Server config changed at runtime (e.g. pehkui toggle, breath density) — re-sync
-        // every online player so integrations pick up the new values immediately.
+        // Server config changed at runtime. Values such as particle density are read live;
+        // only integrations whose toggle flipped are re-applied to online players.
         var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) {
             return;
         }
         server.execute(() -> {
-            for (var player : server.getPlayerList().getPlayers()) {
-                IntegrationManager.syncPlayer(player);
-            }
-            debug("[RunicRaces] Server config reloaded — re-synced {} players", server.getPlayerList().getPlayerCount());
+            IntegrationManager.onServerConfigReloaded(server);
+            debug("[RunicRaces] Server config reloaded — integration activation reconciled");
         });
     }
 

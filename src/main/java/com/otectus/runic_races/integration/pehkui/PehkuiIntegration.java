@@ -10,8 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import virtuoel.pehkui.api.ScaleData;
 import virtuoel.pehkui.api.ScaleOperations;
 import virtuoel.pehkui.api.ScaleRegistries;
@@ -19,20 +17,21 @@ import virtuoel.pehkui.api.ScaleType;
 import virtuoel.pehkui.api.ScaleTypes;
 import virtuoel.pehkui.api.TypedScaleModifier;
 
-import java.util.Optional;
-
-/**
- * Pehkui integration: assigns racial height scaling to each of the 37 races, read
- * from the central {@link RaceRegistry}. Human is baseline (~1.0).
- * Range: 0.45 (Sprite) / 0.50 (Faerie) to 1.30 (Terra Drake).
- */
+/** Optional body scaling; existing races retain BASE behavior, additions change geometry without racial reach. */
 public class PehkuiIntegration implements ModIntegration {
     private static final float SCALE_EPSILON = 0.001f;
     private static final int RESIZE_PROTECTION_TICKS = 40;
     private static ScaleType RACE_SCALE_TYPE;
+    private static ScaleType EXPANSION_SIZE_TYPE;
 
     @Override
     public void init() {
+        registerScaleTypes();
+    }
+
+    /** Registry and dimension callbacks must exist on remote clients before scale packets arrive. */
+    public static synchronized void registerScaleTypes() {
+        if (RACE_SCALE_TYPE != null) return;
         // Register a custom ScaleType so racial scaling doesn't clobber BASE
         ResourceLocation typeId = new ResourceLocation(RunicRacesMod.MOD_ID, "race_scale");
         RACE_SCALE_TYPE = ScaleType.Builder.create()
@@ -45,6 +44,23 @@ public class PehkuiIntegration implements ModIntegration {
         ResourceLocation modifierId = new ResourceLocation(RunicRacesMod.MOD_ID, "race_scale_modifier");
         ScaleRegistries.register(ScaleRegistries.SCALE_MODIFIERS, modifierId, raceModifier);
         ScaleTypes.BASE.getDefaultBaseValueModifiers().add(raceModifier);
+        RACE_SCALE_TYPE.getScaleChangedEvent().add(data -> {
+            if (data.getEntity() != null) ScaleTypes.BASE.getScaleData(data.getEntity()).onUpdate();
+        });
+
+        // Expansion size changes geometry only. BASE also affects reach, motion and other
+        // Pehkui mechanics; preserve the old races' established BASE behavior separately.
+        EXPANSION_SIZE_TYPE = ScaleType.Builder.create().defaultBaseScale(1.0f).build();
+        ScaleRegistries.register(ScaleRegistries.SCALE_TYPES, new ResourceLocation(RunicRacesMod.MOD_ID, "race_body_size"), EXPANSION_SIZE_TYPE);
+        TypedScaleModifier body = new TypedScaleModifier(() -> EXPANSION_SIZE_TYPE, ScaleOperations.MULTIPLY);
+        ScaleRegistries.register(ScaleRegistries.SCALE_MODIFIERS, new ResourceLocation(RunicRacesMod.MOD_ID, "race_body_modifier"), body);
+        ScaleTypes.WIDTH.getDefaultBaseValueModifiers().add(body);
+        ScaleTypes.HEIGHT.getDefaultBaseValueModifiers().add(body);
+        EXPANSION_SIZE_TYPE.getScaleChangedEvent().add(data -> {
+            if (data.getEntity() == null) return;
+            ScaleTypes.WIDTH.getScaleData(data.getEntity()).onUpdate();
+            ScaleTypes.HEIGHT.getScaleData(data.getEntity()).onUpdate();
+        });
 
         RunicRacesMod.LOGGER.info("[RunicRaces] Pehkui integration initialized — custom race_scale type registered with {} race scales",
                 RaceRegistry.raceCount());
@@ -69,27 +85,49 @@ public class PehkuiIntegration implements ModIntegration {
 
         try {
             ScaleData scaleData = RACE_SCALE_TYPE.getScaleData(player);
-            float currentScale = scaleData.getScale();
-            if (Math.abs(currentScale - scale) <= SCALE_EPSILON) {
+            ScaleData bodyData = EXPANSION_SIZE_TYPE.getScaleData(player);
+            boolean expansion = com.otectus.runic_races.ability.AbilityKind.forRace(race == null ? "" : race).isPresent();
+            float baseTarget = expansion ? 1 : scale;
+            float bodyTarget = expansion ? scale : 1;
+            float oldBase = scaleData.getBaseScale(), oldBody = bodyData.getBaseScale();
+            float currentScale = oldBase * oldBody;
+            if (Math.abs(oldBase - baseTarget) <= SCALE_EPSILON && Math.abs(oldBody - bodyTarget) <= SCALE_EPSILON) {
+                player.getPersistentData().remove("runic_races:resize_pending");
                 return;
             }
 
             EntityDimensions previousDimensions = player.getDimensions(player.getPose());
             boolean growing = scale > currentScale + SCALE_EPSILON;
 
-            scaleData.setScale(scale);
-            player.refreshDimensions();
-            player.fallDistance = 0.0f;
-
-            boolean relocated = false;
+            Vec3 previousPosition = player.position();
             if (growing) {
-                relocated = relocateForGrowth(player, previousDimensions);
+                // Check before mutating scale. Refreshing dimensions can move the entity;
+                // repeated grow/rollback/teleport attempts used to pin players near walls.
+                float ratio = scale / currentScale;
+                AABB destination = EntityDimensions.scalable(previousDimensions.width * ratio,
+                        previousDimensions.height * ratio).makeBoundingBox(previousPosition);
+                if (!player.level().getWorldBorder().isWithinBounds(destination)
+                        || destination.minY < player.level().getMinBuildHeight()
+                        || destination.maxY > player.level().getMaxBuildHeight()
+                        || !player.level().noCollision(player, destination.deflate(1.0e-7))) {
+                    if (!player.getPersistentData().getBoolean("runic_races:resize_pending"))
+                        player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.runic_races.resize_waiting"), true);
+                    player.getPersistentData().putBoolean("runic_races:resize_pending", true);
+                    return;
+                }
             }
+            scaleData.setScale(baseTarget);
+            bodyData.setScale(bodyTarget);
+            // Keep the feet fixed after the automatic dimension callbacks. The full
+            // destination was checked above; no relocation search may cross a wall.
+            player.setPos(previousPosition.x, previousPosition.y, previousPosition.z);
+            player.fallDistance = 0.0f;
+            player.getPersistentData().remove("runic_races:resize_pending");
             RacialEventHandler.markResizeProtection(player, RESIZE_PROTECTION_TICKS);
 
             EntityDimensions currentDimensions = player.getDimensions(player.getPose());
             RunicRacesMod.debug(
-                    "[RunicRaces] Set Pehkui scale for {} ({}) from {} to {} ({}x{} -> {}x{}, relocated={})",
+                    "[RunicRaces] Set Pehkui scale for {} ({}) from {} to {} ({}x{} -> {}x{})",
                     player.getName().getString(),
                     race == null ? "<no race>" : race,
                     currentScale,
@@ -97,8 +135,7 @@ public class PehkuiIntegration implements ModIntegration {
                     previousDimensions.width,
                     previousDimensions.height,
                     currentDimensions.width,
-                    currentDimensions.height,
-                    relocated
+                    currentDimensions.height
             );
         } catch (Exception e) {
             RunicRacesMod.LOGGER.error("[RunicRaces] Failed to set Pehkui scale for {}: {}",
@@ -106,44 +143,4 @@ public class PehkuiIntegration implements ModIntegration {
         }
     }
 
-    private boolean relocateForGrowth(ServerPlayer player, EntityDimensions previousDimensions) {
-        EntityDimensions currentDimensions = player.getDimensions(player.getPose());
-        Vec3 center = player.position().add(0.0, (double) previousDimensions.height / 2.0, 0.0);
-        double horizontalGrowth = (double) Math.max(0.0F, currentDimensions.width - previousDimensions.width) + 1.0E-6;
-        double verticalGrowth = (double) Math.max(0.0F, currentDimensions.height - previousDimensions.height) + 1.0E-6;
-
-        VoxelShape growthShape = Shapes.create(AABB.ofSize(center, horizontalGrowth, verticalGrowth, horizontalGrowth));
-        Optional<Vec3> safePosition = player.level().findFreePosition(
-                player,
-                growthShape,
-                center,
-                (double) currentDimensions.width,
-                (double) currentDimensions.height,
-                (double) currentDimensions.width
-        );
-        if (safePosition.isPresent()) {
-            Vec3 target = safePosition.get().add(0.0, (double) (-currentDimensions.height) / 2.0, 0.0);
-            player.teleportTo(target.x, target.y, target.z);
-            return true;
-        }
-
-        if (currentDimensions.width > previousDimensions.width && currentDimensions.height > previousDimensions.height) {
-            VoxelShape horizontalOnlyShape = Shapes.create(AABB.ofSize(center, horizontalGrowth, 1.0E-6, horizontalGrowth));
-            Optional<Vec3> horizontalFallback = player.level().findFreePosition(
-                    player,
-                    horizontalOnlyShape,
-                    center,
-                    (double) currentDimensions.width,
-                    (double) previousDimensions.height,
-                    (double) currentDimensions.width
-            );
-            if (horizontalFallback.isPresent()) {
-                Vec3 target = horizontalFallback.get().add(0.0, (double) (-previousDimensions.height) / 2.0 + 1.0E-6, 0.0);
-                player.teleportTo(target.x, target.y, target.z);
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

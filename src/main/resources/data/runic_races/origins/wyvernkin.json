@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:wyvernkin_icon"
+  },
+  "order": 7066,
+  "impact": 2,
+  "name": "origin.runic_races.wyvernkin.name",
+  "description": "origin.runic_races.wyvernkin.description",
+  "powers": [
+    "runic_races:wyvernkin/venom_swoop",
+    "runic_races:wyvernkin/lean_wings",
+    "runic_races:wyvernkin/exposed_membranes"
+  ]
+}

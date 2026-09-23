@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:crystal_one_icon"
+  },
+  "order": 3057,
+  "impact": 2,
+  "name": "origin.runic_races.crystal_one.name",
+  "description": "origin.runic_races.crystal_one.description",
+  "powers": [
+    "runic_races:crystal_one/prism_reprisal",
+    "runic_races:crystal_one/faceted_body",
+    "runic_races:crystal_one/fracture_lines"
+  ]
+}

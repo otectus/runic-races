@@ -1,0 +1,22 @@
+{
+  "type": "origins:multiple",
+  "name": "power.runic_races.tide_elf.amphibious_grace.name",
+  "description": "power.runic_races.tide_elf.amphibious_grace.description",
+  "mechanics": {
+    "type": "runic_races:racial_traits",
+    "values": {
+      "swim_speed": 0.2
+    }
+  },
+  "water_breathing": {
+    "type": "origins:water_breathing"
+  },
+  "water_vision": {
+    "type": "origins:night_vision",
+    "strength": 1,
+    "condition": {
+      "type": "origins:submerged_in",
+      "fluid": "minecraft:water"
+    }
+  }
+}

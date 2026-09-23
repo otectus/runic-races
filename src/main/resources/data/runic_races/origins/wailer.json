@@ -1,0 +1,14 @@
+{
+  "icon": {
+    "item": "runic_races:wailer_icon"
+  },
+  "order": 6064,
+  "impact": 3,
+  "name": "origin.runic_races.wailer.name",
+  "description": "origin.runic_races.wailer.description",
+  "powers": [
+    "runic_races:wailer/keening_cry",
+    "runic_races:wailer/deathwatch",
+    "runic_races:wailer/fraying_spirit"
+  ]
+}

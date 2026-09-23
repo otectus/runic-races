@@ -33,10 +33,15 @@ class NetworkAppendOnlyTest {
             "S2CScreenCuePacket",
             "S2CRaceStatePacket",
             "S2CAdaptationStacksPacket",
-            "C2SBackToFamilyPacket"
+            "C2SBackToFamilyPacket",
+            "AbilityInputPacket",
+            "AbilitySnapshot",
+            "S2CBreathVfxPacket",
+            "S2CPowerDataPacket",
+            "S2CParticleBatchPacket"
     );
 
-    private static final String EXPECTED_PROTOCOL = "2";
+    private static final String EXPECTED_PROTOCOL = "5";
 
     @Test
     void registrationOrderIsLocked() throws IOException {

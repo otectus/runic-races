@@ -46,6 +46,11 @@ public final class OriginsPowerHelper {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void setResourceValue(ServerPlayer player, ResourceLocation powerId, int value) {
+        assignResource(player, powerId, value, true);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static void assignResource(ServerPlayer player, ResourceLocation powerId, int value, boolean sync) {
         IPowerContainer container = IPowerContainer.get(player).orElse(null);
         if (container == null || !container.hasPower(powerId)) {
             return;
@@ -58,6 +63,6 @@ public final class OriginsPowerHelper {
 
         ConfiguredPower configuredPower = (ConfiguredPower) holder.value();
         configuredPower.assign(player, value);
-        container.sync();
+        if (sync) container.sync();
     }
 }

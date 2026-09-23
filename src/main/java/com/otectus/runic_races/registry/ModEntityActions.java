@@ -8,6 +8,7 @@ import com.otectus.runic_races.action.ConsumeManaAction;
 import com.otectus.runic_races.action.ConsumeStaminaAction;
 import com.otectus.runic_races.action.GlowHostilesAction;
 import com.otectus.runic_races.action.PlaceTrapAction;
+import com.otectus.runic_races.action.CooldownDecayAction;
 import com.otectus.runic_races.action.ShowBannerAction;
 import com.otectus.runic_races.action.SignaturePresentationAction;
 import com.otectus.runic_races.action.SummonMinionAction;
@@ -60,6 +61,9 @@ public class ModEntityActions {
 
     public static final RegistryObject<PlaceTrapAction> PLACE_TRAP =
             ENTITY_ACTIONS.register("place_trap", PlaceTrapAction::new);
+
+    public static final RegistryObject<CooldownDecayAction> COOLDOWN_DECAY =
+            ENTITY_ACTIONS.register("cooldown_decay", CooldownDecayAction::new);
 
     public static void register(IEventBus modBus) {
         ENTITY_ACTIONS.register(modBus);
