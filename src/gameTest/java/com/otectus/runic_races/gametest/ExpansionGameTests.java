@@ -124,6 +124,24 @@ public final class ExpansionGameTests {
         }
         h.succeed();
     }
+    @GameTest(templateNamespace = "runic_races", template = "empty", timeoutTicks = 100)
+    public static void racialJumpsAndFallsComposeWithPehkui(GameTestHelper h) throws Exception {
+        for (String race : List.of("deep_one", "forge_one", "sprite", "faerie", "mountain_one", "moss_one",
+                "zephyr", "wailer", "primian", "valen", "terra_drake")) {
+            TestPlayer p = player(h, race);
+            if (net.minecraftforge.fml.ModList.get().isLoaded("pehkui")) {
+                Class.forName("com.otectus.runic_races.gametest.ScalingProbe")
+                        .getMethod("verifyMovement", GameTestHelper.class, ServerPlayer.class).invoke(null, h, p);
+            } else {
+                p.setDeltaMovement(Vec3.ZERO);
+                p.jumpFromGround();
+                h.assertTrue(Math.abs(p.getDeltaMovement().y - .42) < .001,
+                        "Absent Pehkui changed jump velocity for " + race);
+            }
+            AbilityService.clear(p, true);
+        }
+        h.succeed();
+    }
     @GameTest(templateNamespace = "runic_races", template = "empty", timeoutTicks = 80)
     public static void optionalSlotsAndFeathersPreserveExternalModifiers(GameTestHelper h) throws Exception {
         for (String mod : java.util.List.of("curios", "feathers")) {

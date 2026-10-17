@@ -44,6 +44,7 @@ public class IntegrationManager {
     private static final List<Adapter> adapters = new ArrayList<>();
     /** Toggle values the online players were last synchronized against. */
     private static final Map<String, Boolean> syncedActivation = new HashMap<>();
+    private static boolean syncedJumpCompensation;
     private static boolean registered = false;
 
     /** Common setup runs on dedicated servers and clients; no SERVER config may be read here. */
@@ -82,7 +83,7 @@ public class IntegrationManager {
 
             tryLoad("pehkui", "Pehkui",
                     "com.otectus.runic_races.integration.pehkui.PehkuiIntegration",
-                    () -> true); // Keep the adapter available to remove persisted owned scales when disabled.
+                    () -> RRServerConfig.PEHKUI_INTEGRATION.get()); // Disabled adapters still sync to remove owned state.
 
             tryLoad("feathers", "Feather's Mod",
                     "com.otectus.runic_races.integration.feathers.FeathersIntegration",
@@ -92,6 +93,7 @@ public class IntegrationManager {
         }
 
         syncedActivation.clear();
+        syncedJumpCompensation = RRServerConfig.SMALL_RACE_JUMP_COMPENSATION.get();
         int active = 0;
         for (Adapter adapter : adapters) {
             boolean enabled = adapter.enabled().getAsBoolean();
@@ -114,14 +116,17 @@ public class IntegrationManager {
      */
     public static void onServerConfigReloaded(MinecraftServer server) {
         if (!registered) return;
+        boolean jumpCompensation = RRServerConfig.SMALL_RACE_JUMP_COMPENSATION.get();
+        boolean jumpChanged = jumpCompensation != syncedJumpCompensation;
+        syncedJumpCompensation = jumpCompensation;
         List<ModIntegration> changed = new ArrayList<>();
         for (Adapter adapter : adapters) {
             String name = adapter.integration().getName();
             boolean enabled = adapter.enabled().getAsBoolean();
             Boolean previous = syncedActivation.put(name, enabled);
-            if (previous == null || previous != enabled) {
+            if (previous == null || previous != enabled || (name.equals("Pehkui") && jumpChanged)) {
                 changed.add(adapter.integration());
-                RunicRacesMod.LOGGER.info("[RunicRaces] {} integration {} by config reload", name, enabled ? "enabled" : "disabled");
+                RunicRacesMod.LOGGER.info("[RunicRaces] Re-syncing {} after config reload (enabled={})", name, enabled);
             }
         }
         if (changed.isEmpty()) return;

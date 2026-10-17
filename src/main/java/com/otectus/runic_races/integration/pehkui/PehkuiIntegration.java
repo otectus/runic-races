@@ -1,6 +1,7 @@
 package com.otectus.runic_races.integration.pehkui;
 
 import com.otectus.runic_races.RunicRacesMod;
+import com.otectus.runic_races.config.RRServerConfig;
 import com.otectus.runic_races.event.RacialEventHandler;
 import com.otectus.runic_races.integration.ModIntegration;
 import com.otectus.runic_races.race.RaceRegistry;
@@ -10,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import virtuoel.pehkui.api.PehkuiConfig;
 import virtuoel.pehkui.api.ScaleData;
 import virtuoel.pehkui.api.ScaleOperations;
 import virtuoel.pehkui.api.ScaleRegistries;
@@ -23,6 +25,7 @@ public class PehkuiIntegration implements ModIntegration {
     private static final int RESIZE_PROTECTION_TICKS = 40;
     private static ScaleType RACE_SCALE_TYPE;
     private static ScaleType EXPANSION_SIZE_TYPE;
+    private static ScaleType RACE_JUMP_TYPE;
 
     @Override
     public void init() {
@@ -44,8 +47,26 @@ public class PehkuiIntegration implements ModIntegration {
         ResourceLocation modifierId = new ResourceLocation(RunicRacesMod.MOD_ID, "race_scale_modifier");
         ScaleRegistries.register(ScaleRegistries.SCALE_MODIFIERS, modifierId, raceModifier);
         ScaleTypes.BASE.getDefaultBaseValueModifiers().add(raceModifier);
+
+        // Keep jump physics identical on the predicting client and the server. This
+        // owned type is synced by Pehkui; it never replaces another mod's jump scale.
+        RACE_JUMP_TYPE = ScaleType.Builder.create().defaultBaseScale(1.0f).build();
+        ScaleRegistries.register(ScaleRegistries.SCALE_TYPES, new ResourceLocation(RunicRacesMod.MOD_ID, "race_jump"), RACE_JUMP_TYPE);
+        TypedScaleModifier jump = new TypedScaleModifier(() -> RACE_JUMP_TYPE, ScaleOperations.MULTIPLY);
+        ScaleRegistries.register(ScaleRegistries.SCALE_MODIFIERS, new ResourceLocation(RunicRacesMod.MOD_ID, "race_jump_modifier"), jump);
+        ScaleTypes.JUMP_HEIGHT.getDefaultBaseValueModifiers().add(jump);
+        RACE_JUMP_TYPE.getScaleChangedEvent().add(data -> {
+            if (data.getEntity() != null) ScaleTypes.JUMP_HEIGHT.getScaleData(data.getEntity()).onUpdate();
+        });
+
+        TypedScaleModifier falling = new TypedScaleModifier(() -> RACE_SCALE_TYPE,
+                (value, racialScale) -> value * RacialMovementScales.fallMultiplier((float) racialScale));
+        ScaleRegistries.register(ScaleRegistries.SCALE_MODIFIERS, new ResourceLocation(RunicRacesMod.MOD_ID, "race_falling_modifier"), falling);
+        ScaleTypes.FALLING.getDefaultBaseValueModifiers().add(falling);
         RACE_SCALE_TYPE.getScaleChangedEvent().add(data -> {
-            if (data.getEntity() != null) ScaleTypes.BASE.getScaleData(data.getEntity()).onUpdate();
+            if (data.getEntity() == null) return;
+            ScaleTypes.BASE.getScaleData(data.getEntity()).onUpdate();
+            ScaleTypes.FALLING.getScaleData(data.getEntity()).onUpdate();
         });
 
         // Expansion size changes geometry only. BASE also affects reach, motion and other
@@ -80,7 +101,7 @@ public class PehkuiIntegration implements ModIntegration {
         String race = RaceHelper.getRaceName(player).orElse(null);
         // No race (origin cleared / non-runic origin picked) or integration toggled off
         // mid-session → return the player to baseline instead of freezing the old scale.
-        boolean enabled = com.otectus.runic_races.config.RRServerConfig.PEHKUI_INTEGRATION.get();
+        boolean enabled = RRServerConfig.PEHKUI_INTEGRATION.get();
         float scale = (race == null || !enabled) ? 1.0f : RaceHelper.getRaceScale(race);
 
         try {
@@ -91,6 +112,9 @@ public class PehkuiIntegration implements ModIntegration {
             float bodyTarget = expansion ? scale : 1;
             float oldBase = scaleData.getBaseScale(), oldBody = bodyData.getBaseScale();
             float currentScale = oldBase * oldBody;
+            // Also reconcile a config-only change when dimensions did not change, or
+            // a resize is blocked. Use the applied scale, never a pending race target.
+            syncJumpScale(player, oldBase);
             if (Math.abs(oldBase - baseTarget) <= SCALE_EPSILON && Math.abs(oldBody - bodyTarget) <= SCALE_EPSILON) {
                 player.getPersistentData().remove("runic_races:resize_pending");
                 return;
@@ -118,6 +142,7 @@ public class PehkuiIntegration implements ModIntegration {
             }
             scaleData.setScale(baseTarget);
             bodyData.setScale(bodyTarget);
+            syncJumpScale(player, baseTarget);
             // Keep the feet fixed after the automatic dimension callbacks. The full
             // destination was checked above; no relocation search may cross a wall.
             player.setPos(previousPosition.x, previousPosition.y, previousPosition.z);
@@ -141,6 +166,15 @@ public class PehkuiIntegration implements ModIntegration {
             RunicRacesMod.LOGGER.error("[RunicRaces] Failed to set Pehkui scale for {}: {}",
                     player.getName().getString(), e.getMessage());
         }
+    }
+
+    private static void syncJumpScale(ServerPlayer player, float appliedBaseScale) {
+        boolean compensate = RRServerConfig.PEHKUI_INTEGRATION.get()
+                && RRServerConfig.SMALL_RACE_JUMP_COMPENSATION.get()
+                && PehkuiConfig.COMMON.scaledMotion.get();
+        float target = RacialMovementScales.jumpMultiplier(appliedBaseScale, compensate);
+        ScaleData jump = RACE_JUMP_TYPE.getScaleData(player);
+        if (Math.abs(jump.getBaseScale() - target) > SCALE_EPSILON) jump.setScale(target);
     }
 
 }

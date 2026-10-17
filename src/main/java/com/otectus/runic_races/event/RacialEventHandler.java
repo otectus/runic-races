@@ -49,14 +49,12 @@ import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
 
 import java.util.UUID;
 
@@ -72,12 +70,8 @@ import java.util.UUID;
  * - Lightweight-race knockback amplification (LivingKnockBackEvent)
  * - Venomous melee (Arachnid/Serpen) and Blood Elf lifesteal
  * - Brief contact-damage suppression during Pehkui resizes (both growing and shrinking)
- * - Jump height compensation for scaled-down races (Pehkui)
  */
 public class RacialEventHandler {
-
-    // Mod presence never changes at runtime — resolve once instead of per-jump.
-    private static final boolean PEHKUI_LOADED = ModList.get().isLoaded("pehkui");
 
     // NBT tag keys for cooldown tracking.
     // NOTE: several key *strings* predate the current race names (vampire/revenant) — they are
@@ -810,37 +804,6 @@ public class RacialEventHandler {
                     player.getX(), player.getY() + 0.1, player.getZ(),
                     20, 0.8, 0.1, 0.8, 0.05);
         }
-    }
-
-    // ==================== JUMP COMPENSATION ====================
-
-    /**
-     * Compensates jump height for races scaled down by Pehkui.
-     * Boosts Y velocity so all races can clear a 1-block ledge regardless of scale.
-     */
-    @SubscribeEvent
-    public void onLivingJump(LivingEvent.LivingJumpEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        // Pehkui being installed is not enough: the scaling this compensates for is only applied
-        // when the integration actually loaded, which the config toggle can veto. Boosting jump
-        // height against a scale nobody applied is a straight buff.
-        if (!PEHKUI_LOADED
-                || !RRServerConfig.PEHKUI_INTEGRATION.get()
-                || !IntegrationManager.isIntegrationActive("Pehkui")) {
-            return;
-        }
-
-        String race = RaceHelper.getRaceName(player).orElse(null);
-        if (race == null) return;
-
-        float scale = RaceHelper.getRaceScale(race);
-        if (scale >= 1.0f) return;
-
-        // Multiply Y velocity by inverse of scale to counteract Pehkui's motion scaling.
-        // A 0.7-scale player gets 1/0.7 ≈ 1.43x boost, reaching the same world-height as a 1.0-scale player.
-        Vec3 motion = player.getDeltaMovement();
-        player.setDeltaMovement(motion.x, motion.y / scale, motion.z);
-        player.hurtMarked = true; // Sync velocity to client
     }
 
     // ==================== DATA PERSISTENCE ====================

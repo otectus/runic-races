@@ -3,6 +3,23 @@
 All notable changes to Runic Races are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Fixed
+
+- Short races no longer receive an excessive inverse-size jump boost. Pehkui now
+  synchronizes a modest jump correction for one-block traversal on clients and servers;
+  races with body-only scaling receive no extra boost.
+- Racial shrinking no longer multiplies fall distance. Ordinary jumps and small
+  step-downs are safe without disabling compensation; real falls, racial weaknesses,
+  and external jump/motion/fall scales still apply.
+- Pehkui integration changes now reconcile owned scales on server-config reload.
+
+### Added
+
+- Server setting `movement.smallRaceJumpCompensation` (default `true`). Set it to
+  `false` for native scaled jumps. Fall-distance correction remains active independently.
+
 ## [1.7.2] — 2026-09-23 — Lighter on the server
 
 Server performance and stability pass. No race, power, balance, save-format or resource-id change.

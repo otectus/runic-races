@@ -34,6 +34,9 @@ jobs:
           ./gradlew --no-daemon test build runGameTestServer
           python3 tools/audit_release.py
 
+      - name: Verify Pehkui jumps and falls
+        run: ./gradlew --no-daemon -PrrRuntime=pehkui runGameTestServer
+
       - name: Preserve validation results
         if: always()
         uses: actions/upload-artifact@v4

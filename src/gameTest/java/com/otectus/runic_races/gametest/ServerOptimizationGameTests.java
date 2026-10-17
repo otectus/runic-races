@@ -469,6 +469,12 @@ public final class ServerOptimizationGameTests {
     @GameTest(templateNamespace = "runic_races", template = "empty", timeoutTicks = 40, batch = "rr_transport")
     public static void integrationActivationFollowsTheLiveConfig(GameTestHelper h) {
         // Read-only: writing a ConfigValue autosaves the TOML and races Forge's file watcher.
+        if (net.minecraftforge.fml.ModList.get().isLoaded("pehkui")) {
+            h.assertTrue(IntegrationManager.getLoadedIntegrations().stream().anyMatch(i -> i.getName().equals("Pehkui")),
+                    "Pehkui adapter must remain available to remove disabled owned scales");
+            h.assertTrue(IntegrationManager.isIntegrationActive("Pehkui") == RRServerConfig.PEHKUI_INTEGRATION.get(),
+                    "Pehkui activation does not follow its live config toggle");
+        }
         if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) {
             h.assertTrue(IntegrationManager.getLoadedIntegrations().stream().anyMatch(i -> i.getName().equals("Curios")),
                     "Curios adapter missing although the mod is present");

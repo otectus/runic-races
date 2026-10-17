@@ -13,6 +13,9 @@ public class RRServerConfig {
     public static final ForgeConfigSpec.BooleanValue PEHKUI_INTEGRATION;
     public static final ForgeConfigSpec.BooleanValue FEATHERS_INTEGRATION;
 
+    // Movement
+    public static final ForgeConfigSpec.BooleanValue SMALL_RACE_JUMP_COMPENSATION;
+
     // Resource gating
     public static final ForgeConfigSpec.BooleanValue FAIL_CLOSED_WHEN_RESOURCE_MOD_MISSING;
 
@@ -60,6 +63,15 @@ public class RRServerConfig {
         FEATHERS_INTEGRATION = builder
                 .comment("Enable Feather's Mod integration (racial stamina pools for physical powers)")
                 .define("feathers", true);
+        builder.pop();
+
+        builder.comment("Racial movement tuning").push("movement");
+        SMALL_RACE_JUMP_COMPENSATION = builder
+                .comment("Compensate reduced Pehkui movement for short races so ordinary jumps clear one-block ledges.",
+                        "Uses a modest jump-height correction instead of an inverse-size velocity boost. Disable for native scaled jumps.",
+                        "Only applies to racial BASE scaling; body-only races and external scale contributions are preserved.",
+                        "Racial shrinking never amplifies fall distance, independently of this toggle. Real falls still cause damage.")
+                .define("smallRaceJumpCompensation", true);
         builder.pop();
 
         builder.comment("Resource gating — controls behavior when optional resource mods are absent").push("resourceGating");

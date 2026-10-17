@@ -121,11 +121,27 @@ Magi's Arcane Overflow is cooldown-only on a standalone install instead of silen
 
 ## Configuration
 
-Config files are generated in `config/runic_races/`:
+Common and client configs are generated in `config/runic_races/`. The server config is
+world-specific: `<world>/serverconfig/runic_races/runic_races-server.toml` (including
+single-player worlds). Pack defaults can be supplied in `defaultconfigs/runic_races/`.
 
 - `runic_races-server.toml` — Integration toggles, resource gating posture (`failClosedWhenResourceModMissing` defaults to **true** for predictable standalone play; flip to `false` inside a pack that guarantees Iron's Spellbooks / Feather's are present).
 - `runic_races-client.toml` — Racial HUD (anchor, offset, scale, opacity, minimal mode, ability names, ready glow), ambient state effects (passive state particles, screen cues), and state-rune pulse.
 - `runic_races-common.toml` — Debug logging; **`disableDefaultOriginLayer`** (see Origins Compatibility below).
+
+Short races keep one-block traversal with Pehkui by default, without the old oversized
+jump. To use native scaled jumps instead, set this in the world's server config:
+
+```toml
+[movement]
+smallRaceJumpCompensation = false
+```
+
+The toggle applies on server-config reload. Racial shrinking no longer increases fall
+distance, with either setting: ordinary jumps and small step-downs are safe, while real
+drops, racial damage weaknesses, and other mods' scale effects still apply. Body-only
+racial sizes need no jump correction. Without Pehkui this setting has no effect.
+Clients and the server must both use the updated mod for matching jump prediction.
 
 ## Origins Compatibility
 

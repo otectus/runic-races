@@ -7,6 +7,52 @@ import virtuoel.pehkui.api.ScaleTypes;
 
 /** Loaded only for the Pehkui runtime matrix, keeping the required-only runtime independent. */
 public final class ScalingProbe {
+    public static void verifyMovement(GameTestHelper h, ServerPlayer p) {
+        IntegrationManager.syncPlayer(p);
+        String race = com.otectus.runic_races.util.RaceHelper.getRaceName(p).orElseThrow();
+        boolean enabled = com.otectus.runic_races.config.RRServerConfig.PEHKUI_INTEGRATION.get();
+        boolean compensation = com.otectus.runic_races.config.RRServerConfig.SMALL_RACE_JUMP_COMPENSATION.get()
+                && virtuoel.pehkui.api.PehkuiConfig.COMMON.scaledMotion.get();
+        boolean bodyOnly = com.otectus.runic_races.ability.AbilityKind.forRace(race).isPresent();
+        float racialBase = !enabled || bodyOnly ? 1 : com.otectus.runic_races.race.RaceRegistry.getScale(race);
+        float jump = compensation && racialBase < 1 ? (float) (1 / Math.sqrt(racialBase)) : 1;
+        float falling = racialBase < 1 ? 1 : 1 / racialBase;
+        h.assertTrue(Math.abs(ScaleTypes.JUMP_HEIGHT.getScaleData(p).getScale() - jump) < .001,
+                "Incorrect owned jump scale for " + race);
+        h.assertTrue(Math.abs(ScaleTypes.FALLING.getScaleData(p).getScale() - falling) < .001,
+                "Racial shrinking amplified fall distance for " + race);
+
+        p.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        p.jumpFromGround();
+        h.assertTrue(Math.abs(p.getDeltaMovement().y - .42 * jump) < .001,
+                "Jump was boosted twice or only on the server for " + race);
+        // A repeat sync must not erase a real fall or refresh resize invulnerability.
+        p.fallDistance = 5;
+        p.getPersistentData().remove("runic_races:resize_protection_until");
+        IntegrationManager.syncPlayer(p);
+        h.assertTrue(p.fallDistance == 5 && !p.getPersistentData().contains("runic_races:resize_protection_until"),
+                "Stable movement sync granted fall protection for " + race);
+        p.fallDistance = 0;
+
+        float before = p.getHealth();
+        p.causeFallDamage(2 * falling, 1, p.damageSources().fall());
+        h.assertTrue(p.getHealth() == before, "Ordinary small landing hurt " + race);
+        p.invulnerableTime = 0;
+        p.causeFallDamage(6 * falling, 1, p.damageSources().fall());
+        h.assertTrue(p.getHealth() < before, "Real fall damage was disabled for " + race);
+
+        // Warmed caches must update, and a re-sync must retain external contributions.
+        ScaleTypes.BASE.getScaleData(p).setScale(1.1f);
+        ScaleTypes.MOTION.getScaleData(p).setScale(.8f);
+        ScaleTypes.JUMP_HEIGHT.getScaleData(p).setScale(1.25f);
+        ScaleTypes.FALLING.getScaleData(p).setScale(1.2f);
+        IntegrationManager.syncPlayer(p);
+        h.assertTrue(Math.abs(ScaleTypes.JUMP_HEIGHT.getScaleData(p).getScale() - 1.25 * jump) < .001,
+                "External jump scale was overwritten for " + race);
+        h.assertTrue(Math.abs(ScaleTypes.FALLING.getScaleData(p).getScale() - 1.2 / (1.1 * .8) * falling) < .001,
+                "External fall/motion scale was overwritten for " + race);
+    }
+
     public static void verify(GameTestHelper h, ServerPlayer p) {
         // Warm every derived cache before changing the owned scales: fresh-only probes
         // miss the stale collision dimensions seen after login or changing race.
