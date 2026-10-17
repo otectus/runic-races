@@ -30,7 +30,8 @@
 - `racialJumpsAndFallsComposeWithPehkui` covers native jump velocity without
   Pehkui; with Pehkui it checks real derived scales, the real jump method, fall
   damage, stable repeated sync and external modifiers for legacy/expansion small
-  races, normal races and tall races. CI runs the Pehkui profile explicitly.
+  races, normal races and tall races. CI runs the Pehkui profile with compensation
+  enabled and disabled, editing the generated world config only while the server is stopped.
 
 ## Runtime and client checks
 

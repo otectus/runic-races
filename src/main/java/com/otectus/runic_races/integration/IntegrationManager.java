@@ -200,6 +200,13 @@ public class IntegrationManager {
         return false;
     }
 
+    private static boolean hasAdapter(String name) {
+        for (Adapter adapter : adapters) {
+            if (adapter.integration().getName().equals(name)) return true;
+        }
+        return false;
+    }
+
     public static void syncPlayer(ServerPlayer player) {
         for (Adapter adapter : adapters) {
             syncOne(adapter.integration(), player);
@@ -257,7 +264,9 @@ public class IntegrationManager {
             String currentRace = raceId == null ? "" : raceId.toString();
             String lastSyncedRace = player.getPersistentData().getString(LAST_SYNCED_RACE);
             boolean resizePending = player.getPersistentData().getBoolean("runic_races:resize_pending");
-            if (resizePending && !isIntegrationActive("Pehkui")) {
+            // Disabled Pehkui still owns cleanup: growing back to baseline may
+            // need to wait for room. Only discard retries if the adapter is absent.
+            if (resizePending && !hasAdapter("Pehkui")) {
                 player.getPersistentData().remove("runic_races:resize_pending");
                 resizePending = false;
             }

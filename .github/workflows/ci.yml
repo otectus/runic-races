@@ -37,6 +37,19 @@ jobs:
       - name: Verify Pehkui jumps and falls
         run: ./gradlew --no-daemon -PrrRuntime=pehkui runGameTestServer
 
+      - name: Verify native jumps with compensation disabled
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          configs = list(Path('run/gametest').glob('*-pehkui/**/serverconfig/runic_races/runic_races-server.toml'))
+          assert len(configs) == 1, f'Expected one Pehkui world server config, found {configs}'
+          config = configs[0]
+          text = config.read_text()
+          assert text.count('smallRaceJumpCompensation = true') == 1, 'Jump setting missing or already disabled'
+          config.write_text(text.replace('smallRaceJumpCompensation = true', 'smallRaceJumpCompensation = false'))
+          PY
+          ./gradlew --no-daemon -PrrRuntime=pehkui runGameTestServer
+
       - name: Preserve validation results
         if: always()
         uses: actions/upload-artifact@v4

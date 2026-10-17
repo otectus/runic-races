@@ -25,7 +25,7 @@ public final class ScalingProbe {
         p.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
         p.jumpFromGround();
         h.assertTrue(Math.abs(p.getDeltaMovement().y - .42 * jump) < .001,
-                "Jump was boosted twice or only on the server for " + race);
+                "Incorrect jump launch velocity for " + race);
         // A repeat sync must not erase a real fall or refresh resize invulnerability.
         p.fallDistance = 5;
         p.getPersistentData().remove("runic_races:resize_protection_until");
